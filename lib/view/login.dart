@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:project_belanjakan/view/register.dart';
 import 'package:project_belanjakan/component/form_component.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginView extends StatefulWidget {
   //*
@@ -64,7 +65,7 @@ class _LoginViewState extends State<LoginView> {
                           if (dataForm!['username'] ==
                                   usernameController.text &&
                               dataForm['password'] == passwordController.text) {
-                                
+                              Fluttertoast.showToast(msg: "login Success");
                             // Navigator.push(
                             //     context,
                             //     MaterialPageRoute(
