@@ -23,49 +23,61 @@ class _LoginViewState extends State<LoginView> {
     //*TextEditingController
     TextEditingController usernameController = TextEditingController();
     TextEditingController passwordController = TextEditingController();
-
     Map? dataForm = widget.data;
     return Scaffold(
-      body: SafeArea(
+      body: Center(
         child: Form(
           key: _formKey,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               //*username
-              inputForm((p0) {
-                if (p0 == null || p0.isEmpty) {
-                  return "username tidak boleh kosong";
-                }
-                return null;
-              },
-                  controller: usernameController,
-                  hintTxt: "Username",
-                  helperTxt: "Inputkan User yang telah didaftarkan",
-                  iconData: Icons.person),
+              InputForm(
+                validasi: (p0) {
+                  if (p0 == null || p0.isEmpty) {
+                    return "username tidak boleh kosong";
+                  }
+                  return null;
+                },
+                password: false,
+                controller: usernameController,
+                hintTxt: "Username",
+                iconData: Icons.person,
+              ),
               //*password
-              inputForm((p0) {
-                if (p0 == null || p0.isEmpty) {
-                  return "password kosong";
-                }
-                return null;
-              },
-                  password: true,
-                  controller: passwordController,
-                  hintTxt: "Password",
-                  helperTxt: "Inputkan Password",
-                  iconData: Icons.password),
+              InputForm(
+                validasi: (p0) {
+                  if (p0 == null || p0.isEmpty) {
+                    return "password kosong";
+                  }
+                  return null;
+                },
+                password: true,
+                controller: passwordController,
+                hintTxt: "Password",
+                iconData: Icons.lock,
+              ),
 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
+              TextButton(
+                  onPressed: () {
+                    Map<String, dynamic> formData = {};
+                    formData['username'] = usernameController.text;
+                    formData['password'] = passwordController.text;
+                    pushRegister(context);
+                  },
+                  child: const Text('Belum punya akun ?')),
+              Padding(
+                padding: const EdgeInsets.only(top: 30),
+                child: SizedBox(
+                  width: 350,
+                  height: 50,
+                  child: ElevatedButton(
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           if (dataForm!['username'] ==
                                   usernameController.text &&
                               dataForm['password'] == passwordController.text) {
-                              Fluttertoast.showToast(msg: "login Success");
+                            Fluttertoast.showToast(msg: "login Success");
                             // Navigator.push(
                             //     context,
                             //     MaterialPageRoute(
@@ -96,16 +108,7 @@ class _LoginViewState extends State<LoginView> {
                         }
                       },
                       child: const Text('Login')),
-                  //* tombol ke halaman register
-                  TextButton(
-                      onPressed: () {
-                        Map<String, dynamic> formData = {};
-                        formData['username'] = usernameController.text;
-                        formData['password'] = passwordController.text;
-                        pushRegister(context);
-                      },
-                      child: const Text('Belum punya akun ?')),
-                ],
+                ),
               ),
             ],
           ),
