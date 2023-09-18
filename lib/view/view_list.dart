@@ -8,7 +8,7 @@ class ListNamaView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Daftar Nama"),
+        title: const Text("Kelompok 2"),
       ),
       body: LayoutBuilder(builder: (context, constraints) {
         if (constraints.maxWidth > 600) {
@@ -102,12 +102,17 @@ class PersonDetail extends StatelessWidget {
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  MouseRegion(
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundImage: Image.network(person.picture).image,
+                  ),
+                  MouseRegion( 
                     // ignore: avoid_print
                     onHover: (_) => {print("Hello World")},
                     child: Text(person.name),
                   ),
-                  Text(person.phone),
+                  Text(person.npm),
+                  Text(person.email),
                   ElevatedButton(
                     onPressed: () {},
                     child: const Text("Contact Me"),
@@ -117,12 +122,14 @@ class PersonDetail extends StatelessWidget {
             : Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
+
                   MouseRegion(
                     // ignore: avoid_print
                     onHover: (_) => {print("Hello World")},
                     child: Text(person.name),
                   ),
-                  Text(person.phone),
+                  Text(person.npm),
+                  Text(person.email),
                   ElevatedButton(
                     onPressed: () {},
                     child: const Text("Contact Me"),
