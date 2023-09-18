@@ -4,14 +4,14 @@ class Person {
   final String npm;
   final String picture;
   final String email;
-  const Person(this.name, this.npm, this.picture,this.email);
+  const Person(this.name, this.npm, this.picture, this.email);
 }
 
 //* 2. Variabel List dengan nama people yan memiliki data bertipe object Person, yang merupakan
 //* hasil mapping data list pada baris 14 kebawah
 final List<Person> people = _people
-    .map((e) => Person(
-        e['name'] as String, e['npm'] as String, e['picture'] as String,e['email'] as String))
+    .map((e) => Person(e['name'] as String, e['npm'] as String,
+        e['picture'] as String, e['email'] as String))
     .toList(growable: false);
 
 final List<Map<String, Object>> _people = [
@@ -22,27 +22,27 @@ final List<Map<String, Object>> _people = [
     "npm": "210711015"
   },
   {
-    "name": "Tito",
+    "name": "Yohanes Krisostomus Brahmantya",
     "picture": "https://picsum.photos/200",
-    "email": "210711015@students.uajy.ac.id",
-    "npm": "210711015"
+    "email": "210711282@students.uajy.ac.id",
+    "npm": "210711282"
   },
   {
-    "name": "Hans",
+    "name": "Hans Timotius Junior Sitepu",
     "picture": "https://picsum.photos/200",
-    "email": "210711015@students.uajy.ac.id",
-    "npm": "210711015"
+    "email": "200710903@students.uajy.ac.id",
+    "npm": "200710903"
   },
   {
     "name": "Angel",
     "picture": "https://picsum.photos/200",
-    "email": "210711015@students.uajy.ac.id",
-    "npm": "210711015"
+    "email": "210711280@students.uajy.ac.id",
+    "npm": "210711280"
   },
   {
-    "name": "Daniel",
+    "name": "Daniel Natalius Christopper",
     "picture": "https://picsum.photos/200",
-    "email": "210711015@students.uajy.ac.id",
-    "npm": "210711015"
+    "email": "210711346@students.uajy.ac.id",
+    "npm": "210711346"
   },
 ];
