@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:project_belanjakan/view/grid.dart';
+import 'package:project_belanjakan/view/main_menu.dart';
 
 import 'package:project_belanjakan/view/register.dart';
 import 'package:project_belanjakan/component/form_component.dart';
@@ -82,7 +82,7 @@ class _LoginViewState extends State<LoginView> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (_) => const MyGridView()));
+                                    builder: (_) => const MainMenuView()));
                           } else {
                             showDialog(
                               context: context,
