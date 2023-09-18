@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:project_belanjakan/main.dart';
 import 'package:project_belanjakan/view/main_menu.dart';
 
 import 'package:project_belanjakan/view/register.dart';
