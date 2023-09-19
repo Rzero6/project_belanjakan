@@ -1,16 +1,12 @@
 # project_belanjakan
 
-A new Flutter project.
+current progres:
+UGD 1
 
-## Getting Started
+## Anggota Kelompok
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- 210711015 - Reynold Kunarto
+- 210711282 - Yohanes Krisostomus Brahmantya
+- 200710903 - Hans Timotius Junior Sitepu
+- 210711280 - Angel
+- 210711346-Daniel Natalius Christopper
