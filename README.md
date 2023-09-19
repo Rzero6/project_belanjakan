@@ -9,4 +9,4 @@ UGD 1
 - 210711282 - Yohanes Krisostomus Brahmantya
 - 200710903 - Hans Timotius Junior Sitepu
 - 210711280 - Angel
-- 210711346-Daniel Natalius Christopper
+- 210711346 - Daniel Natalius Christopper
