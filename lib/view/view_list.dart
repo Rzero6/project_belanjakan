@@ -7,9 +7,6 @@ class ListNamaView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Kelompok 2"),
-      ),
       body: LayoutBuilder(builder: (context, constraints) {
         if (constraints.maxWidth > 600) {
           //* Landscape

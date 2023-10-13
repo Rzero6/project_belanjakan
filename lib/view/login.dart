@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project_belanjakan/view/main_menu.dart';
 
 import 'package:project_belanjakan/view/register.dart';
 import 'package:project_belanjakan/component/form_component.dart';
@@ -78,10 +79,10 @@ class _LoginViewState extends State<LoginView> {
                                   usernameController.text &&
                               dataForm['password'] == passwordController.text) {
                             Fluttertoast.showToast(msg: "login Success");
-                            // Navigator.push(
-                            //     context,
-                            //     MaterialPageRoute(
-                            //         builder: (_) => const HomeView()));
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => const MainMenuView()));
                           } else {
                             showDialog(
                               context: context,

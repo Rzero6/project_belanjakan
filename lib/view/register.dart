@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable
+
 import 'package:flutter/material.dart';
 import 'package:project_belanjakan/view/login.dart';
 import 'package:project_belanjakan/component/form_component.dart';
