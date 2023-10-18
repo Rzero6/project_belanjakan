@@ -30,9 +30,10 @@ class SQLHelperItem {
   }
 
   //read
-  static Future<List<Map<String, dynamic>>> getItems() async {
+  static Future<List<Map<String, dynamic>>> getItems(String search) async {
     final db = await SQLHelperItem.db();
-    return db.query('items');
+    //return db.query('items', where: "id = $search%");
+    return db.query('items', where: 'name LIKE ?', whereArgs: ['%$search%']);
   }
 
   //edit
