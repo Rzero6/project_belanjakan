@@ -87,146 +87,161 @@ class _ItemsListViewState extends State<ItemsListView> {
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                  itemCount: items.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Card(
-                        shape: const RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10))),
-                        clipBehavior: Clip.hardEdge,
-                        child: InkWell(
-                          splashColor: Colors.blue.withAlpha(30),
-                          onTap: () {
-                            //Do something on tap
-                          },
-                          child: SizedBox(
-                            height: 150,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                Container(
-                                  width: 100,
-                                  decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                      image: AssetImage(
-                                          '${'assets/images/' + items[index]['picture']}.jpg'),
-                                      fit: BoxFit.cover,
-                                    ),
-                                    borderRadius: const BorderRadius.only(
-                                        bottomLeft: Radius.circular(10),
-                                        topLeft: Radius.circular(10)),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: SizedBox(
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          Align(
-                                            alignment: Alignment.topLeft,
-                                            child: Text(
-                                              items[index]['name'],
-                                              style: const TextStyle(
-                                                  fontSize: 24,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                          const SizedBox(
-                                            height: 8,
-                                          ),
-                                          Align(
-                                            alignment: Alignment.bottomLeft,
-                                            child: Text(
-                                              'Rp. ${items[index]['price']}',
-                                              style: const TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                          const SizedBox(
-                                            height: 25,
-                                          ),
-                                          Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: Text(
-                                              items[index]['detail'],
-                                            ),
-                                          ),
-                                        ],
+              child: items.isEmpty
+                  ? const Center(
+                      child: Text('Maaf, data tidak ada :('),
+                    )
+                  : ListView.builder(
+                      itemCount: items.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Card(
+                            shape: const RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10))),
+                            clipBehavior: Clip.hardEdge,
+                            child: InkWell(
+                              splashColor: Colors.blue.withAlpha(30),
+                              onTap: () {
+                                //Do something on tap
+                              },
+                              child: SizedBox(
+                                height: 150,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    Container(
+                                      width: 100,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          image: AssetImage(
+                                              '${'assets/images/' + items[index]['picture']}.jpg'),
+                                          fit: BoxFit.cover,
+                                        ),
+                                        borderRadius: const BorderRadius.only(
+                                            bottomLeft: Radius.circular(10),
+                                            topLeft: Radius.circular(10)),
                                       ),
                                     ),
-                                  ),
-                                ),
-                                Align(
-                                    alignment: Alignment.topRight,
-                                    child: IconButton(
-                                        onPressed: () {
-                                          showCupertinoModalPopup(
-                                            context: context,
-                                            builder: ((context) =>
-                                                CupertinoActionSheet(
-                                                  actions: <CupertinoActionSheetAction>[
-                                                    CupertinoActionSheetAction(
-                                                      child: const Text(
-                                                          'Edit Data'),
-                                                      onPressed: () {
-                                                        Navigator.pop(context);
-                                                        Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                ItemInputPage(
-                                                              title:
-                                                                  'Edit Item',
-                                                              id: items[index]
-                                                                  ['id'],
-                                                              name: items[index]
-                                                                  ['name'],
-                                                              detail: items[
-                                                                      index]
-                                                                  ['detail'],
-                                                              picture: items[
-                                                                      index]
-                                                                  ['picture'],
-                                                              price:
-                                                                  items[index]
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: SizedBox(
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Align(
+                                                alignment: Alignment.topLeft,
+                                                child: Text(
+                                                  items[index]['name'],
+                                                  style: const TextStyle(
+                                                      fontSize: 24,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ),
+                                              const SizedBox(
+                                                height: 8,
+                                              ),
+                                              Align(
+                                                alignment: Alignment.bottomLeft,
+                                                child: Text(
+                                                  'Rp. ${items[index]['price']}',
+                                                  style: const TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ),
+                                              const SizedBox(
+                                                height: 25,
+                                              ),
+                                              Align(
+                                                alignment: Alignment.centerLeft,
+                                                child: Text(
+                                                  items[index]['detail'],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Align(
+                                        alignment: Alignment.topRight,
+                                        child: IconButton(
+                                            onPressed: () {
+                                              showCupertinoModalPopup(
+                                                context: context,
+                                                builder: ((context) =>
+                                                    CupertinoActionSheet(
+                                                      actions: <CupertinoActionSheetAction>[
+                                                        CupertinoActionSheetAction(
+                                                          child: const Text(
+                                                              'Edit Data'),
+                                                          onPressed: () {
+                                                            Navigator.pop(
+                                                                context);
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        ItemInputPage(
+                                                                  title:
+                                                                      'Edit Item',
+                                                                  id: items[
+                                                                          index]
+                                                                      ['id'],
+                                                                  name: items[
+                                                                          index]
+                                                                      ['name'],
+                                                                  detail: items[
+                                                                          index]
+                                                                      [
+                                                                      'detail'],
+                                                                  picture: items[
+                                                                          index]
+                                                                      [
+                                                                      'picture'],
+                                                                  price: items[
+                                                                          index]
                                                                       ['price'],
-                                                            ),
+                                                                ),
+                                                              ),
+                                                            ).then((value) =>
+                                                                refresh(''));
+                                                          },
+                                                        ),
+                                                        CupertinoActionSheetAction(
+                                                          child: const Text(
+                                                            'Delete Data',
+                                                            style: TextStyle(
+                                                                color:
+                                                                    Colors.red),
                                                           ),
-                                                        ).then((value) =>
-                                                            refresh(''));
-                                                      },
-                                                    ),
-                                                    CupertinoActionSheetAction(
-                                                      child: const Text(
-                                                        'Delete Data',
-                                                        style: TextStyle(
-                                                            color: Colors.red),
-                                                      ),
-                                                      onPressed: () async {
-                                                        await deleteItem(
-                                                            items[index]['id']);
-                                                            Navigator.pop(context);
-                                                      },
-                                                    )
-                                                  ],
-                                                )),
-                                          );
-                                        },
-                                        icon: const Icon(Icons.more_vert))),
-                              ],
+                                                          onPressed: () async {
+                                                            await deleteItem(
+                                                                items[index]
+                                                                    ['id']);
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                        )
+                                                      ],
+                                                    )),
+                                              );
+                                            },
+                                            icon: const Icon(Icons.more_vert))),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                    );
-                  }),
+                        );
+                      }),
             ),
           ],
         ),
