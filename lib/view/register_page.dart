@@ -68,9 +68,14 @@ class _RegisterviewState extends State<Registerview> {
                               prefixIcon: Icon(Icons.person),
                               labelText: 'Username',
                             ),
-                            validator: (value) => value == ''
-                                ? 'Please Enter your Username'
-                                : null,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Please enter your username';
+                              } else if (value.length < 3) {
+                                return 'Username must be at least 3 characters';
+                              }
+                              return null;
+                            },
                           ),
                           TextFormField(
                               controller: emailController,
@@ -107,9 +112,22 @@ class _RegisterviewState extends State<Registerview> {
                               ),
                             ),
                             obscureText: state.isPasswordVisible,
-                            validator: (value) => value == ''
-                                ? 'Please Enter your Password'
-                                : null,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Please Enter your Password';
+                              }
+                              if (value.length < 8) {
+                                return 'Password must be at least 8 characters';
+                              }
+                              if (!value.contains(RegExp(r'[0-9]'))) {
+                                return 'Password must contain at least one number';
+                              }
+                              if (!value.contains(
+                                  RegExp(r'[!@#\$%^&*(),.?":{}|<>]'))) {
+                                return 'Password must contain at least one special character';
+                              }
+                              return null;
+                            },
                           ),
                           TextFormField(
                               controller: numberController,
