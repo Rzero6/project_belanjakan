@@ -107,8 +107,21 @@ class _RegisterviewState extends State<Registerview> {
                               ),
                             ),
                             obscureText: state.isPasswordVisible,
-                            validator: (value) =>
-                                value == '' ? 'Please Enter your Password' : null,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Please Enter your Password';
+                              }
+                              if (value.length < 8) {
+                                return 'Password must be at least 8 characters';
+                              }
+                              if (!value.contains(new RegExp(r'[0-9]'))) {
+                                return 'Password must contain at least one number';
+                              }
+                              if (!value.contains(new RegExp(r'[!@#\$%^&*(),.?":{}|<>]'))) {
+                                return 'Password must contain at least one special character';
+                              }
+                              return null;
+                            },
                           ),
                           TextFormField(
                             controller: numberController,
