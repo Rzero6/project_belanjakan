@@ -10,35 +10,51 @@ class MyGridView extends StatefulWidget {
 }
 
 class _MyGridViewState extends State<MyGridView> {
-  bool isExpanded = false;
+  List<String> isi = [
+    "hallo",
+    "hallo Bandung",
+    "ibu kota",
+    "periangan",
+    "hallo",
+    "hallo Bandung",
+    "kota kenang kenangan",
+    "sudah lama beta",
+    "tidak berjumpa",
+    "dengan kau",
+    "sekarang",
+    "sudah menjadi",
+    "lautan api",
+    "mari bung",
+    "rebut kembali"
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black54,
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: SingleChildScrollView(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
           child: StaggeredGrid.count(
             crossAxisCount: 2,
             mainAxisSpacing: 20,
             crossAxisSpacing: 20,
-            children: const [
-              ExpandableStaggeredTile(message: "hallo"),
-              ExpandableStaggeredTile(message: "hallo Bandung"),
-              ExpandableStaggeredTile(message: "ibu kota"),
-              ExpandableStaggeredTile(message: "periangan"),
-              ExpandableStaggeredTile(message: "hallo"),
-              ExpandableStaggeredTile(message: "hallo Bandung"),
-              ExpandableStaggeredTile(message: "kota kenang kenangan"),
-              ExpandableStaggeredTile(message: "sudah lama beta"),
-              ExpandableStaggeredTile(message: "tidak berjumpa"),
-              ExpandableStaggeredTile(message: "dengan kau"),
-              ExpandableStaggeredTile(message: "sekarang"),
-              ExpandableStaggeredTile(message: "sudah menjadi"),
-              ExpandableStaggeredTile(message: "lautan api"),
-              ExpandableStaggeredTile(message: "mari bung"),
-              ExpandableStaggeredTile(message: "rebut kembali"),
-            ],
+            children: List.generate(isi.length, (index) => ExpandableStaggeredTile(message: isi[index])),
+            // children: const [
+            //   ExpandableStaggeredTile(message: "hallo"),
+            //   ExpandableStaggeredTile(message: "hallo Bandung"),
+            //   ExpandableStaggeredTile(message: "ibu kota"),
+            //   ExpandableStaggeredTile(message: "periangan"),
+            //   ExpandableStaggeredTile(message: "hallo"),
+            //   ExpandableStaggeredTile(message: "hallo Bandung"),
+            //   ExpandableStaggeredTile(message: "kota kenang kenangan"),
+            //   ExpandableStaggeredTile(message: "sudah lama beta"),
+            //   ExpandableStaggeredTile(message: "tidak berjumpa"),
+            //   ExpandableStaggeredTile(message: "dengan kau"),
+            //   ExpandableStaggeredTile(message: "sekarang"),
+            //   ExpandableStaggeredTile(message: "sudah menjadi"),
+            //   ExpandableStaggeredTile(message: "lautan api"),
+            //   ExpandableStaggeredTile(message: "mari bung"),
+            //   ExpandableStaggeredTile(message: "rebut kembali"),
+            // ],
           ),
         ),
       ),
