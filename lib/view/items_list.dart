@@ -47,33 +47,45 @@ class _ItemsListViewState extends State<ItemsListView> {
         child: const Icon(Icons.add),
       ),
       body: Padding(
-        padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+        padding: const EdgeInsets.only(top: 20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(
-                width: double.infinity,
-                child: TextFormField(
-                  onChanged: (value) {
-                    refresh(value);
-                  },
-                  controller: searchController,
-                  decoration: InputDecoration(
-                      labelText: 'Search',
-                      border: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(20),
-                        ),
-                      ),
-                      suffixIcon: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              searchController.clear();
-                              refresh('');
-                            });
-                          },
-                          icon: const Icon(Icons.close))),
-                )),
+            Container(
+              decoration: const BoxDecoration(
+                  border: Border(
+                      bottom: BorderSide(
+                          color: Color.fromARGB(255, 225, 225, 225),
+                          width: 0.5))),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                child: SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: TextFormField(
+                      onChanged: (value) {
+                        refresh(value);
+                      },
+                      controller: searchController,
+                      decoration: InputDecoration(
+                          labelText: 'Search',
+                          border: const OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(10),
+                            ),
+                          ),
+                          suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  searchController.clear();
+                                  refresh('');
+                                });
+                              },
+                              icon: const Icon(Icons.close))),
+                    )),
+              ),
+            ),
             Expanded(
               child: ListView.builder(
                   itemCount: items.length,
@@ -98,14 +110,15 @@ class _ItemsListViewState extends State<ItemsListView> {
                                 Container(
                                   width: 100,
                                   decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                        image: AssetImage(
-                                            '${'assets/images/' + items[index]['picture']}.jpg'),
-                                        fit: BoxFit.cover,
-                                      ),
-                                      borderRadius: const BorderRadius.only(
-                                          bottomLeft: Radius.circular(10),
-                                          topLeft: Radius.circular(10))),
+                                    image: DecorationImage(
+                                      image: AssetImage(
+                                          '${'assets/images/' + items[index]['picture']}.jpg'),
+                                      fit: BoxFit.cover,
+                                    ),
+                                    borderRadius: const BorderRadius.only(
+                                        bottomLeft: Radius.circular(10),
+                                        topLeft: Radius.circular(10)),
+                                  ),
                                 ),
                                 Expanded(
                                   child: Padding(
@@ -163,6 +176,7 @@ class _ItemsListViewState extends State<ItemsListView> {
                                                       child: const Text(
                                                           'Edit Data'),
                                                       onPressed: () {
+                                                        Navigator.pop(context);
                                                         Navigator.push(
                                                           context,
                                                           MaterialPageRoute(
@@ -198,6 +212,7 @@ class _ItemsListViewState extends State<ItemsListView> {
                                                       onPressed: () async {
                                                         await deleteItem(
                                                             items[index]['id']);
+                                                            Navigator.pop(context);
                                                       },
                                                     )
                                                   ],
