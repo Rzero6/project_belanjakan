@@ -68,9 +68,14 @@ class _RegisterviewState extends State<Registerview> {
                               prefixIcon: Icon(Icons.person),
                               labelText: 'Username',
                             ),
-                            validator: (value) => value == ''
-                                ? 'Please Enter your Username'
-                                : null,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Please enter your username';
+                              } else if (value.length < 3) {
+                                return 'Username must be at least 3 characters';
+                              }
+                              return null;
+                            },
                           ),
                           TextFormField(
                               controller: emailController,
