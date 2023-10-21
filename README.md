@@ -14,4 +14,4 @@ UGD 3 Data
 ## Tugas
 
 - Reynold : CRUDS Tambahan (Items) Front End + Back End , Shared Preferences
-- Angel : Validator Register
+- Angel : Validator Register (Email)
