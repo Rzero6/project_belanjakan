@@ -1,7 +1,7 @@
 # project_belanjakan
-
-current progres:
-UGD 1
+## KELOMPOK 2
+current progress:
+UGD 3 Data
 
 ## Anggota Kelompok
 
@@ -10,3 +10,8 @@ UGD 1
 - 200710903 - Hans Timotius Junior Sitepu
 - 210711280 - Angel
 - 210711346 - Daniel Natalius Christopper
+
+## Tugas
+
+- Reynold : CRUDS Tambahan (Items) Front End + Back End , Shared Preferences
+- Angel : Validator Register (Email)
