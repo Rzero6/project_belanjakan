@@ -171,5 +171,6 @@ class _LoginviewState extends State<Loginview> {
     await sharedPrefs.setString('email', userData.email!);
     await sharedPrefs.setString('phone', userData.phone!);
     await sharedPrefs.setString('dob', userData.dateOfBirth!);
+    await sharedPrefs.setString('profile_pic', userData.profilePic!);
   }
 }

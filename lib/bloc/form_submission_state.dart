@@ -8,9 +8,8 @@ class InitialFormState extends FormSubmissionState {
   const InitialFormState();
 }
 
-class FormSubmitting extends FormSubmissionState {
-  
-}
+class FormSubmitting extends FormSubmissionState {}
+
 class SubmissionSuccess extends FormSubmissionState {
   final User user;
 
@@ -19,6 +18,7 @@ class SubmissionSuccess extends FormSubmissionState {
   @override
   List<Object> get props => [user];
 }
+
 class SubmissionFailed extends FormSubmissionState {
   final String exception;
   const SubmissionFailed(this.exception);

@@ -19,6 +19,8 @@ class DisplayPictureScreen extends StatefulWidget {
 class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
   File? fileResult;
 
+  get onPressed => null;
+
   @override
   void initState() {
     fileResult = File(widget.imagePath);
@@ -37,7 +39,14 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
           widget.cameraController.resumePreview();
           return true;
         },
-        child: Image.file(fileResult!),
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Image.file(fileResult!),
+          ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context, widget.imagePath);
+              },
+              child: const Icon(Icons.check))
+        ]),
       ),
     );
   }

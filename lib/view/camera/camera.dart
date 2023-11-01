@@ -75,14 +75,16 @@ class _CameraViewState extends State<CameraView> {
       await _initializeCameraFuture;
       final image = await _cameraController.takePicture();
       if (!mounted) return null;
-      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-        _cameraController.pausePreview();
-        LoggingUtils.logDebugValue(
-            "get image on previewImageResult".toUpperCase(),
-            "image.path : ${image.path}");
-        return DisplayPictureScreen(
-            imagePath: image.path, cameraController: _cameraController);
-      }));
+      // String returnedString = await Navigator.of(context)
+      //     .push(MaterialPageRoute(builder: (context) {
+      //   _cameraController.pausePreview();
+      //   LoggingUtils.logDebugValue(
+      //       "get image on previewImageResult".toUpperCase(),
+      //       "image.path : ${image.path}");
+      //   return DisplayPictureScreen(
+      //       imagePath: image.path, cameraController: _cameraController);
+      // }));
+      Navigator.pop(context, image.path);
     } catch (e) {
       LoggingUtils.logError(activity, e.toString());
       return null;

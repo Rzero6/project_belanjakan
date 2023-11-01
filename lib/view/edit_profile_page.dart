@@ -1,10 +1,14 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:project_belanjakan/database/sql_helper_user.dart';
 import 'package:project_belanjakan/model/user.dart';
-import 'package:project_belanjakan/view/camera_profile/camera.dart';
+import 'package:project_belanjakan/view/camera/camera.dart';
+import 'package:project_belanjakan/view/profile_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -16,7 +20,7 @@ class EditProfilePage extends StatefulWidget {
 
 class _EditProfilePageState extends State<EditProfilePage> {
   User? userData;
-  String imagePath = 'assets/images/user/profile_picture.jpg';
+  // String imagePath = 'assets/images/user/profile_picture.jpg';
   late File imageFile;
   final formKey = GlobalKey<FormState>();
   TextEditingController usernameController = TextEditingController();
@@ -36,18 +40,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
             actions: <CupertinoActionSheetAction>[
               CupertinoActionSheetAction(
                 child: const Text('Camera'),
-                onPressed: () {
-                  Navigator.pushReplacement(
+                onPressed: () async {
+                  String path = await Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => CameraView(
-                          onPictureTaken: (String returnedPath) {
-                            setState(() {
-                              imagePath = returnedPath;
-                            });
-                          },
-                        ),
+                        builder: (_) => const CameraView(),
                       ));
+                  setState(() {
+                    imageFile = File(path);
+                    print("PAAAAAAAAAAATHHHH :" + path);
+                  });
                 },
               ),
               CupertinoActionSheetAction(
@@ -74,8 +76,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   void initState() {
     loadData();
-    super.initState();
-    imageFile = File(imagePath);
+    super.initState(); // dari img path
   }
 
   @override
@@ -215,7 +216,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             ),
                           );
                           editUser();
-                          Navigator.pop(context);
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const ProfileView()));
                         }
                       },
                       child: const Text('Save')),
@@ -232,35 +236,56 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return await SQLHelperUser.getUserById(id);
   }
 
+  void _createFileFromString(String encodedStr) async {
+    Uint8List bytes = base64.decode(encodedStr);
+    String dir = (await getApplicationDocumentsDirectory()).path;
+    File file = File("$dir/${DateTime.now().millisecondsSinceEpoch}.jpg");
+    await file.writeAsBytes(bytes);
+    setState(() {
+      imageFile = file;
+    });
+  }
+
   Future<void> loadData() async {
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
-    setState(() {
+    setState(() async {
       userData = User(
           id: sharedPrefs.getInt('userID'),
           username: sharedPrefs.getString('username'),
           password: sharedPrefs.getString('password'),
           email: sharedPrefs.getString('email'),
-          phone: sharedPrefs.getString('phone'));
+          phone: sharedPrefs.getString('phone'),
+          profilePic: sharedPrefs.getString('profile_pic'));
       usernameController.text = userData!.username!;
       emailController.text = userData!.email!;
       numberController.text = userData!.phone!;
+      _createFileFromString(userData!.profilePic!);
     });
   }
 
   Future<void> editUser() async {
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
+    String img = await imgToStr(imageFile);
     User userData = User(
         username: usernameController.text,
         password: passwordController.text,
         email: emailController.text,
         phone: numberController.text,
-        dateOfBirth: sharedPrefs.getString('dob'));
+        dateOfBirth: sharedPrefs.getString('dob'),
+        profilePic: img);
+
     setState(() {
       sharedPrefs.setString('username', userData.username!);
       sharedPrefs.setString('password', userData.password!);
       sharedPrefs.setString('email', userData.email!);
       sharedPrefs.setString('phone', userData.phone!);
+      sharedPrefs.setString('profile_pic', userData.profilePic!);
     });
     await SQLHelperUser.editUsers(sharedPrefs.getInt('userID')!, userData);
+  }
+
+  Future<String> imgToStr(File img) async {
+    Uint8List bytes = await img.readAsBytes();
+    return base64Encode(bytes);
   }
 }
