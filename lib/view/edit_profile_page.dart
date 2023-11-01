@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:project_belanjakan/database/sql_helper_user.dart';
 import 'package:project_belanjakan/model/user.dart';
+import 'package:project_belanjakan/view/camera_profile/camera.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -14,8 +16,8 @@ class EditProfilePage extends StatefulWidget {
 
 class _EditProfilePageState extends State<EditProfilePage> {
   User? userData;
-  final String imagePath = 'https://picsum.photos/200';
-  File? image;
+  String imagePath = 'assets/images/user/profile_picture.jpg';
+  late File imageFile;
   final formKey = GlobalKey<FormState>();
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -26,12 +28,46 @@ class _EditProfilePageState extends State<EditProfilePage> {
   bool isPasswordVisibleChanged = true;
   bool isOldPasswordVisibleChanged = true;
 
+  void showOptionToPick() {
+    showCupertinoModalPopup(
+      context: context,
+      builder: ((context) => CupertinoActionSheet(
+            title: const Text("Select Picture from"),
+            actions: <CupertinoActionSheetAction>[
+              CupertinoActionSheetAction(
+                child: const Text('Camera'),
+                onPressed: () {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => CameraView(
+                          onPictureTaken: (String returnedPath) {
+                            setState(() {
+                              imagePath = returnedPath;
+                            });
+                          },
+                        ),
+                      ));
+                },
+              ),
+              CupertinoActionSheetAction(
+                child: const Text('Gallery'),
+                onPressed: () {
+                  pickImageFromGallery();
+                },
+              )
+            ],
+          )),
+    );
+  }
+
   Future<void> pickImageFromGallery() async {
     final ImagePicker picker = ImagePicker();
     final pickedImage = await picker.pickImage(source: ImageSource.gallery);
     if (pickedImage == null) return;
     setState(() {
-      image = File(pickedImage.path);
+      imageFile = File(pickedImage.path);
+      Navigator.pop(context);
     });
   }
 
@@ -39,6 +75,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   void initState() {
     loadData();
     super.initState();
+    imageFile = File(imagePath);
   }
 
   @override
@@ -57,8 +94,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 child: Material(
                   color: Colors.transparent,
                   child: Ink.image(
-                    image: image != null
-                        ? FileImage(File(image!.path)) as ImageProvider
+                    image: imageFile.existsSync()
+                        ? FileImage(imageFile) as ImageProvider
                         : const AssetImage(
                             'assets/images/profile_placeholder.jpg'),
                     fit: BoxFit.cover,
@@ -71,7 +108,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 bottom: 0,
                 right: 3,
                 child: GestureDetector(
-                  onTap: () => pickImageFromGallery(),
+                  onTap: () => showOptionToPick(),
                   child: ClipOval(
                     child: Container(
                       padding: const EdgeInsets.all(8),
