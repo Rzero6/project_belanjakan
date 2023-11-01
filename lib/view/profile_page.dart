@@ -17,20 +17,13 @@ class ProfileView extends StatefulWidget {
 class _ProfileViewState extends State<ProfileView> {
   int? userID;
   User? userData;
-  final String imagePath = 'https://picsum.photos/200';
-  File? image;
 
-  Future<void> pickImageFromGallery() async {
-    final ImagePicker picker = ImagePicker();
-    final pickedImage = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedImage == null) return;
-    setState(() {
-      image = File(pickedImage.path);
-    });
-  }
+  String imagePath = 'assets/images/user/profile_picture.jpg';
+  late File imageFile;
 
   @override
   void initState() {
+    imageFile = File(imagePath);
     loadData();
     super.initState();
   }
@@ -53,8 +46,8 @@ class _ProfileViewState extends State<ProfileView> {
                   child: Hero(
                     tag: 'profilePic',
                     child: Ink.image(
-                      image: image != null
-                          ? FileImage(File(image!.path)) as ImageProvider
+                      image: imageFile.existsSync()
+                          ? FileImage(imageFile) as ImageProvider
                           : const AssetImage(
                               'assets/images/profile_placeholder.jpg'),
                       fit: BoxFit.cover,
@@ -70,9 +63,10 @@ class _ProfileViewState extends State<ProfileView> {
                 child: GestureDetector(
                   onTap: () async {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => const EditProfilePage())).then((value) => loadData());
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const EditProfilePage()))
+                        .then((value) => loadData());
                   },
                   child: ClipOval(
                     child: Container(
