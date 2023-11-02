@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:project_belanjakan/view/login_page.dart';
+import 'package:project_belanjakan/view/profile_page.dart';
 import 'package:project_belanjakan/view/user_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -13,21 +14,31 @@ class SettingsView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(
+            ElevatedButton.icon(
+              icon: const Icon(Icons.person),
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => const ProfileView()));
+              },
+              label: const Text('Profile'),
+            ),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.people),
               onPressed: () {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (_) => const UserList()));
               },
-              child: const Text('User List'),
+              label: const Text('User List'),
             ),
-            ElevatedButton(
+            ElevatedButton.icon(
+              icon: const Icon(Icons.power_settings_new),
                 onPressed: () async {
                   removeLoginData();
                   Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (_) => const Loginview()));
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: const Text('Logout')),
+                label: const Text('Logout')),
           ],
         ),
       ),

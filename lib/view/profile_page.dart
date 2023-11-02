@@ -95,16 +95,16 @@ class _ProfileViewState extends State<ProfileView> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              userData?.username ?? "",
+              userData?.username ?? "Not Found",
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
             ),
             const SizedBox(
               height: 4,
             ),
             Text(
-              userData?.email ?? "",
+              userData?.email ?? "Not Found",
               style: const TextStyle(color: Colors.grey),
-            )
+            ),
           ],
         )
       ],
@@ -117,28 +117,29 @@ class _ProfileViewState extends State<ProfileView> {
 
   Future<void> loadData() async {
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
+    userData = User(
+        id: sharedPrefs.getInt('userID'),
+        username: sharedPrefs.getString('username'),
+        password: sharedPrefs.getString('password'),
+        email: sharedPrefs.getString('email'),
+        phone: sharedPrefs.getString('phone'),
+        profilePic: sharedPrefs.getString("profile_pic"));
+    if (userData!.profilePic == null) {
+      imagePath = 'assets/images/profile_placeholder.jpg';
+    } else {
+      imagePath = await _createFileFromString(userData!.profilePic!);
+    }
     setState(() {
-      userData = User(
-          id: sharedPrefs.getInt('userID'),
-          username: sharedPrefs.getString('username'),
-          password: sharedPrefs.getString('password'),
-          email: sharedPrefs.getString('email'),
-          phone: sharedPrefs.getString('phone'),
-          profilePic: sharedPrefs.getString("profile_pic"));
-      _createFileFromString(userData!.profilePic!);
+      imageFile = File(imagePath);
     });
   }
 
-  void _createFileFromString(String encodedStr) async {
+  Future<String> _createFileFromString(String encodedStr) async {
     Uint8List bytes = base64.decode(encodedStr);
     String dir = (await getApplicationDocumentsDirectory()).path;
     File file = File("$dir/${DateTime.now().millisecondsSinceEpoch}.jpg");
-    await file.writeAsBytes(bytes);
-
-    setState(() {
-      imagePath = file.path;
-      imageFile = File(file.path);
-    });
+    file = await file.writeAsBytes(bytes);
+    return file.path;
   }
 
   Future<String> imgToStr(File img) async {

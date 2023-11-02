@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:project_belanjakan/view/grid.dart';
 import 'package:project_belanjakan/view/items_list.dart';
+import 'package:project_belanjakan/view/offers/daily_offers.dart';
 import 'package:project_belanjakan/view/profile_page.dart';
 import 'package:project_belanjakan/view/settings_page.dart';
 
@@ -27,8 +28,8 @@ class _MainMenuViewState extends State<MainMenuView> {
   Widget build(BuildContext context) {
     final List<Widget> pages = [
       const MyGridView(),
+      const DailyOffers(),
       const ItemsListView(),
-      const ProfileView(),
       const SettingsView(),
     ];
     return Scaffold(
@@ -56,17 +57,18 @@ class _MainMenuViewState extends State<MainMenuView> {
               tabs: const [
                 GButton(icon: Icons.home, text: 'Home'),
                 GButton(
-                  icon: Icons.shop,
-                  text: 'Items',
+                  icon: Icons.monetization_on_rounded,
+                  text: 'Offers',
                 ),
                 GButton(
-                  icon: Icons.person,
-                  text: 'Profile',
+                  icon: Icons.shop,
+                  text: 'Items',
                 ),
                 GButton(
                   icon: Icons.settings_rounded,
                   text: 'Settings',
                 ),
+
               ],
               duration: const Duration(milliseconds: 500),
               selectedIndex: currentPageIndex,

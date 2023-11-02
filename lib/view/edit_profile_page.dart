@@ -21,7 +21,7 @@ class EditProfilePage extends StatefulWidget {
 class _EditProfilePageState extends State<EditProfilePage> {
   User? userData;
   // String imagePath = 'assets/images/user/profile_picture.jpg';
-  late File imageFile;
+  File imageFile = File('assets/images/user/profile_picture.jpg');
   final formKey = GlobalKey<FormState>();
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -31,6 +31,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   bool isPasswordVisibleChanged = true;
   bool isOldPasswordVisibleChanged = true;
+  bool isLoading = false;
 
   void showOptionToPick() {
     showCupertinoModalPopup(
@@ -48,7 +49,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       ));
                   setState(() {
                     imageFile = File(path);
-                    print("PAAAAAAAAAAATHHHH :" + path);
+                    print("PAAAAAAAAAAATHHHH :$path");
                   });
                 },
               ),
@@ -77,6 +78,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
   void initState() {
     loadData();
     super.initState(); // dari img path
+  }
+
+  void savingData() {
+    editUser();
+    Future.delayed(const Duration(seconds: 3), () {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Edit Success'),
+      ));
+      isLoading = false;
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const ProfileView()));
+    });
   }
 
   @override
@@ -210,19 +222,21 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   child: ElevatedButton(
                       onPressed: () {
                         if (formKey.currentState!.validate()) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Edit Success'),
-                            ),
-                          );
-                          editUser();
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => const ProfileView()));
+                          setState(() {
+                            isLoading = true;
+                          });
+                          savingData();
                         }
                       },
-                      child: const Text('Save')),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 16),
+                        child: isLoading
+                            ? const CircularProgressIndicator(
+                                color: Colors.white,
+                              )
+                            : const Text('Save'),
+                      )),
                 )
               ],
             ),
@@ -236,30 +250,31 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return await SQLHelperUser.getUserById(id);
   }
 
-  void _createFileFromString(String encodedStr) async {
+  Future<File> _createFileFromString(String encodedStr) async {
     Uint8List bytes = base64.decode(encodedStr);
     String dir = (await getApplicationDocumentsDirectory()).path;
     File file = File("$dir/${DateTime.now().millisecondsSinceEpoch}.jpg");
-    await file.writeAsBytes(bytes);
-    setState(() {
-      imageFile = file;
-    });
+    return await file.writeAsBytes(bytes);
   }
 
   Future<void> loadData() async {
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
-    setState(() async {
-      userData = User(
-          id: sharedPrefs.getInt('userID'),
-          username: sharedPrefs.getString('username'),
-          password: sharedPrefs.getString('password'),
-          email: sharedPrefs.getString('email'),
-          phone: sharedPrefs.getString('phone'),
-          profilePic: sharedPrefs.getString('profile_pic'));
+    userData = User(
+        id: sharedPrefs.getInt('userID'),
+        username: sharedPrefs.getString('username'),
+        password: sharedPrefs.getString('password'),
+        email: sharedPrefs.getString('email'),
+        phone: sharedPrefs.getString('phone'),
+        profilePic: sharedPrefs.getString('profile_pic'));
+    if (userData!.profilePic == null) {
+      imageFile = File('assets/images/profile_placeholder.jpg');
+    } else {
+      imageFile = await _createFileFromString(userData!.profilePic!);
+    }
+    setState(() {
       usernameController.text = userData!.username!;
       emailController.text = userData!.email!;
       numberController.text = userData!.phone!;
-      _createFileFromString(userData!.profilePic!);
     });
   }
 
