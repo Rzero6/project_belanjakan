@@ -4,7 +4,6 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:project_belanjakan/view/grid.dart';
 import 'package:project_belanjakan/view/items_list.dart';
 import 'package:project_belanjakan/view/offers/daily_offers.dart';
-import 'package:project_belanjakan/view/profile_page.dart';
 import 'package:project_belanjakan/view/settings_page.dart';
 
 class MainMenuView extends StatefulWidget {
@@ -68,7 +67,6 @@ class _MainMenuViewState extends State<MainMenuView> {
                   icon: Icons.settings_rounded,
                   text: 'Settings',
                 ),
-
               ],
               duration: const Duration(milliseconds: 500),
               selectedIndex: currentPageIndex,

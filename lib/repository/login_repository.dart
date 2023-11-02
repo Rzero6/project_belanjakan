@@ -1,5 +1,6 @@
 import '../model/user.dart';
 import 'package:project_belanjakan/database/sql_helper_user.dart';
+
 class FailedLogin implements Exception {
   String errorMessage() {
     return "Login Failed";
@@ -16,9 +17,15 @@ class LoginRepository {
         throw 'Username or Password cannot be empty';
       } else {
         for (var user in users) {
-          if (user['username'] == username &&
-              user['password'] == password) {
-            userData = User(id: user['id'], username: user['username'], password : user['password'], email: user['email'], dateOfBirth: user['date_of_birth'], phone: user['phone']);
+          if (user['username'] == username && user['password'] == password) {
+            userData = User(
+                id: user['id'],
+                username: user['username'],
+                password: user['password'],
+                email: user['email'],
+                dateOfBirth: user['date_of_birth'],
+                phone: user['phone'],
+                profilePic: user['profile_pic']);
             break;
           }
         }
