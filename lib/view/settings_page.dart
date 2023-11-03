@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project_belanjakan/view/address/address_page.dart';
 import 'package:project_belanjakan/view/login_page.dart';
 import 'package:project_belanjakan/view/profile_page.dart';
 import 'package:project_belanjakan/view/user_list.dart';
@@ -21,6 +22,14 @@ class SettingsView extends StatelessWidget {
                     MaterialPageRoute(builder: (_) => const ProfileView()));
               },
               label: const Text('Profile'),
+            ),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.location_on),
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => const AddressesView()));
+              },
+              label: const Text('Address'),
             ),
             ElevatedButton.icon(
               icon: const Icon(Icons.people),
