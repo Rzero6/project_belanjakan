@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project_belanjakan/view/offers/shake_n_win.dart';
 
 class DailyOffers extends StatefulWidget {
   const DailyOffers({super.key});
@@ -10,6 +11,21 @@ class DailyOffers extends StatefulWidget {
 class _DailyOffersState extends State<DailyOffers> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('Coming soon'),),);
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (_) => const ShakeNWin()));
+                },
+                child: const Text('Shake N Win')),
+            const Text('Coming soon'),
+          ],
+        ),
+      ),
+    );
   }
 }
