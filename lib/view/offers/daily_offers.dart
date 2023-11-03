@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project_belanjakan/view/offers/coupons_page.dart';
 import 'package:project_belanjakan/view/offers/shake_n_win.dart';
 
 class DailyOffers extends StatefulWidget {
@@ -19,9 +20,9 @@ class _DailyOffersState extends State<DailyOffers> {
             ElevatedButton(
                 onPressed: () {
                   Navigator.push(
-                      context, MaterialPageRoute(builder: (_) => const ShakeNWin()));
+                      context, MaterialPageRoute(builder: (_) => const CouponsPage()));
                 },
-                child: const Text('Shake N Win')),
+                child: const Text('Coupons')),
             const Text('Coming soon'),
           ],
         ),
