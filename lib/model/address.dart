@@ -1,17 +1,17 @@
 class Address {
   final int? id;
   final int? userId;
-  final String? name;
-  final String? street;
-  final String? locality;
-  final String? subLocality;
-  final String? administrativeArea;
-  final String? subAdministrativeArea;
-  final String? city;
-  final String? postalCode;
-  final String? position;
-  final String? thoroughfare;
-  final String? subThoroughfare;
+  final String? nomor;
+  final String? jalan;
+  final String? kecamatan;
+  final String? kelurahan;
+  final String? provinsi;
+  final String? kabupaten;
+  final String? kodePos;
+  final String? blok;
+  final double? latitude;
+  final double? longitude;
 
-  Address({this.id, this.userId, this.street, this.city, this.position, this.name, this.locality, this.subLocality, this.administrativeArea, this.subAdministrativeArea, this.postalCode, this.thoroughfare, this.subThoroughfare});
+  Address({ this.id, this.userId,this.nomor,this.jalan,this.kecamatan,this.kelurahan,this.provinsi,this.kabupaten,this.kodePos,this.blok, this.latitude, this.longitude});
+
 }
