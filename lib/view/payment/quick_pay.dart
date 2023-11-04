@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
-import 'package:intl/intl.dart';
-=======
->>>>>>> 51c53a3e0cadf21180d4679fcefebd29bd8f25aa
 import 'package:project_belanjakan/database/sql_helper_items.dart';
 import 'package:project_belanjakan/model/item.dart';
-import 'package:project_belanjakan/view/login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
 
 class QuickPayView extends StatefulWidget {
   final int id;
@@ -44,7 +40,6 @@ class _QuickPayViewState extends State<QuickPayView> {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
     final currencyFormat =
         NumberFormat.currency(locale: 'id_ID', symbol: 'Rp.');
     //Data Dummy
@@ -52,14 +47,11 @@ class _QuickPayViewState extends State<QuickPayView> {
     int adminFee = 1000;
     int quantity = 1;
 
-=======
->>>>>>> 51c53a3e0cadf21180d4679fcefebd29bd8f25aa
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
         centerTitle: true,
         title: const Icon(Icons.shopify),
-<<<<<<< HEAD
       ),
       body: SingleChildScrollView(
         child: isLoading
@@ -106,100 +98,10 @@ class _QuickPayViewState extends State<QuickPayView> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           child: Text(items!.detail!),
-=======
-        actions: <Widget>[
-          IconButton(
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (_) {
-                  removeLoginData();
-                  return const Loginview();
-                }),
-              );
-            },
-            icon: const Icon(Icons.logout),
-            color: const Color(0xFF323232),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Card(
-                shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10))),
-                clipBehavior: Clip.hardEdge,
-                child: InkWell(
-                  splashColor: Colors.blue.withAlpha(30),
-                  onTap: () {},
-                  child: SizedBox(
-                    height: 150,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Container(
-                          width: 100,
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage(
-                                  '${'assets/images/${items!.picture!}'}.jpg'),
-                              fit: BoxFit.cover,
-                            ),
-                            borderRadius: const BorderRadius.only(
-                                bottomLeft: Radius.circular(10),
-                                topLeft: Radius.circular(10)),
-                          ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: SizedBox(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Align(
-                                    alignment: Alignment.topLeft,
-                                    child: Text(
-                                      items!.name!,
-                                      style: const TextStyle(
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 8,
-                                  ),
-                                  Align(
-                                    alignment: Alignment.bottomLeft,
-                                    child: Text(
-                                      'Rp. ${items!.price!}',
-                                      style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 25,
-                                  ),
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      items!.detail!,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
->>>>>>> 51c53a3e0cadf21180d4679fcefebd29bd8f25aa
                         ),
                       ],
                     ),
                   ),
-<<<<<<< HEAD
                   Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Expanded(
@@ -258,19 +160,6 @@ class _QuickPayViewState extends State<QuickPayView> {
                   ),
                 ],
               ),
-=======
-                ),
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.0),
-              child: Card(
-                  // SINI
-                  ),
-            )
-          ],
-        ),
->>>>>>> 51c53a3e0cadf21180d4679fcefebd29bd8f25aa
       ),
     );
   }
