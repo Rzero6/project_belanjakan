@@ -36,15 +36,16 @@ class _AddressesViewState extends State<AddressesView> {
       Placemark place = placemarks[0];
       setState(() {
         addressDetails = Address(
-            administrativeArea: place.administrativeArea,
-            locality: place.locality,
-            name: place.name,
-            postalCode: place.postalCode,
-            street: place.street,
-            subAdministrativeArea: place.subAdministrativeArea,
-            subLocality: place.subLocality,
-            subThoroughfare: place.subThoroughfare,
-            thoroughfare: place.thoroughfare);
+            provinsi: place.administrativeArea,
+            kecamatan: place.locality,
+            nomor: place.name,
+            kodePos: place.postalCode,
+            jalan: place.street,
+            kabupaten: place.subAdministrativeArea,
+            kelurahan: place.subLocality,
+            blok: place.thoroughfare,
+            latitude: _currentLocation!.latitude,
+            longitude: _currentLocation!.longitude);
             isLoading = false;
             isLocated = true;
       });
@@ -65,18 +66,9 @@ class _AddressesViewState extends State<AddressesView> {
                     child: CircularProgressIndicator(),
                   )
                 : isLocated
-                    ? Column(
+                    ? const Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Text(addressDetails.administrativeArea!),
-                          Text(addressDetails.locality!),
-                          Text(addressDetails.name!),
-                          Text(addressDetails.postalCode!),
-                          Text(addressDetails.street!),
-                          Text(addressDetails.subAdministrativeArea!),
-                          Text(addressDetails.subLocality!),
-                          Text(addressDetails.subThoroughfare!),
-                          Text(addressDetails.thoroughfare!),
                         ],
                       )
                     : ElevatedButton(
