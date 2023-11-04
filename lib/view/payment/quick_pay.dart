@@ -98,8 +98,8 @@ class _QuickPayViewState extends State<QuickPayView> {
                                 Text(
                                     '${currentAddress?.kelurahan!}, ${currentAddress?.kecamatan!}'),
                                 Text(
-                                    '${currentAddress?.kabupaten!}, ${currentAddress?.provinsi!}'),
-                                Text('${currentAddress?.kodePos!}'),
+                                    '${currentAddress?.kabupaten!}, ${currentAddress?.kodePos!}'),
+                                Text('${currentAddress?.provinsi!}'),
                               ],
                             ),
                             const SizedBox(

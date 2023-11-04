@@ -15,6 +15,7 @@ class _InputAddressState extends State<InputAddress> {
   late bool servicePermission = false;
   late LocationPermission permission;
   bool isLoading = false;
+  Address? currentAddress;
 
   String _currentStreet = "";
   String _currentSubLocality = "";
@@ -22,7 +23,6 @@ class _InputAddressState extends State<InputAddress> {
   String _currentAdministrativeArea = "";
   String _currentSubAdminisitrative = "";
   String _currentPostalCode = "";
-  String _currentAddress = "";
   String fullAddress = "Masukan alamat terlebih dulu";
 
   final TextEditingController _manualStreetController = TextEditingController();
@@ -73,11 +73,10 @@ class _InputAddressState extends State<InputAddress> {
         _manualSubLocalityController.text = _currentSubLocality;
         _manualLocalityController.text = _currentLocality;
         _manualAdministrativeAreaController.text = _currentAdministrativeArea;
-        _manualAddressController.text = _currentAddress;
         _manualSubAdminisitrativeController.text = _currentSubAdminisitrative;
         _manualPostalCodeController.text = _currentPostalCode;
         fullAddress =
-            '${_manualStreetController.text}, ${_manualSubLocalityController.text}, ${_manualLocalityController.text}, ${_manualAdministrativeAreaController.text}, ${_manualSubAdminisitrativeController.text}, ${_manualPostalCodeController.text}';
+            '${_manualStreetController.text}, ${_manualSubLocalityController.text}, ${_manualLocalityController.text}, ${_manualSubAdminisitrativeController.text},  ${_manualPostalCodeController.text},  ${_manualAdministrativeAreaController.text}';
         isLoading = false;
       });
     } catch (e) {
@@ -182,8 +181,9 @@ class _InputAddressState extends State<InputAddress> {
                       ),
                       TextField(
                         controller: _manualPostalCodeController,
+                        keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
-                          hintText: "Enter Postal Code",
+                          hintText: "Masukan Kode Pos",
                         ),
                       ),
                       const Text(
@@ -208,7 +208,17 @@ class _InputAddressState extends State<InputAddress> {
                       ElevatedButton(
                         onPressed: () {
                           setState(() {
-                            _currentAddress = _manualAddressController.text;
+                            currentAddress = Address(
+                                jalan: _manualStreetController.text,
+                                kelurahan: _manualSubLocalityController.text,
+                                kecamatan: _manualLocalityController.text,
+                                kabupaten:
+                                    _manualSubAdminisitrativeController.text,
+                                kodePos: _manualPostalCodeController.text,
+                                provinsi:
+                                    _manualAdministrativeAreaController.text);
+                            fullAddress =
+                                '${_manualStreetController.text}, ${_manualSubLocalityController.text}, ${_manualLocalityController.text}, ${_manualSubAdminisitrativeController.text},  ${_manualPostalCodeController.text},  ${_manualAdministrativeAreaController.text}';
                           });
                         },
                         child: const Text("Gunakan Lokasi inputan",
@@ -216,22 +226,21 @@ class _InputAddressState extends State<InputAddress> {
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          if (fullAddress!='Masukan alamat terlebih dulu') {
-                            Address address = Address(jalan: _currentStreet, kabupaten: _currentSubAdminisitrative, kelurahan: _currentSubLocality, kecamatan: _currentLocality, kodePos: _currentPostalCode, provinsi: _currentAdministrativeArea);
-                            Navigator.pop(context,address);
+                          if (fullAddress != 'Masukan alamat terlebih dulu') {
+                            Navigator.pop(context, currentAddress);
                           } else {
                             showDialog(
                               context: context,
                               builder: (context) {
                                 return AlertDialog(
                                   title: const Text('Peringatan'),
-                                  content:
-                                      const Text('Harus input alamat terlebih dulu!'),
+                                  content: const Text(
+                                      'Harus input alamat terlebih dulu!'),
                                   actions: [
                                     TextButton(
                                       onPressed: () {
                                         Navigator.of(context)
-                                            .pop(); // Close the dialog
+                                            .pop();
                                       },
                                       child: const Text('Tutup'),
                                     ),
