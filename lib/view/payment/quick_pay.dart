@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:project_belanjakan/database/sql_helper_items.dart';
 import 'package:project_belanjakan/model/item.dart';
-import 'package:project_belanjakan/view/login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class QuickPayView extends StatefulWidget {
@@ -108,22 +107,20 @@ class _QuickPayViewState extends State<QuickPayView> {
                       child: Expanded(
                         child: Column(
                           children: [
-                            ListTile(
-                              leading: Text('Harga Barang x $quantity'),
-                              trailing:
-                                  Text(currencyFormat.format(items!.price!)),
-                              dense: true,
+                            const Divider(
+                              color: Colors.black45,
                             ),
-                            ListTile(
-                              leading: const Text('Ongkos Kirim'),
-                              trailing:
-                                  Text(currencyFormat.format(ongkosKirim)),
-                              dense: true,
+                            rincianHarga('Harga Barang x $quantity',
+                                currencyFormat.format(items!.price!)),
+                            rincianHarga('Ongkos Kirim',
+                                currencyFormat.format(ongkosKirim)),
+                            rincianHarga(
+                                'Biaya Admin', currencyFormat.format(adminFee)),
+                            const SizedBox(
+                              height: 25,
                             ),
-                            ListTile(
-                              leading: const Text('Biaya Admin'),
-                              trailing: Text(currencyFormat.format(adminFee)),
-                              dense: true,
+                            const Divider(
+                              color: Colors.black45,
                             ),
                             ListTile(
                               leading: const Text(
@@ -161,6 +158,29 @@ class _QuickPayViewState extends State<QuickPayView> {
                   ),
                 ],
               ),
+      ),
+    );
+  }
+
+  SizedBox rincianHarga(String detail, String harga) {
+    return SizedBox(
+      height: 25,
+      child: Center(
+        child: ListTile(
+          leading: Text(
+            detail,
+            style: const TextStyle(
+              fontSize: 12,
+            ),
+          ),
+          trailing: Text(
+            harga,
+            style: const TextStyle(
+              fontSize: 12,
+            ),
+          ),
+          dense: true,
+        ),
       ),
     );
   }

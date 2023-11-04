@@ -90,7 +90,7 @@ class _CouponsPageState extends State<CouponsPage> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (_) => const ShakeNWin()));
+                                  builder: (_) => const ShakeNWin())).then((value) => refreshCoupons());
                         }
                       },
                       child: const Text('Shake N Win')),
