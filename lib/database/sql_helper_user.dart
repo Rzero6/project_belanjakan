@@ -1,3 +1,4 @@
+import 'package:project_belanjakan/model/coupon.dart';
 import 'package:sqflite/sqflite.dart' as sql;
 import 'package:project_belanjakan/model/user.dart';
 
@@ -13,6 +14,17 @@ class SQLHelperUser {
       phone TEXT,
       date_of_birth DATE,
       profile_pic TEXT)
+    """);
+
+    await database.execute("""
+    CREATE TABLE coupons(
+      id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+      user_id INTEGER,
+      discount INTEGER,
+      code TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      expires_at DATETIME
+    )
     """);
   }
 
@@ -37,10 +49,27 @@ class SQLHelperUser {
     return await db.insert('users', data);
   }
 
+  static Future<int> addCouponForUsers(Coupon couponData) async {
+    final db = await SQLHelperUser.db();
+    final expiresDate = DateTime.now().add(const Duration(days: 1)).toIso8601String();
+    final data = {
+      'user_id': couponData.userId,
+      'discount': couponData.discount,
+      'code': couponData.code,
+      'expires_at' : expiresDate,
+    };
+    return await db.insert('coupons', data);
+  }
+
   //read
   static Future<List<Map<String, dynamic>>> getUsers() async {
     final db = await SQLHelperUser.db();
     return db.query('users');
+  }
+
+  static Future<List<Map<String, dynamic>>> getUserCoupon(int userId) async {
+    final db = await SQLHelperUser.db();
+    return db.query('coupons', where: 'user_id = $userId');
   }
 
   //edit
@@ -61,6 +90,22 @@ class SQLHelperUser {
   static Future<int> deleteUsers(int id) async {
     final db = await SQLHelperUser.db();
     return await db.delete('users', where: "id = $id");
+  }
+
+  static Future<void> deleteExpiredCoupons(int userId) async {
+    final db = await SQLHelperUser.db();
+    final currentDateTime = DateTime.now().toIso8601String();
+
+    final expiredCoupons = await db.query(
+      'coupons',
+      where: 'expires_at < ? AND user_id = ?',
+      whereArgs: [currentDateTime, userId],
+    );
+
+    for (final coupon in expiredCoupons) {
+      final couponId = coupon['id'];
+      await db.delete('coupons', where: "id = $couponId");
+    }
   }
 
   //get a user

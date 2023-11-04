@@ -10,6 +10,8 @@ environment:
 
 dependencies:
   animated_text_kit: ^4.2.2
+  audioplayers: ^5.2.0
+  awesome_notifications: ^0.7.4+1
   camera: ^0.10.5+5
   cupertino_icons: ^1.0.2
   flutter:
@@ -22,10 +24,13 @@ dependencies:
   google_nav_bar: ^5.0.6
   image_picker: ^1.0.4
   intl: ^0.17.0
+  lottie: ^2.7.0
   path_provider: ^2.1.1
   photo_view: ^0.14.0
+  sensors_plus: ^3.1.0
   shared_preferences: ^2.2.2
   sqflite: ^2.3.0
+  vibration: ^1.8.3
 
 dev_dependencies:
   flutter_lints: ^2.0.0
@@ -36,3 +41,5 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/audio/
+    - assets/animation/

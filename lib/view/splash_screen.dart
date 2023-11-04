@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:project_belanjakan/view/login_page.dart';
 import 'package:project_belanjakan/view/main_menu.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -16,6 +17,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     super.initState();
+    AudioPlayer().play(AssetSource('audio/intro.mp3'));
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
 
     Future.delayed(const Duration(seconds: 3), nextPage);
