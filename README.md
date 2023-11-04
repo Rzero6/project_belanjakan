@@ -14,4 +14,3 @@ UGD 4 Hardware
 ## Tugas
 
 - Reynold : Shake n win (Sensor : Accellometer, speaker : sound effect) , Notification (Speaker, Vibrate), dan bantu hal hal kecil lainnya
-- Angel : Validator Register (Email)
