@@ -27,6 +27,12 @@ class GeolocationApp extends StatefulWidget {
 class _GeolocationAppState extends State<GeolocationApp> {
   Position? _currentLocation;
   String _currentAddress = "";
+  String _currentStreet = "N/A";
+  String _currentSubLocality = "N/A";
+  String _currentLocality = "N/A";
+  String _currentAdministrativeArea = "N/A";
+  String _currentCountry = "N/A";
+  String _currentPostalCode = "N/A";
   bool servicePermission = false;
   late LocationPermission permission;
   TextEditingController _addressController = TextEditingController();
@@ -63,11 +69,27 @@ class _GeolocationAppState extends State<GeolocationApp> {
 
   Future<void> _getAddressFromCoordinates() async {
     try{
-      List<Placemark> placemarks = await placemarkFromCoordinates(_currentLocation!.latitude, _currentLocation!.longitude);
-      Placemark place = placemarks[0];
-      setState(() {
-        _currentAddress = "${place.locality}, ${place.country}";
-      });
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        _currentLocation!.latitude,
+        _currentLocation!.longitude,
+        localeIdentifier: "id_ID",
+      );
+      if(placemarks.isNotEmpty) {
+        Placemark place = placemarks[0];
+        _currentStreet = place.street ?? "N/A";
+        _currentSubLocality = place.subLocality ?? "N/A";
+        _currentLocality = place.locality ?? "N/A";
+        _currentAdministrativeArea = place.administrativeArea ?? "N/A";
+        _currentCountry = place.country ?? "N/A";
+        _currentPostalCode = place.postalCode ?? "N/A";
+
+        setState(() {
+          _currentAddress = 
+              "Street: $_currentStreet\n Sub-Locality: $_currentSubLocality\n Locality: $_currentLocality\n Administrative Are: $_currentAdministrativeArea\n Country: $_currentCountry\n Postal Code: $_currentPostalCode";
+        });
+      } else {
+        print("No Location Found For the Given Coordinates");
+      }
     } catch (e) {
       print(e);
     }
@@ -152,8 +174,30 @@ class _GeolocationAppState extends State<GeolocationApp> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 6),
-              Text("${_currentAddress ?? 'N/A'}"),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text("Street: ${_currentStreet ?? 'N/A'}"),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text("Sub-Locality: ${_currentSubLocality ?? 'N/A'}"),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text("Locality: ${_currentLocality ?? 'N/A'}"),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text("Administrative Area: ${_currentAdministrativeArea ?? 'N/A'}"),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text("Country: ${_currentCountry ?? 'N/A'}"),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text("PostalCode: ${_currentPostalCode ?? 'N/A'}"),
+            ),
               SizedBox(height: 50.0),
               ElevatedButton(
                 onPressed: () async {
