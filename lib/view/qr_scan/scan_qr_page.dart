@@ -50,6 +50,11 @@ class _BarcodeScannerPageViewState extends State<BarcodeScannerPageView>
                     context,
                     MaterialPageRoute(
                         builder: (_) => const PaymentVerificationView()));
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content:
+                      Text("Qr Tidak Relevan / Bukan masuk dalam pembayaran"),
+                ));
               }
             },
           ),
