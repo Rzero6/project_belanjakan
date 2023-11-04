@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project_belanjakan/database/sql_helper_items.dart';
 import 'package:project_belanjakan/model/item.dart';
+import 'package:project_belanjakan/view/payment/payment_verification.dart';
 import 'package:project_belanjakan/view/payment/quick_pay.dart';
 
 class ProductDetailScreen extends StatefulWidget {
@@ -93,7 +94,13 @@ class BottomNavBar extends StatelessWidget {
                 ),
               ),
             ),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const PaymentVerificationView(),
+                  ));
+            },
             child: Container(
               padding:
                   const EdgeInsets.only(left: 5, right: 5, top: 15, bottom: 15),
@@ -246,9 +253,6 @@ class DetailScreen extends StatelessWidget {
                 SizedBox(
                   height: 15,
                 ),
-                // Column(
-                //   children: generateProductSpecification(context),
-                // )
               ],
             ),
           )

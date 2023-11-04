@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:project_belanjakan/view/payment/payment_verification.dart';
 // import 'package:modul_cam_qr_1282/constant/app_constant.dart';
 // import 'package:modul_cam_qr_1282/views/camera/camera.dart';
 import "package:project_belanjakan/view/qr_scan/scanner_error_widget.dart";
@@ -44,7 +45,12 @@ class _BarcodeScannerPageViewState extends State<BarcodeScannerPageView>
               setBarcodeCapture(capture);
               if (barcodeCapture!.barcodes.first.rawValue!.isNotEmpty &&
                   barcodeCapture!.barcodes.first.rawValue!
-                      .startsWith("byr-pb:")) {}
+                      .startsWith("byr-pb:")) {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const PaymentVerificationView()));
+              }
             },
           ),
           Align(
