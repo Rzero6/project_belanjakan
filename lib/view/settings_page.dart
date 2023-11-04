@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:project_belanjakan/view/items_list.dart';
 import 'package:project_belanjakan/view/login_page.dart';
 import 'package:project_belanjakan/view/notification/services.dart';
-import 'package:project_belanjakan/view/payment/quick_pay.dart';
 import 'package:project_belanjakan/view/profile_page.dart';
 import 'package:project_belanjakan/view/user_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';

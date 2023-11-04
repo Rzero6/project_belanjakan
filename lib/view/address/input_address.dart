@@ -216,7 +216,7 @@ class _InputAddressState extends State<InputAddress> {
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          if (fullAddress.isNotEmpty) {
+                          if (fullAddress!='Masukan alamat terlebih dulu') {
                             Address address = Address(jalan: _currentStreet, kabupaten: _currentSubAdminisitrative, kelurahan: _currentSubLocality, kecamatan: _currentLocality, kodePos: _currentPostalCode, provinsi: _currentAdministrativeArea);
                             Navigator.pop(context,address);
                           } else {
