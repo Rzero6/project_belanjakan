@@ -1,7 +1,7 @@
 # project_belanjakan
 ## KELOMPOK 2
 current progress:
-UGD 3 Data
+UGD 4 Hardware
 
 ## Anggota Kelompok
 
@@ -13,5 +13,5 @@ UGD 3 Data
 
 ## Tugas
 
-- Reynold : CRUDS Tambahan (Items) Front End + Back End , Shared Preferences
+- Reynold : Shake n win (Sensor : Accellometer, speaker : sound effect) , Notification (Speaker, Vibrate), dan bantu hal hal kecil lainnya
 - Angel : Validator Register (Email)
