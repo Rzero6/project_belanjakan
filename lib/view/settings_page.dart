@@ -20,18 +20,6 @@ class SettingsView extends StatelessWidget {
           children: [
             ElevatedButton.icon(
               icon: const Icon(Icons.notifications),
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => const QuickPayView(
-                              id: 1,
-                            )));
-              },
-              label: const Text('Quick Pay'),
-            ),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.notifications),
               onPressed: () async {
                 await NotificationService.showNotification(
                     title: "Heey kamuu",
