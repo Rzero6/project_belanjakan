@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project_belanjakan/database/sql_helper_items.dart';
 import 'package:project_belanjakan/model/item.dart';
+import 'package:project_belanjakan/view/payment/quick_pay.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final int id;
@@ -58,13 +59,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           }
         },
       ),
-      bottomNavigationBar: const BottomNavBar(),
+      bottomNavigationBar: BottomNavBar(id: widget.id),
     );
   }
 }
 
 class BottomNavBar extends StatelessWidget {
-  const BottomNavBar({super.key});
+  final int id;
+  const BottomNavBar({super.key, required this.id});
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +117,13 @@ class BottomNavBar extends StatelessWidget {
             ),
             onPressed: () {},
             child: InkWell(
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => QuickPayView(id: id),
+                    ));
+              },
               child: Container(
                 padding: const EdgeInsets.only(
                     left: 5, right: 5, top: 15, bottom: 15),
@@ -141,6 +149,7 @@ Widget createDetailView(
   );
 }
 
+// ignore: must_be_immutable
 class DetailScreen extends StatelessWidget {
   Item productDetails;
 
