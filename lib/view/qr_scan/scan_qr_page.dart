@@ -85,8 +85,7 @@ class _BarcodeScannerPageViewState extends State<BarcodeScannerPageView>
 
   Text barcodeCaptureTextResult(BuildContext context) {
     return Text(
-      barcodeCapture?.barcodes.first.rawValue ??
-          "scan something & click to copy to clipboard",
+      barcodeCapture?.barcodes.first.rawValue ?? "scan Qr pembayaran",
       overflow: TextOverflow.fade,
       style: Theme.of(context)
           .textTheme

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:project_belanjakan/database/sql_helper_items.dart';
 import 'package:project_belanjakan/model/item.dart';
+import 'package:project_belanjakan/view/payment/payment_verification.dart';
+import 'package:project_belanjakan/view/qr_scan/scan_qr_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 
@@ -150,6 +152,11 @@ class _QuickPayViewState extends State<QuickPayView> {
                       child: ElevatedButton(
                           onPressed: () {
                             //PAGE BAYAARRR
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) =>
+                                        const BarcodeScannerPageView()));
                           },
                           child: const Text(
                             'Bayar',
