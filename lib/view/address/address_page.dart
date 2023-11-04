@@ -46,8 +46,8 @@ class _AddressesViewState extends State<AddressesView> {
             blok: place.thoroughfare,
             latitude: _currentLocation!.latitude,
             longitude: _currentLocation!.longitude);
-            isLoading = false;
-            isLocated = true;
+        isLoading = false;
+        isLocated = true;
       });
     }).catchError((e) {
       print("Error : $e");
@@ -66,9 +66,15 @@ class _AddressesViewState extends State<AddressesView> {
                     child: CircularProgressIndicator(),
                   )
                 : isLocated
-                    ? const Column(
+                    ? Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
+                          Text("${addressDetails.jalan}"),
+                          Text("${addressDetails.kelurahan}"),
+                          Text("${addressDetails.kecamatan}"),
+                          Text("${addressDetails.kabupaten}"),
+                          Text("${addressDetails.kodePos}"),
+                          Text("${addressDetails.provinsi}"),
                         ],
                       )
                     : ElevatedButton(

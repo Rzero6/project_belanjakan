@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:project_belanjakan/view/address/address_page.dart';
 import 'package:project_belanjakan/view/login_page.dart';
 import 'package:project_belanjakan/view/notification/services.dart';
+import 'package:project_belanjakan/view/payment/quick_pay.dart';
 import 'package:project_belanjakan/view/profile_page.dart';
 import 'package:project_belanjakan/view/user_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,6 +18,14 @@ class SettingsView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            ElevatedButton.icon(
+              icon: const Icon(Icons.notifications),
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => const QuickPayView(id: 1,)));
+              },
+              label: const Text('Quick Pay'),
+            ),
             ElevatedButton.icon(
               icon: const Icon(Icons.notifications),
               onPressed: () async {
