@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:project_belanjakan/database/sql_helper_items.dart';
 import 'package:project_belanjakan/model/item.dart';
-import 'package:project_belanjakan/view/payment/payment_verification.dart';
 import 'package:project_belanjakan/view/payment/quick_pay.dart';
 
 class ProductDetailScreen extends StatefulWidget {
@@ -50,7 +49,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           switch (snapshot.connectionState) {
             case ConnectionState.none:
             case ConnectionState.waiting:
-              return const CircularProgressIndicator();
+              return const Center(child: CircularProgressIndicator());
             default:
               if (snapshot.hasError) {
                 return Text('Error: ${snapshot.error}');
@@ -72,7 +71,7 @@ class BottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.only(left: 20, right: 10),
+      padding: const EdgeInsets.only(left: 20, right: 10, bottom: 20),
       child: Row(
         children: <Widget>[
           const Icon(
@@ -82,7 +81,7 @@ class BottomNavBar extends StatelessWidget {
           const Spacer(),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFfef2f2),
+              backgroundColor: Colors.blue.shade100,
               foregroundColor: Colors.white,
               elevation: 0,
               shape: const RoundedRectangleBorder(
@@ -95,20 +94,16 @@ class BottomNavBar extends StatelessWidget {
               ),
             ),
             onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const PaymentVerificationView(),
-                  ));
+              //ADD TO CART
             },
             child: Container(
               padding:
                   const EdgeInsets.only(left: 5, right: 5, top: 15, bottom: 15),
               child: Text("Add to cart".toUpperCase(),
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
-                      color: Color(0xFFff665e))),
+                      color: Colors.blue.shade600)),
             ),
           ),
           ElevatedButton(
@@ -118,8 +113,8 @@ class BottomNavBar extends StatelessWidget {
                   borderRadius: BorderRadius.only(
                       topRight: Radius.circular(10),
                       bottomRight: Radius.circular(10)),
-                  side: BorderSide(color: Color(0xFFff665e))),
-              backgroundColor: const Color(0xFFff665e),
+                  side: BorderSide(color: Colors.blue)),
+              backgroundColor: Colors.blue,
               foregroundColor: Colors.white,
             ),
             onPressed: () {},
@@ -174,6 +169,13 @@ class DetailScreen extends StatelessWidget {
           const SizedBox(
             height: 10,
           ),
+          Container(
+            padding:
+                const EdgeInsets.only(left: 15, right: 15, top: 20, bottom: 20),
+            child: Text("${productDetails.name}".toUpperCase(),
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+          ),
           const SizedBox(
             height: 10,
           ),
@@ -192,10 +194,8 @@ class DetailScreen extends StatelessWidget {
                 Text(
                     "Rp. ${(productDetails.price != null) ? productDetails.price : "Unavailable"}"
                         .toUpperCase(),
-                    style: TextStyle(
-                        color: (productDetails.price != null)
-                            ? const Color(0xFFf67426)
-                            : const Color(0xFF0dc2cd),
+                    style: const TextStyle(
+                        color: Colors.blue,
                         fontFamily: 'Roboto-Light.ttf',
                         fontSize: 20,
                         fontWeight: FontWeight.w500)),
@@ -232,30 +232,6 @@ class DetailScreen extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(
-            height: 10,
-          ),
-          Container(
-            alignment: Alignment.topLeft,
-            width: double.infinity,
-            padding:
-                const EdgeInsets.only(left: 15, right: 15, top: 20, bottom: 20),
-            color: const Color(0xFFFFFFFF),
-            child: const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text("Specification",
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF565656))),
-                SizedBox(
-                  height: 15,
-                ),
-              ],
-            ),
-          )
         ],
       ),
     );
