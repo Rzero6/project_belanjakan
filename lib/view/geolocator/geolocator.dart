@@ -92,7 +92,7 @@ class _GeolocationAppState extends State<GeolocationApp> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Your Location", style: TextStyle(fontSize: 20)),
+        title: Text("Pilih Lokasi", style: TextStyle(fontSize: 20)),
         centerTitle: true,
       ),
       body: Padding(
