@@ -1,7 +1,7 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:project_belanjakan/main.dart';
-import 'package:project_belanjakan/view/offers/coupons_page.dart';
+import 'package:project_belanjakan/view/offers/coupons/coupons_page.dart';
 
 class NotificationService {
   static Future<void> initializeNotification() async {

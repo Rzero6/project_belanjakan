@@ -1,10 +1,10 @@
 // main_menu_view.dart
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:project_belanjakan/view/grid.dart';
+import 'package:project_belanjakan/view/main/grid.dart';
 import 'package:project_belanjakan/view/offers/daily_offers.dart';
 import 'package:project_belanjakan/view/products/show_item.dart';
-import 'package:project_belanjakan/view/settings_page.dart';
+import 'package:project_belanjakan/view/main/settings_page.dart';
 
 class MainMenuView extends StatefulWidget {
   // final User userData;

@@ -64,7 +64,7 @@ class _QuickPayViewState extends State<QuickPayView> {
           ? const Center(
               child: CircularProgressIndicator(),
             )
-          : SingleChildScrollView(
+          : Center(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -157,39 +157,37 @@ class _QuickPayViewState extends State<QuickPayView> {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Expanded(
-                      child: Column(
-                        children: [
-                          const Divider(
-                            color: Colors.black45,
+                    child: Column(
+                      children: [
+                        const Divider(
+                          color: Colors.black45,
+                        ),
+                        rincianHarga('Harga Barang x $quantity',
+                            currencyFormat.format(items!.price!)),
+                        rincianHarga('Ongkos Kirim',
+                            currencyFormat.format(ongkosKirim)),
+                        rincianHarga(
+                            'Biaya Admin', currencyFormat.format(adminFee)),
+                        const SizedBox(
+                          height: 25,
+                        ),
+                        const Divider(
+                          color: Colors.black45,
+                        ),
+                        ListTile(
+                          leading: const Text(
+                            'Total Biaya',
+                            style: TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          rincianHarga('Harga Barang x $quantity',
-                              currencyFormat.format(items!.price!)),
-                          rincianHarga('Ongkos Kirim',
-                              currencyFormat.format(ongkosKirim)),
-                          rincianHarga(
-                              'Biaya Admin', currencyFormat.format(adminFee)),
-                          const SizedBox(
-                            height: 25,
-                          ),
-                          const Divider(
-                            color: Colors.black45,
-                          ),
-                          ListTile(
-                            leading: const Text(
-                              'Total Biaya',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            dense: true,
-                            trailing: Text(
-                                currencyFormat.format(items!.price! * quantity +
-                                    ongkosKirim +
-                                    adminFee),
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold)),
-                          ),
-                        ],
-                      ),
+                          dense: true,
+                          trailing: Text(
+                              currencyFormat.format(items!.price! * quantity +
+                                  ongkosKirim +
+                                  adminFee),
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold)),
+                        ),
+                      ],
                     ),
                   ),
                   Padding(
@@ -201,6 +199,7 @@ class _QuickPayViewState extends State<QuickPayView> {
                       child: ElevatedButton(
                           onPressed: () {
                             //PAGE BAYAARRR
+                            
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(

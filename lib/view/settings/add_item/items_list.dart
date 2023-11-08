@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:project_belanjakan/database/sql_helper_items.dart';
-import 'package:project_belanjakan/view/item_input_page.dart';
+import 'package:project_belanjakan/view/settings/add_item/item_input_page.dart';
 
 class ItemsListView extends StatefulWidget {
   const ItemsListView({super.key});

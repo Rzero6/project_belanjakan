@@ -8,7 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:project_belanjakan/database/sql_helper_user.dart';
 import 'package:project_belanjakan/model/user.dart';
 import 'package:project_belanjakan/view/camera/camera.dart';
-import 'package:project_belanjakan/view/profile_page.dart';
+import 'package:project_belanjakan/view/settings/profile/profile_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EditProfilePage extends StatefulWidget {

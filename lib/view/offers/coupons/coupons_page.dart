@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:project_belanjakan/database/sql_helper_user.dart';
-import 'package:project_belanjakan/view/offers/shake_n_win.dart';
+import 'package:project_belanjakan/view/offers/coupons/shake_n_win.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CouponsPage extends StatefulWidget {

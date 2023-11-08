@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:project_belanjakan/view/offers/coupons_page.dart';
+import 'package:project_belanjakan/view/offers/coupons/coupons_page.dart';
 
 class DailyOffers extends StatefulWidget {
   const DailyOffers({super.key});

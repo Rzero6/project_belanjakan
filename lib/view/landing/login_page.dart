@@ -5,8 +5,8 @@ import 'package:project_belanjakan/bloc/login_bloc.dart';
 import 'package:project_belanjakan/bloc/login_event.dart';
 import 'package:project_belanjakan/bloc/login_state.dart';
 import 'package:project_belanjakan/model/user.dart';
-import 'package:project_belanjakan/view/main_menu.dart';
-import 'package:project_belanjakan/view/register_page.dart';
+import 'package:project_belanjakan/view/main/main_menu.dart';
+import 'package:project_belanjakan/view/landing/register_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Loginview extends StatefulWidget {

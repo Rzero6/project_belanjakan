@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:project_belanjakan/view/login_page.dart';
-import 'package:project_belanjakan/view/main_menu.dart';
+import 'package:project_belanjakan/view/landing/login_page.dart';
+import 'package:project_belanjakan/view/main/main_menu.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:audioplayers/audioplayers.dart';
 

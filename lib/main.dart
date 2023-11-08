@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:project_belanjakan/view/notification/services.dart';
-import 'package:project_belanjakan/view/splash_screen.dart';
+import 'package:project_belanjakan/services/notifications/services.dart';
+import 'package:project_belanjakan/view/landing/splash_screen.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 void main() async {

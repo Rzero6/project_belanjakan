@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:project_belanjakan/database/sql_helper_items.dart';
 import 'package:project_belanjakan/model/item.dart';
 import 'package:project_belanjakan/view/payment/quick_pay.dart';
+import 'package:intl/intl.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final int id;
@@ -16,6 +17,8 @@ class ProductDetailScreen extends StatefulWidget {
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   Item? items;
   bool isLoading = false;
+  TextEditingController amountController = TextEditingController();
+  int itemAmount = 0;
 
   void refresh(int num) async {
     setState(() {
@@ -39,6 +42,20 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     super.initState();
   }
 
+  void incrementItemAmount() {
+    setState(() {
+      itemAmount++;
+    });
+  }
+
+  void decrementItemAmount() {
+    if (itemAmount > 0) {
+      setState(() {
+        itemAmount--;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,85 +76,119 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           }
         },
       ),
-      bottomNavigationBar: BottomNavBar(id: widget.id),
+      bottomNavigationBar: BottomNavBar(
+          id: widget.id,
+          itemAmount: itemAmount,
+          incrementItemAmount: incrementItemAmount,
+          decrementItemAmount: decrementItemAmount),
     );
   }
 }
 
 class BottomNavBar extends StatelessWidget {
   final int id;
-  const BottomNavBar({super.key, required this.id});
+  final int itemAmount;
+  final Function() incrementItemAmount;
+  final Function() decrementItemAmount;
+  const BottomNavBar(
+      {super.key,
+      required this.id,
+      required this.itemAmount,
+      required this.incrementItemAmount,
+      required this.decrementItemAmount});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(left: 20, right: 10, bottom: 20),
-      child: Row(
-        children: <Widget>[
-          const Icon(
-            Icons.favorite_border,
-            color: Color(0xFF5e5e5e),
-          ),
-          const Spacer(),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue.shade100,
-              foregroundColor: Colors.white,
-              elevation: 0,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10),
-                    bottomLeft: Radius.circular(10)),
-                side: BorderSide(
-                  color: Color(0xFFfef2f2),
+    return SingleChildScrollView(
+      child: Container(
+        height: 116,
+        padding: const EdgeInsets.only(left: 20, right: 10, bottom: 20),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Jumlah', style: TextStyle(fontSize: 18)),
+                IconButton(
+                  onPressed: decrementItemAmount,
+                  icon: const Icon(Icons.remove),
                 ),
-              ),
+                Text('$itemAmount', style: const TextStyle(fontSize: 18)),
+                IconButton(
+                  onPressed: incrementItemAmount,
+                  icon: const Icon(Icons.add),
+                ),
+              ],
             ),
-            onPressed: () {
-              //ADD TO CART
-            },
-            child: Container(
-              padding:
-                  const EdgeInsets.only(left: 5, right: 5, top: 15, bottom: 15),
-              child: Text("Add to cart".toUpperCase(),
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.blue.shade600)),
+            Row(
+              children: <Widget>[
+                const Icon(
+                  Icons.favorite_border,
+                  color: Color(0xFF5e5e5e),
+                ),
+                const Spacer(),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue.shade100,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          bottomLeft: Radius.circular(10)),
+                      side: BorderSide(
+                        color: Color(0xFFfef2f2),
+                      ),
+                    ),
+                  ),
+                  onPressed: () {
+                    //ADD TO CART
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.only(
+                        left: 5, right: 5, top: 15, bottom: 15),
+                    child: Text("Add to cart".toUpperCase(),
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.blue.shade600)),
+                  ),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    elevation: 0,
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(10),
+                            bottomRight: Radius.circular(10)),
+                        side: BorderSide(color: Colors.blue)),
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: () {},
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => QuickPayView(id: id),
+                          ));
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.only(
+                          left: 5, right: 5, top: 15, bottom: 15),
+                      child: Text("Buy now".toUpperCase(),
+                          style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xFFFFFFFF))),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              elevation: 0,
-              shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(10),
-                      bottomRight: Radius.circular(10)),
-                  side: BorderSide(color: Colors.blue)),
-              backgroundColor: Colors.blue,
-              foregroundColor: Colors.white,
-            ),
-            onPressed: () {},
-            child: InkWell(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => QuickPayView(id: id),
-                    ));
-              },
-              child: Container(
-                padding: const EdgeInsets.only(
-                    left: 5, right: 5, top: 15, bottom: 15),
-                child: Text("Buy now".toUpperCase(),
-                    style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xFFFFFFFF))),
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -159,6 +210,9 @@ class DetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currencyFormat =
+        NumberFormat.currency(locale: 'id_ID', symbol: 'Rp. ');
+
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
@@ -170,8 +224,7 @@ class DetailScreen extends StatelessWidget {
             height: 10,
           ),
           Container(
-            padding:
-                const EdgeInsets.only(left: 15, right: 15, top: 20, bottom: 20),
+            padding: const EdgeInsets.all(15),
             child: Text("${productDetails.name}".toUpperCase(),
                 style:
                     const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
@@ -180,23 +233,23 @@ class DetailScreen extends StatelessWidget {
             height: 10,
           ),
           Container(
-            padding:
-                const EdgeInsets.only(left: 15, right: 15, top: 20, bottom: 20),
+            padding: const EdgeInsets.all(15),
             color: const Color(0xFFFFFFFF),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Text("Price".toUpperCase(),
+                Text("Harga".toUpperCase(),
                     style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                         color: Color(0xFF565656))),
                 Text(
-                    "Rp. ${(productDetails.price != null) ? productDetails.price : "Unavailable"}"
+                    ((productDetails.price != null)
+                            ? currencyFormat.format(productDetails.price)
+                            : "Unavailable")
                         .toUpperCase(),
                     style: const TextStyle(
                         color: Colors.blue,
-                        fontFamily: 'Roboto-Light.ttf',
                         fontSize: 20,
                         fontWeight: FontWeight.w500)),
               ],
@@ -208,8 +261,7 @@ class DetailScreen extends StatelessWidget {
           Container(
             alignment: Alignment.topLeft,
             width: double.infinity,
-            padding:
-                const EdgeInsets.only(left: 15, right: 15, top: 20, bottom: 20),
+            padding: const EdgeInsets.all(15),
             color: const Color(0xFFFFFFFF),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
