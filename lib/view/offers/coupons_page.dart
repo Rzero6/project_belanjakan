@@ -90,10 +90,9 @@ class _CouponsPageState extends State<CouponsPage> {
                           showDialogUdahNgocok();
                         } else {
                           Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (_) => const ShakeNWin()))
-                              .then((value) => refreshCoupons());
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const ShakeNWin())).then((value) => refreshCoupons());
                         }
                       },
                       child: const Text('Shake N Win')),
