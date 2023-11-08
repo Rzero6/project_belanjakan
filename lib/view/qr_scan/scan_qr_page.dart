@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:project_belanjakan/model/item.dart';
 import 'package:project_belanjakan/view/payment/payment_verification.dart';
 // import 'package:modul_cam_qr_1282/constant/app_constant.dart';
 // import 'package:modul_cam_qr_1282/views/camera/camera.dart';
@@ -7,7 +8,8 @@ import "package:project_belanjakan/view/qr_scan/scanner_error_widget.dart";
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 class BarcodeScannerPageView extends StatefulWidget {
-  const BarcodeScannerPageView({Key? key}) : super(key: key);
+  final int id;
+  const BarcodeScannerPageView({Key? key, required this.id}) : super(key: key);
 
   @override
   State<BarcodeScannerPageView> createState() => _BarcodeScannerPageViewState();
@@ -49,7 +51,9 @@ class _BarcodeScannerPageViewState extends State<BarcodeScannerPageView>
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (_) => const PaymentVerificationView()));
+                        builder: (_) => PaymentVerificationView(
+                              id: widget.id,
+                            )));
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                   content:

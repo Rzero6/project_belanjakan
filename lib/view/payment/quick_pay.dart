@@ -156,38 +156,29 @@ class _QuickPayViewState extends State<QuickPayView> {
                     ),
                   ),
                   Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Expanded(
-                        child: Column(
-                          children: [
-                            const Divider(
-                              color: Colors.black45,
-                            ),
-                            rincianHarga('Harga Barang x $quantity',
-                                currencyFormat.format(items!.price!)),
-                            rincianHarga('Ongkos Kirim',
-                                currencyFormat.format(ongkosKirim)),
-                            rincianHarga(
-                                'Biaya Admin', currencyFormat.format(adminFee)),
-                            const SizedBox(
-                              height: 25,
-                            ),
-                            const Divider(
-                              color: Colors.black45,
-                            ),
-                            ListTile(
-                              leading: const Text(
-                                'Total Biaya',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              dense: true,
-                              trailing: Text(
-                                  currencyFormat.format(
-                                      items!.price! * quantity +
-                                          ongkosKirim +
-                                          adminFee),
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold)),
+                    padding: const EdgeInsets.all(8.0),
+                    child: Expanded(
+                      child: Column(
+                        children: [
+                          const Divider(
+                            color: Colors.black45,
+                          ),
+                          rincianHarga('Harga Barang x $quantity',
+                              currencyFormat.format(items!.price!)),
+                          rincianHarga('Ongkos Kirim',
+                              currencyFormat.format(ongkosKirim)),
+                          rincianHarga(
+                              'Biaya Admin', currencyFormat.format(adminFee)),
+                          const SizedBox(
+                            height: 25,
+                          ),
+                          const Divider(
+                            color: Colors.black45,
+                          ),
+                          ListTile(
+                            leading: const Text(
+                              'Total Biaya',
+                              style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             dense: true,
                             trailing: Text(
@@ -195,10 +186,12 @@ class _QuickPayViewState extends State<QuickPayView> {
                                     ongkosKirim +
                                     adminFee),
                                 style: const TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 18)),
+                                    fontWeight: FontWeight.bold)),
                           ),
                         ],
-                      )),
+                      ),
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
                         vertical: 10.0, horizontal: 8.0),
@@ -211,8 +204,9 @@ class _QuickPayViewState extends State<QuickPayView> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (_) =>
-                                        const BarcodeScannerPageView()));
+                                    builder: (_) => BarcodeScannerPageView(
+                                          id: widget.id,
+                                        )));
                           },
                           child: const Text(
                             'Bayar',
@@ -230,29 +224,6 @@ class _QuickPayViewState extends State<QuickPayView> {
   SizedBox rincianHarga(String detail, String harga) {
     return SizedBox(
       height: 20,
-      child: Center(
-        child: ListTile(
-          leading: Text(
-            detail,
-            style: const TextStyle(
-              fontSize: 12,
-            ),
-          ),
-          trailing: Text(
-            harga,
-            style: const TextStyle(
-              fontSize: 12,
-            ),
-          ),
-          dense: true,
-        ),
-      ),
-    );
-  }
-
-  SizedBox rincianHarga(String detail, String harga) {
-    return SizedBox(
-      height: 25,
       child: Center(
         child: ListTile(
           leading: Text(

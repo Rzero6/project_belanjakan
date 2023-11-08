@@ -10,6 +10,7 @@
 #include <awesome_notifications/awesome_notifications_plugin_c_api.h>
 #include <file_selector_windows/file_selector_windows.h>
 #include <geolocator_windows/geolocator_windows.h>
+#include <printing/printing_plugin.h>
 
 void RegisterPlugins(flutter::PluginRegistry* registry) {
   AudioplayersWindowsPluginRegisterWithRegistrar(
@@ -20,4 +21,6 @@ void RegisterPlugins(flutter::PluginRegistry* registry) {
       registry->GetRegistrarForPlugin("FileSelectorWindows"));
   GeolocatorWindowsRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("GeolocatorWindows"));
+  PrintingPluginRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("PrintingPlugin"));
 }
