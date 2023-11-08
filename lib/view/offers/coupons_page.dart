@@ -73,6 +73,8 @@ class _CouponsPageState extends State<CouponsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+          elevation: 0.0, centerTitle: true, title: const Text('Coupons')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:project_belanjakan/database/sql_helper_items.dart';
 import 'package:project_belanjakan/model/item.dart';
+import 'package:project_belanjakan/view/address/get_current_location.dart';
+import 'package:project_belanjakan/view/address/input_address.dart';
+import 'package:project_belanjakan/view/qr_scan/scan_qr_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:project_belanjakan/model/address.dart';
+import 'package:intl/intl.dart';
 
 class QuickPayView extends StatefulWidget {
   final int id;
@@ -15,6 +19,7 @@ class QuickPayView extends StatefulWidget {
 class _QuickPayViewState extends State<QuickPayView> {
   Item? items;
   bool isLoading = false;
+  Address? currentAddress;
 
   void refresh(int num) async {
     setState(() {
@@ -22,8 +27,10 @@ class _QuickPayViewState extends State<QuickPayView> {
     });
     try {
       final data = await SQLHelperItem.getItemById(num);
+      final addressData = await GetCurrentLocation().getAddressLocation();
       setState(() {
         items = data;
+        currentAddress = addressData;
       });
     } finally {
       setState(() {
@@ -53,14 +60,60 @@ class _QuickPayViewState extends State<QuickPayView> {
         centerTitle: true,
         title: const Icon(Icons.shopify),
       ),
-      body: SingleChildScrollView(
-        child: isLoading
-            ? const Center(
-                child: CircularProgressIndicator(),
-              )
-            : Column(
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : SingleChildScrollView(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  InkWell(
+                    splashColor: Colors.blue,
+                    onTap: () async {
+                      final address = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const InputAddress()));
+                      if (address != null) {
+                        setState(() {
+                          currentAddress = address;
+                        });
+                      }
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SizedBox(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            const Icon(Icons.location_on, color: Colors.blue),
+                            const SizedBox(
+                              width: 8,
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(currentAddress!.jalan!),
+                                Text(
+                                    '${currentAddress?.kelurahan!}, ${currentAddress?.kecamatan!}'),
+                                Text(
+                                    '${currentAddress?.kabupaten!}, ${currentAddress?.kodePos!}'),
+                                Text('${currentAddress?.provinsi!}'),
+                              ],
+                            ),
+                            const SizedBox(
+                              width: 8,
+                            ),
+                            const Icon(
+                              Icons.arrow_forward_ios_rounded,
+                              color: Colors.black54,
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                   SizedBox(
                     height: 250,
                     child: Container(
@@ -76,7 +129,7 @@ class _QuickPayViewState extends State<QuickPayView> {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                        vertical: 15, horizontal: 10),
+                        vertical: 10, horizontal: 10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -136,8 +189,15 @@ class _QuickPayViewState extends State<QuickPayView> {
                                   style: const TextStyle(
                                       fontWeight: FontWeight.bold)),
                             ),
-                          ],
-                        ),
+                            dense: true,
+                            trailing: Text(
+                                currencyFormat.format(items!.price! * quantity +
+                                    ongkosKirim +
+                                    adminFee),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 18)),
+                          ),
+                        ],
                       )),
                   Padding(
                     padding: const EdgeInsets.symmetric(
@@ -148,6 +208,11 @@ class _QuickPayViewState extends State<QuickPayView> {
                       child: ElevatedButton(
                           onPressed: () {
                             //PAGE BAYAARRR
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) =>
+                                        const BarcodeScannerPageView()));
                           },
                           child: const Text(
                             'Bayar',
@@ -158,6 +223,29 @@ class _QuickPayViewState extends State<QuickPayView> {
                   ),
                 ],
               ),
+            ),
+    );
+  }
+
+  SizedBox rincianHarga(String detail, String harga) {
+    return SizedBox(
+      height: 20,
+      child: Center(
+        child: ListTile(
+          leading: Text(
+            detail,
+            style: const TextStyle(
+              fontSize: 12,
+            ),
+          ),
+          trailing: Text(
+            harga,
+            style: const TextStyle(
+              fontSize: 12,
+            ),
+          ),
+          dense: true,
+        ),
       ),
     );
   }

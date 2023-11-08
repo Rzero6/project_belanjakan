@@ -1,9 +1,8 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
-import 'package:project_belanjakan/view/address/address_page.dart';
+import 'package:project_belanjakan/view/items_list.dart';
 import 'package:project_belanjakan/view/login_page.dart';
 import 'package:project_belanjakan/view/notification/services.dart';
-import 'package:project_belanjakan/view/payment/quick_pay.dart';
 import 'package:project_belanjakan/view/profile_page.dart';
 import 'package:project_belanjakan/view/user_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,24 +19,15 @@ class SettingsView extends StatelessWidget {
           children: [
             ElevatedButton.icon(
               icon: const Icon(Icons.notifications),
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => const QuickPayView(id: 1,)));
-              },
-              label: const Text('Quick Pay'),
-            ),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.notifications),
               onPressed: () async {
                 await NotificationService.showNotification(
-                  title: "Heey kamuu",
-                  body: "Sinii ngocok dulu, dapat kupon diskon loh",
-                  payload: {
-                    "navigate": "true",
-                  },
-                  notificationLayout: NotificationLayout.Default,
-                  category: NotificationCategory.Promo
-                );
+                    title: "Heey kamuu",
+                    body: "Sinii ngocok dulu, dapat kupon diskon loh",
+                    payload: {
+                      "navigate": "true",
+                    },
+                    notificationLayout: NotificationLayout.Default,
+                    category: NotificationCategory.Promo);
               },
               label: const Text('Test Notification'),
             ),
@@ -50,12 +40,12 @@ class SettingsView extends StatelessWidget {
               label: const Text('Profile'),
             ),
             ElevatedButton.icon(
-              icon: const Icon(Icons.location_on),
+              icon: const Icon(Icons.add_box_outlined),
               onPressed: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => const AddressesView()));
+                    MaterialPageRoute(builder: (_) => const ItemsListView()));
               },
-              label: const Text('Address'),
+              label: const Text('Add Items'),
             ),
             ElevatedButton.icon(
               icon: const Icon(Icons.people),
