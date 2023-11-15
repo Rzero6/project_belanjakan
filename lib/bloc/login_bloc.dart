@@ -2,7 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:project_belanjakan/bloc/form_submission_state.dart';
 import 'package:project_belanjakan/bloc/login_event.dart';
 import 'package:project_belanjakan/bloc/login_state.dart';
-import 'package:project_belanjakan/model/user.dart';
+import 'package:project_belanjakan/model/user_api.dart';
 import 'package:project_belanjakan/repository/login_repository.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
@@ -24,7 +24,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   void _onFormSubmitted(FormSubmitted event, Emitter<LoginState> emit) async {
     emit(state.copyWith(formSubmissionState: FormSubmitting()));
     try {
-      User userData= await loginRepository.login(event.username, event.password);
+      User userData= await loginRepository.login(event.email, event.password);
       emit(state.copyWith(formSubmissionState: SubmissionSuccess(user: userData)));
     } on FailedLogin catch (e) {
       emit(state.copyWith(

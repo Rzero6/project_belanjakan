@@ -1,13 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
-// import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:photo_view/photo_view.dart';
-import 'package:project_belanjakan/database/sql_helper_user.dart';
-import 'package:project_belanjakan/model/user.dart';
+import 'package:project_belanjakan/model/user_api.dart';
+import 'package:project_belanjakan/services/notifications/services.dart';
+import 'package:project_belanjakan/view/landing/login_page.dart';
 import 'package:project_belanjakan/view/settings/profile/edit_profile_page.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileView extends StatefulWidget {
@@ -20,14 +22,13 @@ class ProfileView extends StatefulWidget {
 class _ProfileViewState extends State<ProfileView> {
   int? userID;
   User? userData;
+  bool isLoading = true;
 
   late String imagePath = "";
   late File imageFile;
 
   @override
   void initState() {
-    // imageFile = File(imagePath);
-    // Future<String> imgstr = imgToStr(imageFile);
     imageFile = File(imagePath);
     loadData();
     super.initState();
@@ -36,101 +37,45 @@ class _ProfileViewState extends State<ProfileView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: ListView(
-      physics: const BouncingScrollPhysics(),
-      children: [
-        const SizedBox(
-          height: 25,
-        ),
-        Center(
-          child: Stack(
-            children: [
-              ClipOval(
-                child: Material(
-                  color: Colors.transparent,
-                  child: Hero(
-                    tag: 'profilePic',
-                    child: Ink.image(
-                      image: imageFile.existsSync()
-                          ? FileImage(imageFile) as ImageProvider
-                          : const AssetImage(
-                              'assets/images/profile_placeholder.jpg'),
-                      fit: BoxFit.cover,
-                      width: 128,
-                      height: 128,
-                    ),
+        body: isLoading
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : ListView(
+                physics: const BouncingScrollPhysics(),
+                children: [
+                  const SizedBox(
+                    height: 25,
                   ),
-                ),
-              ),
-              Positioned(
-                bottom: 0,
-                right: 3,
-                child: GestureDetector(
-                  onTap: () async {
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => const EditProfilePage()));
-                  },
-                  child: ClipOval(
-                    child: Container(
-                      padding: const EdgeInsets.all(3),
-                      color: Theme.of(context).colorScheme.primary,
-                      child: const Icon(
-                        Icons.edit,
-                        color: Colors.white,
-                        size: 28,
-                      ),
-                    ),
+                  profilePicWidget(),
+                  const SizedBox(
+                    height: 24,
                   ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(
-          height: 24,
-        ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              userData?.username ?? "Not Found",
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-            ),
-            const SizedBox(
-              height: 4,
-            ),
-            Text(
-              userData?.email ?? "Not Found",
-              style: const TextStyle(color: Colors.grey),
-            ),
-          ],
-        )
-      ],
-    ));
-  }
-
-  Future<User?> getUserById(int id) async {
-    return await SQLHelperUser.getUserById(id);
+                  profileNameWidget(),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 3.w),
+                    child: additionalMenu(),
+                  ),
+                ],
+              ));
   }
 
   Future<void> loadData() async {
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
     userData = User(
         id: sharedPrefs.getInt('userID'),
-        username: sharedPrefs.getString('username'),
-        password: sharedPrefs.getString('password'),
-        email: sharedPrefs.getString('email'),
-        phone: sharedPrefs.getString('phone'),
-        profilePic: sharedPrefs.getString("profile_pic"));
-    if (userData!.profilePic == null) {
+        name: sharedPrefs.getString('username')!,
+        email: sharedPrefs.getString('email')!,
+        phone: sharedPrefs.getString('phone') ?? 'xxx',
+        profilePicture: sharedPrefs.getString("profile_pic"));
+    if (userData!.profilePicture == null) {
       imagePath = 'assets/images/profile_placeholder.jpg';
     } else {
-      imagePath = await _createFileFromString(userData!.profilePic!);
+      imagePath = await _createFileFromString(userData!.profilePicture!);
     }
     setState(() {
       imageFile = File(imagePath);
+      isLoading = false;
     });
   }
 
@@ -145,6 +90,195 @@ class _ProfileViewState extends State<ProfileView> {
   Future<String> imgToStr(File img) async {
     Uint8List bytes = await img.readAsBytes();
     return base64Encode(bytes);
+  }
+
+  Center profilePicWidget() {
+    return Center(
+      child: Stack(
+        children: [
+          ClipOval(
+            child: Material(
+              color: Colors.transparent,
+              child: Hero(
+                tag: 'profilePic',
+                child: Ink.image(
+                  image: imageFile.existsSync()
+                      ? FileImage(imageFile) as ImageProvider
+                      : const AssetImage(
+                          'assets/images/profile_placeholder.jpg'),
+                  fit: BoxFit.cover,
+                  width: 128,
+                  height: 128,
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 0,
+            right: 3,
+            child: GestureDetector(
+              onTap: () async {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const EditProfilePage())).then(
+                  (value) {
+                    isLoading = true;
+                    loadData();
+                  },
+                );
+              },
+              child: ClipOval(
+                child: Container(
+                  padding: const EdgeInsets.all(3),
+                  color: Theme.of(context).colorScheme.primary,
+                  child: const Icon(
+                    Icons.edit,
+                    color: Colors.white,
+                    size: 28,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Column profileNameWidget() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          userData?.name ?? "Not Found",
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+        ),
+        const SizedBox(
+          height: 4,
+        ),
+        Text(
+          userData?.email ?? "Not Found",
+          style: const TextStyle(color: Colors.grey),
+        ),
+      ],
+    );
+  }
+
+  Column additionalMenu() {
+    return Column(
+      children: [
+        SizedBox(
+          height: 5.h,
+        ),
+        const Card(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10))),
+          child: SizedBox(
+            width: double.infinity,
+            child: Column(
+              children: [
+                ListTile(
+                  leading: Icon(Icons.assignment),
+                  title: Text('Pesanan Saya'),
+                ),
+                Divider(
+                  height: 0,
+                ),
+                ListTile(
+                  leading: Icon(Icons.shopify_rounded),
+                  title: Text('Toko Saya'),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Card(
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10))),
+          child: SizedBox(
+            width: double.infinity,
+            child: Column(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.notifications),
+                  title: const Text('Notifications'),
+                  onTap: () async {
+                    await NotificationService.showNotification(
+                        title: "Heey kamuu",
+                        body: "Sinii ngocok dulu, dapat kupon diskon loh",
+                        payload: {
+                          "navigate": "true",
+                        },
+                        notificationLayout: NotificationLayout.Default,
+                        category: NotificationCategory.Promo);
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+        Card(
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10))),
+          child: SizedBox(
+            width: double.infinity,
+            child: Column(
+              children: [
+                Theme(
+                  data: ThemeData(highlightColor: Colors.transparent),
+                  child: ListTile(
+                    splashColor: Colors.transparent,
+                    leading: const Icon(Icons.logout, color: Colors.red),
+                    title: const Text(
+                      'Logout',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: const Text('Confirm Logout'),
+                            content: const Text('Yakin ingin keluar ?'),
+                            actions: <Widget>[
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('Cancel'),
+                              ),
+                              ElevatedButton(
+                                  style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all<Color>(
+                                              Colors.red)),
+                                  onPressed: () {
+                                    removeLoginData();
+                                    Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (_) => const Loginview()));
+                                  },
+                                  child: const Text('Logout'))
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> removeLoginData() async {
+    SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
+    sharedPrefs.clear();
   }
 }
 

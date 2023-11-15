@@ -2,7 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:project_belanjakan/bloc/form_submission_state.dart';
 import 'package:project_belanjakan/bloc/register_event.dart';
 import 'package:project_belanjakan/bloc/register_state.dart';
-import 'package:project_belanjakan/model/user.dart';
+import 'package:project_belanjakan/model/user_api.dart';
 import 'package:project_belanjakan/repository/register_repository.dart';
 
 class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {

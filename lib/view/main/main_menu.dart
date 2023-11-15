@@ -1,13 +1,11 @@
-// main_menu_view.dart
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:project_belanjakan/view/main/grid.dart';
+import 'package:project_belanjakan/view/main/product_show.dart';
 import 'package:project_belanjakan/view/offers/daily_offers.dart';
-import 'package:project_belanjakan/view/products/show_item.dart';
-import 'package:project_belanjakan/view/main/settings_page.dart';
+import 'package:project_belanjakan/view/main/show_item.dart';
+import 'package:project_belanjakan/view/settings/profile/profile_page.dart';
 
 class MainMenuView extends StatefulWidget {
-  // final User userData;
   const MainMenuView({super.key});
 
   @override
@@ -26,10 +24,10 @@ class _MainMenuViewState extends State<MainMenuView> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> pages = [
-      const MyGridView(),
+      const ItemsGridView(),
       const DailyOffers(),
       const ShowItemView(),
-      const SettingsView(),
+      const ProfileView(),
     ];
     return Scaffold(
       backgroundColor: Colors.white,
@@ -61,11 +59,11 @@ class _MainMenuViewState extends State<MainMenuView> {
                 ),
                 GButton(
                   icon: Icons.shop,
-                  text: 'Items',
+                  text: 'Cart',
                 ),
                 GButton(
                   icon: Icons.settings_rounded,
-                  text: 'Settings',
+                  text: 'Profile',
                 ),
               ],
               duration: const Duration(milliseconds: 500),
@@ -84,33 +82,3 @@ class _MainMenuViewState extends State<MainMenuView> {
     );
   }
 }
-
-// class MainMenuView extends StatelessWidget {
-//   const MainMenuView({super.key});
-
-    // return DefaultTabController(
-    //   length: 4,
-    //   child: Scaffold(
-    //     appBar: AppBar(
-    //       title: const Text('Main Menu'),
-    //       bottom: const TabBar(
-    //         tabs: [
-    //           Tab(text: 'Grid'),
-    //           Tab(text: 'Profile'),
-    //           Tab(text: 'Calls'),
-    //           Tab(text: 'Settings'),
-    //         ],
-    //       ),
-    //     ),
-    //     body: const TabBarView(
-    //       children: [
-    //         MyGridView(),
-    //         ListNamaView(),
-    //         Center(child: Text('Calls')),
-    //         Center(child: Text('Settings')),
-    //       ],
-    //     ),
-    //   ),
-    // );
-//   }
-// }

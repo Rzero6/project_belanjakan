@@ -4,10 +4,11 @@ import 'package:project_belanjakan/bloc/form_submission_state.dart';
 import 'package:project_belanjakan/bloc/login_bloc.dart';
 import 'package:project_belanjakan/bloc/login_event.dart';
 import 'package:project_belanjakan/bloc/login_state.dart';
-import 'package:project_belanjakan/model/user.dart';
+import 'package:project_belanjakan/model/user_api.dart';
 import 'package:project_belanjakan/view/main/main_menu.dart';
 import 'package:project_belanjakan/view/landing/register_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:email_validator/email_validator.dart';
 
 class Loginview extends StatefulWidget {
   const Loginview({super.key});
@@ -18,7 +19,7 @@ class Loginview extends StatefulWidget {
 
 class _LoginviewState extends State<Loginview> {
   final formKey = GlobalKey<FormState>();
-  TextEditingController usernameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
   @override
@@ -26,7 +27,7 @@ class _LoginviewState extends State<Loginview> {
     return BlocProvider(
       create: (context) => LoginBloc(),
       child: BlocListener<LoginBloc, LoginState>(
-        listener: (context, state) {
+        listener: (context, state) async {
           if (state.formSubmissionState is SubmissionSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -35,7 +36,7 @@ class _LoginviewState extends State<Loginview> {
             );
             User userData =
                 (state.formSubmissionState as SubmissionSuccess).user;
-            saveLoginData(userData);
+            await saveLoginData(userData);
             Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: (_) => const MainMenuView()));
           }
@@ -78,13 +79,16 @@ class _LoginviewState extends State<Loginview> {
                               ]),
                         ),
                         TextFormField(
-                          controller: usernameController,
+                          controller: emailController,
                           decoration: const InputDecoration(
                             prefixIcon: Icon(Icons.person),
-                            labelText: 'Username',
+                            labelText: 'Email',
                           ),
-                          validator: (value) =>
-                              value == '' ? 'Please Enter your Username' : null,
+                          validator: (value) => value == ''
+                              ? 'Please Enter your Email'
+                              : EmailValidator.validate(value!)
+                                  ? null
+                                  : 'Email salah',
                         ),
                         TextFormField(
                           controller: passwordController,
@@ -119,7 +123,7 @@ class _LoginviewState extends State<Loginview> {
                               if (formKey.currentState!.validate()) {
                                 context.read<LoginBloc>().add(
                                       FormSubmitted(
-                                          username: usernameController.text,
+                                          email: emailController.text,
                                           password: passwordController.text),
                                     );
                               }
@@ -166,11 +170,9 @@ class _LoginviewState extends State<Loginview> {
   Future<void> saveLoginData(User userData) async {
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
     await sharedPrefs.setInt('userID', userData.id!);
-    await sharedPrefs.setString('username', userData.username!);
-    await sharedPrefs.setString('password', userData.password!);
-    await sharedPrefs.setString('email', userData.email!);
-    await sharedPrefs.setString('phone', userData.phone!);
-    await sharedPrefs.setString('dob', userData.dateOfBirth!);
-    await sharedPrefs.setString('profile_pic', userData.profilePic!);
+    await sharedPrefs.setString('username', userData.name);
+    await sharedPrefs.setString('email', userData.email);
+    await sharedPrefs.setString('profile_pic', userData.profilePicture ?? "");
+    await sharedPrefs.setString('token', userData.token!);
   }
 }
