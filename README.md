@@ -1,7 +1,7 @@
 # project_belanjakan
 ## KELOMPOK 2
 current progress:
-UGD 4 Hardware
+UGD 5 API
 
 ## Anggota Kelompok
 
@@ -13,4 +13,8 @@ UGD 4 Hardware
 
 ## Tugas
 
-- Reynold : Shake n win (Sensor : Accellometer, speaker : sound effect) , Notification (Speaker, Vibrate), dan bantu hal hal kecil lainnya
+- Reynold : Pindah dari sqlite ke api (front end + back end)
+- Tito : Benerin controller untuk search item
+- Angel : Membuat ERD
+- Daniel : Membuat ERD
+- Hans: Membuat ERD
