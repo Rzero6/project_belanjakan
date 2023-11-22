@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:project_belanjakan/database/sql_helper_items.dart';
+import 'package:project_belanjakan/component/snackbar.dart';
 import 'package:project_belanjakan/model/item.dart';
+import 'package:project_belanjakan/services/api/item_client.dart';
 import 'package:project_belanjakan/view/address/get_current_location.dart';
 import 'package:project_belanjakan/view/address/input_address.dart';
 import 'package:project_belanjakan/view/qr_scan/scan_qr_page.dart';
@@ -9,40 +10,37 @@ import 'package:project_belanjakan/model/address.dart';
 import 'package:intl/intl.dart';
 
 class QuickPayView extends StatefulWidget {
-  final int id;
-  const QuickPayView({super.key, required this.id});
+  final int id, quantity;
+  const QuickPayView({super.key, required this.id, required this.quantity});
 
   @override
   State<QuickPayView> createState() => _QuickPayViewState();
 }
 
 class _QuickPayViewState extends State<QuickPayView> {
-  Item? items;
+  late Item item;
   bool isLoading = false;
-  Address? currentAddress;
+  late Address currentAddress;
+  CustomSnackBar customSnackbar = CustomSnackBar();
 
-  void refresh(int num) async {
-    setState(() {
-      isLoading = true;
-    });
+  void loadData() async {
     try {
-      final data = await SQLHelperItem.getItemById(num);
       final addressData = await GetCurrentLocation().getAddressLocation();
+      item = await ItemClient.findItem(widget.id);
       setState(() {
-        items = data;
         currentAddress = addressData;
-      });
-    } finally {
-      setState(() {
         isLoading = false;
       });
+    } catch (err) {
+      customSnackbar.showSnackBar(context, err.toString(), Colors.red);
+      Navigator.pop(context);
     }
   }
 
   @override
   void initState() {
-    refresh(widget.id);
     super.initState();
+    loadData();
   }
 
   @override
@@ -52,7 +50,6 @@ class _QuickPayViewState extends State<QuickPayView> {
     //Data Dummy
     int ongkosKirim = 15000;
     int adminFee = 1000;
-    int quantity = 1;
 
     return Scaffold(
       appBar: AppBar(
@@ -64,7 +61,7 @@ class _QuickPayViewState extends State<QuickPayView> {
           ? const Center(
               child: CircularProgressIndicator(),
             )
-          : SingleChildScrollView(
+          : Center(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -94,12 +91,12 @@ class _QuickPayViewState extends State<QuickPayView> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(currentAddress!.jalan!),
+                                Text(currentAddress.jalan!),
                                 Text(
-                                    '${currentAddress?.kelurahan!}, ${currentAddress?.kecamatan!}'),
+                                    '${currentAddress.kelurahan!}, ${currentAddress.kecamatan!}'),
                                 Text(
-                                    '${currentAddress?.kabupaten!}, ${currentAddress?.kodePos!}'),
-                                Text('${currentAddress?.provinsi!}'),
+                                    '${currentAddress.kabupaten!}, ${currentAddress.kodePos!}'),
+                                Text(currentAddress.provinsi!),
                               ],
                             ),
                             const SizedBox(
@@ -120,8 +117,7 @@ class _QuickPayViewState extends State<QuickPayView> {
                       width: double.infinity,
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: AssetImage(
-                              'assets/images/${items!.picture!}.jpg'),
+                          image: AssetImage('assets/images/${item.image}.jpg'),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -134,7 +130,7 @@ class _QuickPayViewState extends State<QuickPayView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          items!.name!,
+                          item.name,
                           style: const TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 30),
                         ),
@@ -150,46 +146,45 @@ class _QuickPayViewState extends State<QuickPayView> {
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Text(items!.detail!),
+                          child: Text(item.detail),
                         ),
                       ],
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Expanded(
-                      child: Column(
-                        children: [
-                          const Divider(
-                            color: Colors.black45,
+                    child: Column(
+                      children: [
+                        const Divider(
+                          color: Colors.black45,
+                        ),
+                        rincianHarga('Harga Barang x ${widget.quantity}',
+                            currencyFormat.format(item.price)),
+                        rincianHarga(
+                            'Ongkos Kirim', currencyFormat.format(ongkosKirim)),
+                        rincianHarga(
+                            'Biaya Admin', currencyFormat.format(adminFee)),
+                        const SizedBox(
+                          height: 25,
+                        ),
+                        const Divider(
+                          color: Colors.black45,
+                        ),
+                        ListTile(
+                          leading: const Text(
+                            'Total Biaya',
+                            style: TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          rincianHarga('Harga Barang x $quantity',
-                              currencyFormat.format(items!.price!)),
-                          rincianHarga('Ongkos Kirim',
-                              currencyFormat.format(ongkosKirim)),
-                          rincianHarga(
-                              'Biaya Admin', currencyFormat.format(adminFee)),
-                          const SizedBox(
-                            height: 25,
-                          ),
-                          const Divider(
-                            color: Colors.black45,
-                          ),
-                          ListTile(
-                            leading: const Text(
-                              'Total Biaya',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            dense: true,
-                            trailing: Text(
-                                currencyFormat.format(items!.price! * quantity +
-                                    ongkosKirim +
-                                    adminFee),
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold)),
-                          ),
-                        ],
-                      ),
+                          dense: true,
+                          trailing: Text(
+                              currencyFormat.format(
+                                  item.price * widget.quantity +
+                                      ongkosKirim +
+                                      adminFee),
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold)),
+                        ),
+                      ],
                     ),
                   ),
                   Padding(
@@ -201,6 +196,7 @@ class _QuickPayViewState extends State<QuickPayView> {
                       child: ElevatedButton(
                           onPressed: () {
                             //PAGE BAYAARRR
+
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(

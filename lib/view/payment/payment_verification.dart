@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project_belanjakan/model/user.dart';
-import 'package:project_belanjakan/model/item.dart';
-import 'package:project_belanjakan/view/main_menu.dart';
+import 'package:project_belanjakan/view/main/main_menu.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:project_belanjakan/view/receipt/preview_screen.dart';
 import 'package:project_belanjakan/view/receipt/pdf_view.dart';
 import 'package:uuid/uuid.dart';
 
@@ -82,11 +80,11 @@ class _PaymentVerificationViewState extends State<PaymentVerificationView> {
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
     userData = User(
         id: sharedPrefs.getInt('userID'),
-        username: sharedPrefs.getString('username'),
-        password: sharedPrefs.getString('password'),
-        email: sharedPrefs.getString('email'),
-        phone: sharedPrefs.getString('phone'),
-        profilePic: sharedPrefs.getString("profile_pic"));
+        name: sharedPrefs.getString('username')!,
+        password: sharedPrefs.getString('password')!,
+        email: sharedPrefs.getString('email')!,
+        phone: sharedPrefs.getString('phone')!,
+        profilePicture: sharedPrefs.getString("profile_pic"));
   }
 
   Future<void> verify(BuildContext context) async {
@@ -98,7 +96,7 @@ class _PaymentVerificationViewState extends State<PaymentVerificationView> {
       ));
       isloading = false;
       if (verifyMessage == "Berhasil Bayar") {
-        createPdf(userData!, id, context, widget.id);
+        //createPdf(userData!, id, context, widget.id);
         setState(() {
           const uuid = Uuid();
           id = uuid.v1();

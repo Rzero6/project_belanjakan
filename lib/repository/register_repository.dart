@@ -1,7 +1,5 @@
-import 'package:sqflite/sqflite.dart';
-
-import '../model/user.dart';
-import 'package:project_belanjakan/database/sql_helper_user.dart';
+import 'package:project_belanjakan/model/user.dart';
+import 'package:project_belanjakan/services/api/auth_client.dart';
 
 class FailedRegister implements Exception {
   String errorMessage() {
@@ -10,43 +8,25 @@ class FailedRegister implements Exception {
 }
 
 class RegisterRepository {
-  User userData = User();
+  AuthClient authClient = AuthClient();
+
   Future<User> register(String username, String password, String phone,
       String date, String email) async {
-    await Future.delayed(const Duration(seconds: 3), () async {
-      if (username == '' ||
-          password == '' ||
-          phone == '' ||
-          date == '' ||
-          email == '') {
-        throw 'Field Must not be empty';
-      } else if (!email.contains("@")) {
-        throw 'Email Must contain @';
-      } else if (username != '' &&
-          password != '' &&
-          phone != '' &&
-          date != '' &&
-          email != '' &&
-          email.contains('@')) {
-        userData = User(
-            username: username,
-            password: password,
-            dateOfBirth: date,
-            email: email,
-            phone: phone);
-        try {
-          await SQLHelperUser.addUsers(userData);
-        } on DatabaseException catch (e) {
-          if (e.isUniqueConstraintError()) {
-            throw 'Email already registered';
-          } else {
-            throw FailedRegister();
-          }
-        }
-      } else {
-        throw FailedRegister();
+    User userData = User(
+        name: username,
+        password: password,
+        phone: phone,
+        dateOfBirth: date,
+        email: email);
+    try {
+      String message = await authClient.registerUser(userData);
+      if (message == 'Register Success') {
+        return userData;
       }
-    });
-    return userData;
+      userData.name = message;
+      return userData;
+    } catch (e) {
+      rethrow;
+    }
   }
 }
