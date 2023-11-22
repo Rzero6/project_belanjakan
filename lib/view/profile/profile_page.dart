@@ -1,14 +1,13 @@
-import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:photo_view/photo_view.dart';
-import 'package:project_belanjakan/model/user_api.dart';
+import 'package:project_belanjakan/model/user.dart';
+import 'package:project_belanjakan/services/convert/string_image.dart';
 import 'package:project_belanjakan/services/notifications/services.dart';
 import 'package:project_belanjakan/view/landing/login_page.dart';
-import 'package:project_belanjakan/view/settings/profile/edit_profile_page.dart';
+import 'package:project_belanjakan/view/products/manage/list_view.dart';
+import 'package:project_belanjakan/view/profile/edit_profile_page.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -24,12 +23,10 @@ class _ProfileViewState extends State<ProfileView> {
   User? userData;
   bool isLoading = true;
 
-  late String imagePath = "";
   late File imageFile;
 
   @override
   void initState() {
-    imageFile = File(imagePath);
     loadData();
     super.initState();
   }
@@ -68,28 +65,12 @@ class _ProfileViewState extends State<ProfileView> {
         email: sharedPrefs.getString('email')!,
         phone: sharedPrefs.getString('phone') ?? 'xxx',
         profilePicture: sharedPrefs.getString("profile_pic"));
-    if (userData!.profilePicture == null) {
-      imagePath = 'assets/images/profile_placeholder.jpg';
-    } else {
-      imagePath = await _createFileFromString(userData!.profilePicture!);
+    if (userData!.profilePicture != null) {
+      imageFile = await ConvertImageString.strToImg(userData!.profilePicture!);
     }
     setState(() {
-      imageFile = File(imagePath);
       isLoading = false;
     });
-  }
-
-  Future<String> _createFileFromString(String encodedStr) async {
-    Uint8List bytes = base64.decode(encodedStr);
-    String dir = (await getApplicationDocumentsDirectory()).path;
-    File file = File("$dir/${DateTime.now().millisecondsSinceEpoch}.jpg");
-    file = await file.writeAsBytes(bytes);
-    return file.path;
-  }
-
-  Future<String> imgToStr(File img) async {
-    Uint8List bytes = await img.readAsBytes();
-    return base64Encode(bytes);
   }
 
   Center profilePicWidget() {
@@ -171,23 +152,25 @@ class _ProfileViewState extends State<ProfileView> {
         SizedBox(
           height: 5.h,
         ),
-        const Card(
-          shape: RoundedRectangleBorder(
+        Card(
+          shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(10))),
           child: SizedBox(
             width: double.infinity,
             child: Column(
               children: [
-                ListTile(
+                const ListTile(
                   leading: Icon(Icons.assignment),
                   title: Text('Pesanan Saya'),
                 ),
-                Divider(
+                const Divider(
                   height: 0,
                 ),
                 ListTile(
-                  leading: Icon(Icons.shopify_rounded),
-                  title: Text('Toko Saya'),
+                  leading: const Icon(Icons.shopify_rounded),
+                  title: const Text('Toko Saya'),
+                  onTap: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const ItemsListView())),
                 ),
               ],
             ),

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:project_belanjakan/view/main/product_show.dart';
+import 'package:project_belanjakan/view/products/product_show.dart';
+import 'package:project_belanjakan/view/main/shoppingCart_page.dart';
 import 'package:project_belanjakan/view/offers/daily_offers.dart';
-import 'package:project_belanjakan/view/main/show_item.dart';
-import 'package:project_belanjakan/view/settings/profile/profile_page.dart';
+import 'package:project_belanjakan/view/profile/profile_page.dart';
 
 class MainMenuView extends StatefulWidget {
   const MainMenuView({super.key});
@@ -24,9 +24,9 @@ class _MainMenuViewState extends State<MainMenuView> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> pages = [
-      const ItemsGridView(),
+      const ProductsView(),
       const DailyOffers(),
-      const ShowItemView(),
+      const ShoppingCart(),
       const ProfileView(),
     ];
     return Scaffold(

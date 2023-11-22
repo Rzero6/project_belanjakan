@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:project_belanjakan/services/notifications/services.dart';
 import 'package:project_belanjakan/view/landing/splash_screen.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() async {
   await NotificationService.initializeNotification();
-  runApp(const MainApp());
+  runApp(const ProviderScope(
+    child: MainApp(),
+  ));
 }
 
 class MainApp extends StatelessWidget {

@@ -80,11 +80,11 @@ class _PaymentVerificationViewState extends State<PaymentVerificationView> {
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
     userData = User(
         id: sharedPrefs.getInt('userID'),
-        username: sharedPrefs.getString('username'),
-        password: sharedPrefs.getString('password'),
-        email: sharedPrefs.getString('email'),
-        phone: sharedPrefs.getString('phone'),
-        profilePic: sharedPrefs.getString("profile_pic"));
+        name: sharedPrefs.getString('username')!,
+        password: sharedPrefs.getString('password')!,
+        email: sharedPrefs.getString('email')!,
+        phone: sharedPrefs.getString('phone')!,
+        profilePicture: sharedPrefs.getString("profile_pic"));
   }
 
   Future<void> verify(BuildContext context) async {
@@ -96,7 +96,7 @@ class _PaymentVerificationViewState extends State<PaymentVerificationView> {
       ));
       isloading = false;
       if (verifyMessage == "Berhasil Bayar") {
-        createPdf(userData!, id, context, widget.id);
+        //createPdf(userData!, id, context, widget.id);
         setState(() {
           const uuid = Uuid();
           id = uuid.v1();

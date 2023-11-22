@@ -1,5 +1,5 @@
-import 'package:project_belanjakan/model/user_api.dart';
-import 'package:project_belanjakan/services/api/remote_service.dart';
+import 'package:project_belanjakan/model/user.dart';
+import 'package:project_belanjakan/services/api/auth_client.dart';
 
 class FailedRegister implements Exception {
   String errorMessage() {
@@ -8,7 +8,7 @@ class FailedRegister implements Exception {
 }
 
 class RegisterRepository {
-  RemoteService remoteService = RemoteService();
+  AuthClient authClient = AuthClient();
 
   Future<User> register(String username, String password, String phone,
       String date, String email) async {
@@ -19,7 +19,7 @@ class RegisterRepository {
         dateOfBirth: date,
         email: email);
     try {
-      String message = await remoteService.registerUser(userData);
+      String message = await authClient.registerUser(userData);
       if (message == 'Register Success') {
         return userData;
       }

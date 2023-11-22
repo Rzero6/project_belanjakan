@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
-import 'package:project_belanjakan/database/sql_helper_user.dart';
 import 'package:project_belanjakan/model/coupon.dart';
+import 'package:project_belanjakan/services/api/coupon_client.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,11 +20,13 @@ class _ShakeNWinState extends State<ShakeNWin> {
   int countShake = 0;
   bool isLoading = true;
   late int userId;
+  late String token;
   Coupon? couponData;
 
-  void getUserId() async {
+  void loadData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     userId = prefs.getInt('userID')!;
+    token = prefs.getString('token')!;
   }
 
   void checkWin() {
@@ -39,7 +40,7 @@ class _ShakeNWinState extends State<ShakeNWin> {
   }
 
   String generateCouponCode() {
-    String code = 'CPN';
+    String code = 'SNW';
     final random = Random();
     int randomNumber;
     for (int i = 0; i < 7; i++) {
@@ -51,13 +52,22 @@ class _ShakeNWinState extends State<ShakeNWin> {
 
   Coupon generateCoupon() {
     int discount = generateDiscount();
-    return couponData =
-        Coupon(userId: userId, code: generateCouponCode(), discount: discount);
+    return couponData = Coupon(
+        name: "Shake N' Win",
+        idUser: userId,
+        code: generateCouponCode(),
+        discount: discount,
+        expiresAt:
+            DateTime.now().add(const Duration(days: 1)).toIso8601String());
   }
 
-  void showRewardDialog() {
+  void addCouponToDatabase() async {
+    await CouponClient.addCoupon(couponData!, token);
+  }
+
+  void showRewardDialog() async {
     couponData = generateCoupon();
-    addCoupon(couponData!);
+    addCouponToDatabase();
     AudioPlayer().play(AssetSource('audio/wawww.mp3'));
     showDialog(
         context: context,
@@ -119,7 +129,7 @@ class _ShakeNWinState extends State<ShakeNWin> {
 
   @override
   void initState() {
-    getUserId();
+    loadData();
     userAccelerometerEvents.listen((event) {
       _accelometerValueY = event.y;
       if (_accelometerValueY.abs() > 15 && rewarded == false) {
@@ -159,9 +169,5 @@ class _ShakeNWinState extends State<ShakeNWin> {
               ),
       ),
     );
-  }
-
-  Future<void> addCoupon(Coupon data) async {
-    await SQLHelperUser.addCouponForUsers(data);
   }
 }

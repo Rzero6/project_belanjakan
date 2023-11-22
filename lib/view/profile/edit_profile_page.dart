@@ -1,12 +1,10 @@
-import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:project_belanjakan/model/user_api.dart';
-import 'package:project_belanjakan/services/api/remote_service.dart';
+import 'package:project_belanjakan/model/user.dart';
+import 'package:project_belanjakan/services/api/user_client.dart';
+import 'package:project_belanjakan/services/convert/string_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -17,7 +15,7 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
-  RemoteService remoteService = RemoteService();
+  final UserClient _userClient = UserClient();
   User? userData;
   File imageFile = File('assets/images/user/profile_picture.jpg');
   final formKey = GlobalKey<FormState>();
@@ -56,7 +54,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   Future<void> pickImageFromGallery() async {
     final ImagePicker picker = ImagePicker();
-    final pickedImage = await picker.pickImage(source: ImageSource.gallery, imageQuality: 10);
+    final pickedImage =
+        await picker.pickImage(source: ImageSource.gallery, imageQuality: 10);
     if (pickedImage == null) return;
     setState(() {
       imageFile = File(pickedImage.path);
@@ -66,7 +65,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   Future<void> pickImageFromCamera() async {
     final ImagePicker picker = ImagePicker();
-    final pickedImage = await picker.pickImage(source: ImageSource.camera, imageQuality: 10);
+    final pickedImage =
+        await picker.pickImage(source: ImageSource.camera, imageQuality: 10);
     if (pickedImage == null) return;
     setState(() {
       imageFile = File(pickedImage.path);
@@ -284,8 +284,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   Future<void> loadData() async {
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
-    userData = await remoteService.getUser(sharedPrefs.getString('token')!);
-    imageFile = await _createFileFromString(userData!.profilePicture!);
+    userData = await _userClient.getUser(sharedPrefs.getString('token')!);
+    if (userData?.profilePicture != null) {
+      imageFile = await ConvertImageString.strToImg(userData!.profilePicture!);
+    }
     setState(() {
       usernameController.text = userData!.name;
       emailController.text = userData!.email;
@@ -296,7 +298,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   Future<bool> editUser() async {
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
-    String image = await imgToStr(imageFile);
+    String image = await ConvertImageString.imgToStr(imageFile);
     userData = User(
         name: usernameController.text,
         password: passwordController.text,
@@ -304,7 +306,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         phone: numberController.text,
         profilePicture: image);
     try {
-      userData = await remoteService.updateUser(
+      userData = await _userClient.updateUser(
           userData!, sharedPrefs.getString('token')!);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -320,17 +322,5 @@ class _EditProfilePageState extends State<EditProfilePage> {
       );
       return false;
     }
-  }
-
-  Future<String> imgToStr(File img) async {
-    Uint8List bytes = await img.readAsBytes();
-    return base64Encode(bytes);
-  }
-
-  Future<File> _createFileFromString(String encodedStr) async {
-    Uint8List bytes = base64.decode(encodedStr);
-    String dir = (await getApplicationDocumentsDirectory()).path;
-    File file = File("$dir/${DateTime.now().millisecondsSinceEpoch}.jpg");
-    return await file.writeAsBytes(bytes);
   }
 }

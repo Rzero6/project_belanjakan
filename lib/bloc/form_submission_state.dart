@@ -1,4 +1,4 @@
-import 'package:project_belanjakan/model/user_api.dart';
+import 'package:project_belanjakan/model/user.dart';
 
 abstract class FormSubmissionState {
   const FormSubmissionState();

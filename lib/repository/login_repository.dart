@@ -1,8 +1,6 @@
-import 'dart:math';
+import 'package:project_belanjakan/services/api/auth_client.dart';
 
-import 'package:project_belanjakan/services/api/remote_service.dart';
-
-import '../model/user_api.dart';
+import '../model/user.dart';
 
 class FailedLogin implements Exception {
   String errorMessage() {
@@ -11,11 +9,11 @@ class FailedLogin implements Exception {
 }
 
 class LoginRepository {
-  RemoteService remoteService = RemoteService();
+  AuthClient authClient = AuthClient();
 
   Future<User> login(String email, String password) async {
     try {
-      User userData = await remoteService.loginUser(email, password);
+      User userData = await authClient.loginUser(email, password);
       return userData;
     } catch (e) {
       rethrow;

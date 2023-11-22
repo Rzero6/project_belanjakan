@@ -1,33 +1,48 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:project_belanjakan/services/convert/string_image.dart';
+
 class Item {
-  final int? id;
-  final String? name;
-  final String? detail;
-  final int? price;
-  final String? picture;
-  final int? amount;
-  Item(
-      {this.id, this.name, this.detail, this.price, this.picture, this.amount});
+  int id;
+  String name;
+  String detail;
+  String image;
+  int price;
+  int stock;
+  File? imageFile;
 
-  @override
-  String toString() {
-    return 'Item {name: $name}';
+  Item({
+    required this.id,
+    required this.name,
+    required this.detail,
+    required this.image,
+    required this.price,
+    required this.stock,
+    this.imageFile,
+  });
+  factory Item.fromRawJson(String str) => Item.fromJson(json.decode(str));
+  factory Item.fromJson(Map<String, dynamic> json) {
+    return Item(
+      id: json['id'],
+      name: json['name'],
+      detail: json['detail'],
+      image: json['image'],
+      price: json['price'],
+      stock: json['stock'],
+    );
   }
+  String toRawJson() => json.encode(toJson());
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+        "detail": detail,
+        "image": image,
+        "price": price,
+        "stock": stock,
+      };
 
-  String getSubTotal(List<Item> products) {
-    return products
-        .fold(
-            0.0,
-            (double previousValue, element) =>
-                previousValue + (element.price! * element.amount!))
-        .toStringAsFixed(2);
-  }
-
-  String getPPNTotal(List<Item> products, int ppn) {
-    return products
-        .fold(
-            0.0,
-            (double previousValue, element) =>
-                previousValue + (element.price! / 100 * ppn * element.amount!))
-        .toStringAsFixed(2);
+  Future setImageFile() async {
+    imageFile ??= await ConvertImageString.strToImg(image);
   }
 }

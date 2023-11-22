@@ -4,7 +4,7 @@ import 'package:project_belanjakan/bloc/form_submission_state.dart';
 import 'package:project_belanjakan/bloc/login_bloc.dart';
 import 'package:project_belanjakan/bloc/login_event.dart';
 import 'package:project_belanjakan/bloc/login_state.dart';
-import 'package:project_belanjakan/model/user_api.dart';
+import 'package:project_belanjakan/model/user.dart';
 import 'package:project_belanjakan/view/main/main_menu.dart';
 import 'package:project_belanjakan/view/landing/register_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
