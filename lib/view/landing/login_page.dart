@@ -81,6 +81,7 @@ class _LoginviewState extends State<Loginview> {
                         TextFormField(
                           controller: emailController,
                           decoration: const InputDecoration(
+                            border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
                             prefixIcon: Icon(Icons.person),
                             labelText: 'Email',
                           ),
@@ -93,6 +94,7 @@ class _LoginviewState extends State<Loginview> {
                         TextFormField(
                           controller: passwordController,
                           decoration: InputDecoration(
+                            border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
                             prefixIcon: const Icon(Icons.lock),
                             labelText: 'Password',
                             suffixIcon: IconButton(
