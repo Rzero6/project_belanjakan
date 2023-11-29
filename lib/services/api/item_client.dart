@@ -147,4 +147,95 @@ class ItemClient {
       client.close();
     }
   }
+
+
+  static Future<Response> addItemTesting(Item item, String token) async {
+    var client = http.Client();
+    Uri uri = Uri.parse('http://127.0.0.1:8000/api/items');
+    try {
+      var response = await client
+          .post(
+            uri,
+            headers: {
+              'Authorization': 'Bearer $token',
+              'Content-Type': 'application/json',
+            },
+            body: item.toRawJson(),
+          )
+          .timeout(const Duration(seconds: 30));
+      if (response.statusCode != 200) throw Exception(response.reasonPhrase);
+      return response;
+    } on TimeoutException catch (_) {
+      return Future.error(timeout);
+    } catch (e) {
+      return Future.error(e.toString());
+    } finally {
+      client.close();
+    }
+  }
+
+  static Future<Item> findItemTsting(id) async {
+    var client = http.Client();
+    Uri uri = Uri.parse('http://127.0.0.1:8000/api/items/$id');
+    try {
+      var response = await client.get(uri).timeout(const Duration(seconds: 30));
+      if (response.statusCode != 200) throw Exception(response.reasonPhrase);
+      Item item = Item.fromJson(json.decode(response.body)['data']);
+      await item.setImageFile();
+      return item;
+    } on TimeoutException catch (_) {
+      return Future.error(timeout);
+    } catch (e) {
+      return Future.error(e.toString());
+    } finally {
+      client.close();
+    }
+  }
+
+  static Future<Response> updateItemTesting(Item updatedItem, String token) async {
+    var client = http.Client();
+    Uri uri = Uri.parse('http://127.0.0.1:8000/api/items/${updatedItem.id}');
+    try {
+      var response = await client
+          .put(
+            uri,
+            headers: {
+              'Authorization': 'Bearer $token',
+              'Content-Type': 'application/json',
+            },
+            body: updatedItem.toRawJson(),
+          )
+          .timeout(const Duration(seconds: 30));
+      if (response.statusCode != 200) throw Exception(response.reasonPhrase);
+      return response;
+    } on TimeoutException catch (_) {
+      return Future.error(timeout);
+    } catch (e) {
+      return Future.error(e.toString());
+    } finally {
+      client.close();
+    }
+  }
+
+  static Future<Response> deleteItemTesting(int itemId, String token) async {
+    var client = http.Client();
+    Uri uri = Uri.parse('http://127.0.0.1:8000/api/items/$itemId');
+
+    try {
+      var response = await client.delete(
+        uri,
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      ).timeout(const Duration(seconds: 30));
+      if (response.statusCode != 200) throw Exception(response.reasonPhrase);
+      return response;
+    } on TimeoutException catch (_) {
+      return Future.error(timeout);
+    } catch (e) {
+      return Future.error(e.toString());
+    } finally {
+      client.close();
+    }
+  }
 }
