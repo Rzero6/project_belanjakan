@@ -10,6 +10,7 @@ import 'package:project_belanjakan/view/products/manage/list_view.dart';
 import 'package:project_belanjakan/view/profile/edit_profile_page.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:project_belanjakan/services/api/user_client.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -22,9 +23,8 @@ class _ProfileViewState extends State<ProfileView> {
   int? userID;
   User? userData;
   bool isLoading = true;
-
-  late File imageFile;
-
+  File imageFile = File('assets/images/user/profile_picture.jpg');
+  final UserClient _userClient = UserClient();
   @override
   void initState() {
     loadData();
@@ -59,13 +59,8 @@ class _ProfileViewState extends State<ProfileView> {
 
   Future<void> loadData() async {
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
-    userData = User(
-        id: sharedPrefs.getInt('userID'),
-        name: sharedPrefs.getString('username')!,
-        email: sharedPrefs.getString('email')!,
-        phone: sharedPrefs.getString('phone') ?? 'xxx',
-        profilePicture: sharedPrefs.getString("profile_pic"));
-    if (userData!.profilePicture != null) {
+    userData = await _userClient.getUser(sharedPrefs.getString('token')!);
+    if (userData?.profilePicture != null) {
       imageFile = await ConvertImageString.strToImg(userData!.profilePicture!);
     }
     setState(() {
