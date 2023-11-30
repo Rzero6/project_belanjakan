@@ -79,8 +79,10 @@ class _LoginviewState extends State<Loginview> {
                               ]),
                         ),
                         TextFormField(
+                          key: const Key("input-email"),
                           controller: emailController,
                           decoration: const InputDecoration(
+                            border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
                             prefixIcon: Icon(Icons.person),
                             labelText: 'Email',
                           ),
@@ -91,8 +93,10 @@ class _LoginviewState extends State<Loginview> {
                                   : 'Email salah',
                         ),
                         TextFormField(
+                          key: const Key("input-password"),
                           controller: passwordController,
                           decoration: InputDecoration(
+                            border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
                             prefixIcon: const Icon(Icons.lock),
                             labelText: 'Password',
                             suffixIcon: IconButton(
@@ -129,6 +133,7 @@ class _LoginviewState extends State<Loginview> {
                               }
                             },
                             child: Padding(
+                              key: ValueKey('login'),
                               padding: const EdgeInsets.symmetric(
                                   vertical: 16.0, horizontal: 16.0),
                               child: state.formSubmissionState is FormSubmitting

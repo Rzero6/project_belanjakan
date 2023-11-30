@@ -10,10 +10,10 @@ class Registerview extends StatefulWidget {
   const Registerview({super.key});
 
   @override
-  State<Registerview> createState() => _RegisterviewState();
+  State<Registerview> createState() => RegisterviewState();
 }
 
-class _RegisterviewState extends State<Registerview> {
+class RegisterviewState extends State<Registerview> {
   final formKey = GlobalKey<FormState>();
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -64,7 +64,11 @@ class _RegisterviewState extends State<Registerview> {
                         children: [
                           TextFormField(
                             controller: usernameController,
+                            key: const Key("input-username"),
                             decoration: const InputDecoration(
+                              border: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10))),
                               prefixIcon: Icon(Icons.person),
                               labelText: 'Username',
                             ),
@@ -81,6 +85,9 @@ class _RegisterviewState extends State<Registerview> {
                               controller: emailController,
                               keyboardType: TextInputType.emailAddress,
                               decoration: const InputDecoration(
+                                border: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10))),
                                 prefixIcon: Icon(Icons.email),
                                 labelText: 'Email',
                               ),
@@ -95,6 +102,9 @@ class _RegisterviewState extends State<Registerview> {
                           TextFormField(
                             controller: passwordController,
                             decoration: InputDecoration(
+                              border: const OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10))),
                               prefixIcon: const Icon(Icons.lock),
                               labelText: 'Password',
                               suffixIcon: IconButton(
@@ -133,6 +143,9 @@ class _RegisterviewState extends State<Registerview> {
                               controller: numberController,
                               keyboardType: TextInputType.phone,
                               decoration: const InputDecoration(
+                                border: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10))),
                                 prefixIcon: Icon(Icons.phone),
                                 labelText: 'Phone Number',
                               ),
@@ -152,6 +165,9 @@ class _RegisterviewState extends State<Registerview> {
                               onTap: _selectDate,
                               readOnly: true,
                               decoration: InputDecoration(
+                                border: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10))),
                                 prefixIcon: const Icon(Icons.date_range),
                                 labelText: 'Born Date',
                                 suffixIcon: IconButton(
