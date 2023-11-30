@@ -10,10 +10,10 @@ class Registerview extends StatefulWidget {
   const Registerview({super.key});
 
   @override
-  State<Registerview> createState() => _RegisterviewState();
+  State<Registerview> createState() => RegisterviewState();
 }
 
-class _RegisterviewState extends State<Registerview> {
+class RegisterviewState extends State<Registerview> {
   final formKey = GlobalKey<FormState>();
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -64,6 +64,7 @@ class _RegisterviewState extends State<Registerview> {
                         children: [
                           TextFormField(
                             controller: usernameController,
+                            key: const Key("input-username"),
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(
                                   borderRadius:
