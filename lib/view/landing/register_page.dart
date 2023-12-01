@@ -197,6 +197,7 @@ class RegisterviewState extends State<Registerview> {
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
+                              key: const Key("register-submit"),
                               onPressed: () {
                                 if (formKey.currentState!.validate()) {
                                   context.read<RegisterBloc>().add(
