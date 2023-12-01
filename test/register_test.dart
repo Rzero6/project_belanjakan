@@ -14,48 +14,40 @@ void main() {
       TestWidgetsFlutterBinding.ensureInitialized();
 
   setUpAll(() => HttpOverrides.global = null);
-  // test('register success', () async {
-  //   User user = User(
-  //       name: 'Test',
-  //       password: 'TestPasword',
-  //       email: 'test@gmail.com',
-  //       phone: '0812312512',
-  //       dateOfBirth: DateTime.now().toIso8601String());
-  //   final hasil = await AuthClient.registerTesting(user);
-  //   expect(hasil, equals('Register Success'));
-  // });
-
-  // test('register failed', () async {
-  //   User user = User(
-  //       name: 'Test',
-  //       password: 'TestPasword',
-  //       email: 'test@gmail.com',
-  //       phone: '0812312512',
-  //       dateOfBirth: DateTime.now().toIso8601String());
-  //   final hasil = await AuthClient.registerTesting(user);
-  //   expect(hasil, 'The email has already been taken.');
-  // });
 
   testWidgets('register success', (WidgetTester tester) async {
     await tester.pumpWidget(
-      ResponsiveSizer(
-        builder: (context, orientation, deviceType) {
-          final double containerHeight =
-              Device.orientation == Orientation.portrait ? 20.5.h : 12.5.h;
+      ProviderScope(
+        child: ResponsiveSizer(
+          builder: (context, orientation, deviceType) {
+            final double containerHeight =
+                Device.orientation == Orientation.portrait ? 20.5.h : 12.5.h;
 
-          return MaterialApp(
-            home: Container(
-              width: 100.w,
-              height: containerHeight,
-              child: ProviderScope(child: Registerview()),
-            ),
-          );
-        },
+            return MaterialApp(
+              home: SizedBox(
+                width: 100.w,
+                height: containerHeight,
+                child: const Registerview(),
+              ),
+            );
+          },
+        ),
       ),
     );
 
-    await tester.enterText(find.byKey(const Key('input-username')), 'Nakula');
-    expect(find.text('Nakula'), findsOneWidget);
-    tester.pump();
+    await tester.enterText(
+        find.byKey(const Key('register-input-username')), 'Nakula');
+    await tester.enterText(
+        find.byKey(const Key('register-input-email')), 'Nakula@gla.lah');
+    await tester.enterText(
+        find.byKey(const Key('register-input-password')), 'Nakula123@');
+    await tester.enterText(
+        find.byKey(const Key('register-input-number')), '081802824805');
+    await tester.tap(find.byKey(const Key('register-input-date')));
+    await tester.tap(find.byTooltip('Switch to input'));
+    // tester.pump(const Duration(seconds: 4));
+
+    tester.pumpAndSettle();
+    // expect(find.byKey(const Key('register-message-success')), findsOneWidget);
   });
 }

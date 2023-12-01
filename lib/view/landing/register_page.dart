@@ -31,6 +31,7 @@ class RegisterviewState extends State<Registerview> {
           if (state.formSubmissionState is SubmissionSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
+                key: Key("register-message-success"),
                 content: Text('Register Success'),
               ),
             );
@@ -40,6 +41,7 @@ class RegisterviewState extends State<Registerview> {
           if (state.formSubmissionState is SubmissionFailed) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
+                key: const Key("register-message-failed"),
                 content: Text((state.formSubmissionState as SubmissionFailed)
                     .exception
                     .toString()),
@@ -64,7 +66,7 @@ class RegisterviewState extends State<Registerview> {
                         children: [
                           TextFormField(
                             controller: usernameController,
-                            key: const Key("input-username"),
+                            key: const Key("register-input-username"),
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(
                                   borderRadius:
@@ -83,6 +85,7 @@ class RegisterviewState extends State<Registerview> {
                           ),
                           TextFormField(
                               controller: emailController,
+                              key: Key('register-input-email'),
                               keyboardType: TextInputType.emailAddress,
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(
@@ -101,6 +104,7 @@ class RegisterviewState extends State<Registerview> {
                               }),
                           TextFormField(
                             controller: passwordController,
+                            key: const Key('register-input-password'),
                             decoration: InputDecoration(
                               border: const OutlineInputBorder(
                                   borderRadius:
@@ -141,6 +145,7 @@ class RegisterviewState extends State<Registerview> {
                           ),
                           TextFormField(
                               controller: numberController,
+                              key: Key('register-input-number'),
                               keyboardType: TextInputType.phone,
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(
@@ -160,6 +165,7 @@ class RegisterviewState extends State<Registerview> {
                                 }
                               }),
                           TextFormField(
+                              key: Key("register-input-date"),
                               controller: dateController,
                               keyboardType: TextInputType.datetime,
                               onTap: _selectDate,
