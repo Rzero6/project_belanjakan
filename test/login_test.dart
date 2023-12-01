@@ -7,6 +7,8 @@ import 'package:project_belanjakan/view/landing/login_page.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 void main() {
+
+  
   // test('login success', () async {
   //   final hasil =
   //       await AuthClient.loginTesting('test@gmail.com', 'TestPasword');
