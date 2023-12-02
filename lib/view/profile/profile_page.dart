@@ -1,9 +1,8 @@
-import 'dart:io';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:project_belanjakan/model/user.dart';
-import 'package:project_belanjakan/services/convert/string_image.dart';
+import 'package:project_belanjakan/services/api/api_client.dart';
 import 'package:project_belanjakan/services/notifications/services.dart';
 import 'package:project_belanjakan/view/landing/login_page.dart';
 import 'package:project_belanjakan/view/products/manage/list_view.dart';
@@ -23,7 +22,6 @@ class _ProfileViewState extends State<ProfileView> {
   int? userID;
   User? userData;
   bool isLoading = true;
-  File imageFile = File('assets/images/user/profile_picture.jpg');
   final UserClient _userClient = UserClient();
   @override
   void initState() {
@@ -60,9 +58,6 @@ class _ProfileViewState extends State<ProfileView> {
   Future<void> loadData() async {
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
     userData = await _userClient.getUser(sharedPrefs.getString('token')!);
-    if (userData?.profilePicture != null) {
-      imageFile = await ConvertImageString.strToImg(userData!.profilePicture!);
-    }
     setState(() {
       isLoading = false;
     });
@@ -78,10 +73,22 @@ class _ProfileViewState extends State<ProfileView> {
               child: Hero(
                 tag: 'profilePic',
                 child: Ink.image(
-                  image: imageFile.existsSync()
-                      ? FileImage(imageFile) as ImageProvider
-                      : const AssetImage(
-                          'assets/images/profile_placeholder.jpg'),
+                  image: userData?.profilePicture == null
+                      ? Image.network(
+                          '${ApiClient().domainName}/images/profile.jpg',
+                          fit: BoxFit.cover,
+                          width: 128,
+                          height: 128,
+                        ).image
+                      : Image.network(
+                          '${ApiClient().domainName}${userData!.profilePicture}',
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(
+                              Icons.person,
+                              size: 128,
+                            );
+                          },
+                        ).image,
                   fit: BoxFit.cover,
                   width: 128,
                   height: 128,

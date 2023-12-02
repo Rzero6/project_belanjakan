@@ -5,6 +5,7 @@ import 'package:project_belanjakan/component/dialog.dart';
 import 'package:project_belanjakan/component/snackbar.dart';
 import 'package:project_belanjakan/model/address.dart';
 import 'package:project_belanjakan/model/cart.dart';
+import 'package:project_belanjakan/services/api/api_client.dart';
 import 'package:project_belanjakan/services/api/cart_client.dart';
 import 'package:project_belanjakan/view/address/get_current_location.dart';
 import 'package:project_belanjakan/view/checkout/checkout_details.dart';
@@ -63,6 +64,10 @@ class _ShoppingCartState extends ConsumerState<ShoppingCart> {
     });
   }
 
+  onRefresh(context, ref, token) async {
+    ref.refresh(listCartProvider(token));
+  }
+
   @override
   Widget build(BuildContext context) {
     var tokenListener = ref.watch(tokenProvider);
@@ -76,11 +81,7 @@ class _ShoppingCartState extends ConsumerState<ShoppingCart> {
                 var cartListener = ref.watch(listCartProvider(token));
                 return cartListener.when(
                   data: (carts) => RefreshIndicator(
-                    onRefresh: () async {
-                      setState(() {
-                        ref.refresh(listCartProvider(token));
-                      });
-                    },
+                    onRefresh: () => onRefresh(context, ref, token),
                     child: Column(
                       children: [
                         Expanded(
@@ -130,15 +131,18 @@ class _ShoppingCartState extends ConsumerState<ShoppingCart> {
         onTap: () => Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (_) => ProductDetailScreen(id: cart.item!.id))),
+                builder: (_) => ProductDetailScreen(
+                      id: cart.item!.id,
+                      amount: cart.amount,
+                    ))).then((value) => ref.refresh(listCartProvider(token))),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             SizedBox(
               width: 30.w,
               height: 15.h,
-              child: Image.file(
-                cart.item!.imageFile!,
+              child: Image.network(
+                ApiClient().domainName + cart.item!.image,
                 fit: BoxFit.cover,
               ),
             ),

@@ -1,13 +1,14 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:project_belanjakan/services/api/api_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:project_belanjakan/component/snackbar.dart';
 import 'package:project_belanjakan/model/item.dart';
 import 'package:project_belanjakan/services/api/item_client.dart';
 import 'package:project_belanjakan/view/products/manage/input_page.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 
 class ItemsListView extends ConsumerStatefulWidget {
   const ItemsListView({super.key});
@@ -24,58 +25,51 @@ class SearchToken {
 class _ItemsListViewState extends ConsumerState<ItemsListView> {
   final TextEditingController searchController = TextEditingController();
   CustomSnackBar customSnackBar = CustomSnackBar();
-  late String token;
   File? cachedImage;
-
+  late SearchToken searchToken;
   final listItemProvider =
-      FutureProvider.family<List<Item>, String>((ref, search) async {
-    List<Item> items = await ItemClient.getItems(search);
-    for (Item item in items) {
-      await item.setImageFile();
-    }
+      FutureProvider.family<List<Item>, SearchToken>((ref, searchToken) async {
+    List<Item> items = await ItemClient.getItemsOnlyOwner(
+        searchToken.search, searchToken.token);
     return items;
-  });
-
-  final tokenProvider = FutureProvider<String>((ref) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = prefs.getString('token')!;
-    return token;
   });
 
   void loadToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    token = prefs.getString('token')!;
+    String token = prefs.getString('token')!;
+    setState(() {
+      searchToken = SearchToken(token: token, search: searchController.text);
+    });
   }
 
-  void onAdd(context, ref, token) {
+  void onAdd(context, ref, SearchToken searchToken) {
     Navigator.push(context,
             MaterialPageRoute(builder: (context) => const ItemInputPage()))
-        .then((value) => ref.refresh(listItemProvider(token)));
+        .then((value) => ref.refresh(listItemProvider(searchToken)));
   }
 
-  void onDelete(id, context, ref, token) async {
+  void onDelete(id, context, ref, SearchToken searchToken) async {
     try {
-      await ItemClient.deleteItem(id, token);
-      ref.refresh(listItemProvider(token));
+      await ItemClient.deleteItem(id, searchToken.token);
+      ref.refresh(listItemProvider(searchToken));
       customSnackBar.showSnackBar(context, "Delete Success", Colors.green);
     } catch (e) {
       customSnackBar.showSnackBar(context, e.toString(), Colors.red);
     }
   }
 
-  ListTile itemInListTile(Item item, context, ref, token) {
+  ListTile itemInListTile(Item item, context, ref, SearchToken searchToken) {
     return ListTile(
       leading: SizedBox(
-          width: 60,
-          height: 60,
-          child: item.imageFile != null
-              ? Image.file(
-                  item.imageFile!,
-                  fit: BoxFit.cover,
-                )
-              : const Center(
-                  child: CircularProgressIndicator(),
-                )),
+          width: 20.w,
+          height: 20.w,
+          child: Image.network(
+            ApiClient().domainName + item.image,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return const Icon(Icons.shopping_bag);
+            },
+          )),
       title: Text(item.name),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,13 +79,14 @@ class _ItemsListViewState extends ConsumerState<ItemsListView> {
         ],
       ),
       onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => ItemInputPage(
-                    id: item.id,
-                  ))).then((value) => ref.refresh(listItemProvider(token))),
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ItemInputPage(
+                        id: item.id,
+                      )))
+          .then((value) => ref.refresh(listItemProvider(searchToken))),
       trailing: IconButton(
-        onPressed: () => onDelete(item.id, context, ref, token),
+        onPressed: () => onDelete(item.id, context, ref, searchToken),
         icon: const Icon(Icons.delete),
       ),
     );
@@ -103,11 +98,18 @@ class _ItemsListViewState extends ConsumerState<ItemsListView> {
     super.initState();
   }
 
+  onSearch(context, ref) async {
+    searchToken.search = searchController.text;
+    ref.refresh(listItemProvider(searchToken));
+  }
+
   @override
   Widget build(BuildContext context) {
-    var tokenListener = ref.watch(tokenProvider);
+    if (searchToken.token.isEmpty) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
 
-    var itemListener = ref.watch(listItemProvider(searchController.text));
+    var itemListener = ref.watch(listItemProvider(searchToken));
     return Scaffold(
       appBar: AppBar(
           title: TextField(
@@ -121,36 +123,22 @@ class _ItemsListViewState extends ConsumerState<ItemsListView> {
           ),
           actions: [
             IconButton(
-                onPressed: () {
-                  setState(() {
-                    ref.refresh(listItemProvider(searchController.text));
-                  });
-                },
+                onPressed: () => onSearch(context, ref),
                 icon: const Icon(Icons.search))
           ]),
       floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.add),
           onPressed: () {
-            onAdd(context, ref, token);
+            onAdd(context, ref, searchToken);
           }),
-      body: tokenListener.when(
-        data: (token) {
-          return itemListener.when(
-            data: (items) => SingleChildScrollView(
-              child: Column(
-                children: items
-                    .map((item) => itemInListTile(item, context, ref, token))
-                    .toList(),
-              ),
-            ),
-            loading: () => const Center(
-              child: CircularProgressIndicator(),
-            ),
-            error: (err, s) => Center(
-              child: Text(err.toString()),
-            ),
-          );
-        },
+      body: itemListener.when(
+        data: (items) => SingleChildScrollView(
+          child: Column(
+            children: items
+                .map((item) => itemInListTile(item, context, ref, searchToken))
+                .toList(),
+          ),
+        ),
         loading: () => const Center(
           child: CircularProgressIndicator(),
         ),

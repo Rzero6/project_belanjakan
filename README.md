@@ -1,7 +1,9 @@
 # project_belanjakan
-## KELOMPOK 2
+
+## KELOMPOK 2 KELAS D
+
 current progress:
-UGD 4 Hardware
+UGD 6 Unit Testing
 
 ## Anggota Kelompok
 
@@ -13,4 +15,8 @@ UGD 4 Hardware
 
 ## Tugas
 
-- Reynold : Shake n win (Sensor : Accellometer, speaker : sound effect) , Notification (Speaker, Vibrate), dan bantu hal hal kecil lainnya
+- Reynold : benerin back-end + front-end sebelum di testing
+- Tito : Login + tanggal Register + Read + Update + Delete
+- Angel : Create item (tapi masih suspend)
+- Daniel : Login API
+- Hans: -

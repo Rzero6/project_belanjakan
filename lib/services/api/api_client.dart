@@ -1,7 +1,7 @@
 class ApiClient {
-  final String domainName = '192.168.1.3';
+  final String domainName = 'http://172.16.65.98:8000';
   late final String baseUrl;
   ApiClient() {
-    baseUrl = 'http://$domainName:8000/api';
+    baseUrl = '$domainName/api';
   }
 }
