@@ -104,10 +104,10 @@ void main() {
     await sharedPrefs.setString('token', 'userData.token!');
 
     // Find the text fields by key
-    final nameField = find.byKey(Key("input-name"));
-    final detailField = find.byKey(Key("input-detail"));
-    final priceField = find.byKey(Key("input-price"));
-    final stockField = find.byKey(Key("input-stock"));
+    final nameField = find.byKey(const Key("input-name"));
+    final detailField = find.byKey(const Key("input-detail"));
+    final priceField = find.byKey(const Key("input-price"));
+    final stockField = find.byKey(const Key("input-stock"));
 
     // Verify that all text fields are initially empty
     expect((tester.widget(nameField) as TextFormField).controller!.text, '');
