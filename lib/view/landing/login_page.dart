@@ -31,6 +31,7 @@ class _LoginviewState extends State<Loginview> {
           if (state.formSubmissionState is SubmissionSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
+                key: Key("sakis-login"),
                 content: Text('Login Success'),
               ),
             );
@@ -43,6 +44,7 @@ class _LoginviewState extends State<Loginview> {
           if (state.formSubmissionState is SubmissionFailed) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
+                key: const Key("error-login"),
                 content: Text((state.formSubmissionState as SubmissionFailed)
                     .exception
                     .toString()),
@@ -79,8 +81,12 @@ class _LoginviewState extends State<Loginview> {
                               ]),
                         ),
                         TextFormField(
+                          key: const Key("input-email"),
                           controller: emailController,
                           decoration: const InputDecoration(
+                            border: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10))),
                             prefixIcon: Icon(Icons.person),
                             labelText: 'Email',
                           ),
@@ -91,8 +97,12 @@ class _LoginviewState extends State<Loginview> {
                                   : 'Email salah',
                         ),
                         TextFormField(
+                          key: const Key("input-password"),
                           controller: passwordController,
                           decoration: InputDecoration(
+                            border: const OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10))),
                             prefixIcon: const Icon(Icons.lock),
                             labelText: 'Password',
                             suffixIcon: IconButton(
@@ -129,6 +139,7 @@ class _LoginviewState extends State<Loginview> {
                               }
                             },
                             child: Padding(
+                              key: const ValueKey('login'),
                               padding: const EdgeInsets.symmetric(
                                   vertical: 16.0, horizontal: 16.0),
                               child: state.formSubmissionState is FormSubmitting

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:project_belanjakan/services/api/api_client.dart';
 import 'package:project_belanjakan/services/api/item_client.dart';
 import 'package:project_belanjakan/view/products/product_details.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -18,16 +19,13 @@ class _ProductsViewState extends ConsumerState<ProductsView> {
   final listItemProvider =
       FutureProvider.family<List<Item>, String>((ref, search) async {
     List<Item> items = await ItemClient.getItems(search);
-    for (Item item in items) {
-      await item.setImageFile();
-    }
     return items;
   });
 
   Card itemInCard(Item item, context, ref) {
     return Card(
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(10))),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(2.w))),
       child: GestureDetector(
         onTap: () {
           Navigator.push(
@@ -35,6 +33,7 @@ class _ProductsViewState extends ConsumerState<ProductsView> {
             MaterialPageRoute(
               builder: (_) => ProductDetailScreen(
                 id: item.id,
+                amount: 1,
               ),
             ),
           );
@@ -45,26 +44,29 @@ class _ProductsViewState extends ConsumerState<ProductsView> {
             Container(
               width: double.infinity,
               height: 16.h,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(10),
-                  topLeft: Radius.circular(10),
+                  topRight: Radius.circular(2.w),
+                  topLeft: Radius.circular(2.w),
                 ),
               ),
               child: ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topRight: Radius.circular(10),
-                  topLeft: Radius.circular(10),
+                borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(2.w),
+                  topLeft: Radius.circular(2.w),
                 ),
-                child: Image.file(
-                  item.imageFile!,
+                child: Image.network(
+                  '${ApiClient().domainName}${item.image}',
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(Icons.shopping_bag);
+                  },
                   fit: BoxFit.cover,
                 ),
               ),
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(10.0),
+                padding: EdgeInsets.all(2.w),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -103,6 +105,10 @@ class _ProductsViewState extends ConsumerState<ProductsView> {
     );
   }
 
+  onRefresh(context, ref) async {
+    ref.refresh(listItemProvider(searchController.text));
+  }
+
   @override
   Widget build(BuildContext context) {
     var listener = ref.watch(listItemProvider(searchController.text));
@@ -116,17 +122,20 @@ class _ProductsViewState extends ConsumerState<ProductsView> {
           searchBox(ref),
           Expanded(
             child: listener.when(
-              data: (items) => GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.85,
-                  mainAxisSpacing: 5,
-                  crossAxisSpacing: 5,
+              data: (items) => RefreshIndicator(
+                onRefresh: () => onRefresh(context, ref),
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.85,
+                    mainAxisSpacing: 5,
+                    crossAxisSpacing: 5,
+                  ),
+                  itemCount: items.length,
+                  itemBuilder: (context, index) {
+                    return itemInCard(items[index], context, ref);
+                  },
                 ),
-                itemCount: items.length,
-                itemBuilder: (context, index) {
-                  return itemInCard(items[index], context, ref);
-                },
               ),
               error: (err, s) => Center(
                 child: Text(err.toString()),
@@ -174,7 +183,7 @@ class _ProductsViewState extends ConsumerState<ProductsView> {
     return Card(
       elevation: 4,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+        padding: EdgeInsets.symmetric(horizontal: 2.w),
         child: Row(
           children: [
             Expanded(
@@ -186,7 +195,7 @@ class _ProductsViewState extends ConsumerState<ProductsView> {
                 ),
               ),
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: 2.w),
             if (searchController.text.isNotEmpty)
               IconButton(
                 onPressed: () {

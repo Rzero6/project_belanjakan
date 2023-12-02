@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:project_belanjakan/model/user.dart';
+import 'package:project_belanjakan/services/api/api_client.dart';
 import 'package:project_belanjakan/services/api/user_client.dart';
 import 'package:project_belanjakan/services/convert/string_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,7 +18,7 @@ class EditProfilePage extends StatefulWidget {
 class _EditProfilePageState extends State<EditProfilePage> {
   final UserClient _userClient = UserClient();
   User? userData;
-  File imageFile = File('assets/images/user/profile_picture.jpg');
+  File? imageFile;
   final formKey = GlobalKey<FormState>();
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -54,8 +55,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   Future<void> pickImageFromGallery() async {
     final ImagePicker picker = ImagePicker();
-    final pickedImage =
-        await picker.pickImage(source: ImageSource.gallery, imageQuality: 10);
+    final pickedImage = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxHeight: 720,
+        maxWidth: 720,
+        imageQuality: 50);
     if (pickedImage == null) return;
     setState(() {
       imageFile = File(pickedImage.path);
@@ -65,8 +69,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   Future<void> pickImageFromCamera() async {
     final ImagePicker picker = ImagePicker();
-    final pickedImage =
-        await picker.pickImage(source: ImageSource.camera, imageQuality: 10);
+    final pickedImage = await picker.pickImage(
+        source: ImageSource.camera,
+        maxHeight: 720,
+        maxWidth: 720,
+        imageQuality: 50);
     if (pickedImage == null) return;
     setState(() {
       imageFile = File(pickedImage.path);
@@ -121,10 +128,20 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           child: Material(
                             color: Colors.transparent,
                             child: Ink.image(
-                              image: imageFile.existsSync()
-                                  ? FileImage(imageFile) as ImageProvider
-                                  : const AssetImage(
-                                      'assets/images/profile_placeholder.jpg'),
+                              image: imageFile != null
+                                  ? Image.file(imageFile!).image
+                                  : Image.network(
+                                      '${ApiClient().domainName}${userData!.profilePicture!}',
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                        return Image.asset(
+                                          'assets/images/profile_placeholder.jpg',
+                                          fit: BoxFit.cover,
+                                          width: 128,
+                                          height: 128,
+                                        );
+                                      },
+                                    ).image,
                               fit: BoxFit.cover,
                               width: 128,
                               height: 128,
@@ -285,9 +302,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Future<void> loadData() async {
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
     userData = await _userClient.getUser(sharedPrefs.getString('token')!);
-    if (userData?.profilePicture != null) {
-      imageFile = await ConvertImageString.strToImg(userData!.profilePicture!);
-    }
     setState(() {
       usernameController.text = userData!.name;
       emailController.text = userData!.email;
@@ -298,7 +312,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   Future<bool> editUser() async {
     SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
-    String image = await ConvertImageString.imgToStr(imageFile);
+    String image = await ConvertImageString.imgToStr(imageFile!);
     userData = User(
         name: usernameController.text,
         password: passwordController.text,

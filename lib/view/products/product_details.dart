@@ -3,6 +3,7 @@ import 'package:project_belanjakan/component/dialog.dart';
 import 'package:project_belanjakan/component/snackbar.dart';
 import 'package:project_belanjakan/model/cart.dart';
 import 'package:project_belanjakan/model/item.dart';
+import 'package:project_belanjakan/services/api/api_client.dart';
 import 'package:project_belanjakan/services/api/cart_client.dart';
 import 'package:project_belanjakan/services/api/item_client.dart';
 import 'package:project_belanjakan/view/payment/quick_pay.dart';
@@ -12,8 +13,9 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final int id;
-
-  const ProductDetailScreen({super.key, required this.id});
+  final int amount;
+  const ProductDetailScreen(
+      {super.key, required this.id, required this.amount});
 
   @override
   State<ProductDetailScreen> createState() => _ProductDetailScreenState();
@@ -31,7 +33,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
       item = await ItemClient.findItem(widget.id);
-      await item.setImageFile();
       token = prefs.getString('token')!;
       setState(() {
         isLoading = false;
@@ -46,7 +47,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   void initState() {
     super.initState();
     loadData();
-    amountController.text = 1.toString();
+    amountController.text = widget.amount.toString();
   }
 
   @override
@@ -65,13 +66,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(
-                        width: double.infinity,
-                        height: 40.h,
-                        child: Image.file(
-                          item.imageFile!,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
+                          width: double.infinity,
+                          height: 40.h,
+                          child: Image.network(
+                            ApiClient().domainName + item.image,
+                            fit: BoxFit.cover,
+                          )),
                       Padding(
                         padding: EdgeInsets.symmetric(
                             vertical: 1.h, horizontal: 2.w),
@@ -137,6 +137,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       await CartClient.addOrUpdateCart(cart, token);
       Navigator.pop(context);
       customSnackBar.showSnackBar(context, 'Added to Cart', Colors.green);
+      Navigator.pop(context);
     } catch (e) {
       Navigator.pop(context);
       customSnackBar.showSnackBar(context, e.toString(), Colors.red);
@@ -146,7 +147,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   Container actionButton() {
     return Container(
       color: Colors.white60,
-      height: 15.h,
+      height: 16.h,
       padding: EdgeInsets.only(left: 5.w, right: 5.w),
       child: Form(
         key: _formKey,
