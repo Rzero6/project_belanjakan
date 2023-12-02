@@ -1,7 +1,9 @@
 # project_belanjakan
+
 ## KELOMPOK 2 KELAS D
+
 current progress:
-UGD 5 API
+UGD 6 Unit Testing
 
 ## Anggota Kelompok
 
@@ -13,8 +15,8 @@ UGD 5 API
 
 ## Tugas
 
-- Reynold : Pindah dari sqlite ke api (front end + back end)
-- Tito : Benerin controller untuk search item
-- Angel : Membuat ERD
-- Daniel : Membuat ERD
-- Hans: Membuat ERD
+- Reynold : benerin back-end + front-end sebelum di testing
+- Tito : Login + tanggal Register + Read + Update + Delete
+- Angel : Create item (tapi masih suspend)
+- Daniel : Login API
+- Hans: -

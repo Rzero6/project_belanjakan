@@ -55,8 +55,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   Future<void> pickImageFromGallery() async {
     final ImagePicker picker = ImagePicker();
-    final pickedImage =
-        await picker.pickImage(source: ImageSource.gallery, imageQuality: 10);
+    final pickedImage = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxHeight: 720,
+        maxWidth: 720,
+        imageQuality: 50);
     if (pickedImage == null) return;
     setState(() {
       imageFile = File(pickedImage.path);
@@ -66,8 +69,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   Future<void> pickImageFromCamera() async {
     final ImagePicker picker = ImagePicker();
-    final pickedImage =
-        await picker.pickImage(source: ImageSource.camera, imageQuality: 10);
+    final pickedImage = await picker.pickImage(
+        source: ImageSource.camera,
+        maxHeight: 720,
+        maxWidth: 720,
+        imageQuality: 50);
     if (pickedImage == null) return;
     setState(() {
       imageFile = File(pickedImage.path);

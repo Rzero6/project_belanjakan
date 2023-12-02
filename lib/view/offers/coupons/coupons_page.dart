@@ -51,6 +51,10 @@ class _CouponsPageState extends ConsumerState<CouponsPage> {
     super.initState();
   }
 
+  onRefresh(context, ref) async {
+    ref.refresh(listCouponProvider(token));
+  }
+
   @override
   Widget build(BuildContext context) {
     var tokenListener = ref.watch(tokenProvider);
@@ -69,11 +73,7 @@ class _CouponsPageState extends ConsumerState<CouponsPage> {
           var couponListener = ref.watch(listCouponProvider(token));
           return couponListener.when(
             data: (coupons) => RefreshIndicator(
-              onRefresh: () async {
-                setState(() {
-                  ref.refresh(listCouponProvider(token));
-                });
-              },
+              onRefresh: () => onRefresh(context, ref),
               child: ListView.builder(
                 itemCount: coupons.length,
                 itemBuilder: (context, index) {

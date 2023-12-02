@@ -84,7 +84,7 @@ class _LoginviewState extends State<Loginview> {
                           key: const Key("input-email"),
                           controller: emailController,
                           decoration: const InputDecoration(
-                            border: const OutlineInputBorder(
+                            border: OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(10))),
                             prefixIcon: Icon(Icons.person),
@@ -139,7 +139,7 @@ class _LoginviewState extends State<Loginview> {
                               }
                             },
                             child: Padding(
-                              key: ValueKey('login'),
+                              key: const ValueKey('login'),
                               padding: const EdgeInsets.symmetric(
                                   vertical: 16.0, horizontal: 16.0),
                               child: state.formSubmissionState is FormSubmitting

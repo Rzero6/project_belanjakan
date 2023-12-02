@@ -13,8 +13,9 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final int id;
-
-  const ProductDetailScreen({super.key, required this.id});
+  final int amount;
+  const ProductDetailScreen(
+      {super.key, required this.id, required this.amount});
 
   @override
   State<ProductDetailScreen> createState() => _ProductDetailScreenState();
@@ -46,7 +47,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   void initState() {
     super.initState();
     loadData();
-    amountController.text = 1.toString();
+    amountController.text = widget.amount.toString();
   }
 
   @override
@@ -136,6 +137,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       await CartClient.addOrUpdateCart(cart, token);
       Navigator.pop(context);
       customSnackBar.showSnackBar(context, 'Added to Cart', Colors.green);
+      Navigator.pop(context);
     } catch (e) {
       Navigator.pop(context);
       customSnackBar.showSnackBar(context, e.toString(), Colors.red);
@@ -145,7 +147,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   Container actionButton() {
     return Container(
       color: Colors.white60,
-      height: 15.h,
+      height: 16.h,
       padding: EdgeInsets.only(left: 5.w, right: 5.w),
       child: Form(
         key: _formKey,
