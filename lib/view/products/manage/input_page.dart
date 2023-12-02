@@ -9,6 +9,7 @@ import 'package:project_belanjakan/services/api/api_client.dart';
 import 'package:project_belanjakan/services/api/item_client.dart';
 import 'package:project_belanjakan/services/convert/string_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 
 class ItemInputPage extends StatefulWidget {
   const ItemInputPage({
@@ -72,8 +73,14 @@ class _ItemInputPageState extends State<ItemInputPage> {
       setState(() {
         isLoading = true;
       });
-      if (!formKey.currentState!.validate() && imageFile!.existsSync()) return;
-      String image = await ConvertImageString.imgToStr(imageFile!);
+      if (!formKey.currentState!.validate() &&
+          (imageFile != null || imageSource != null)) return;
+      String image = '';
+      if (imageFile != null) {
+        image = await ConvertImageString.imgToStr(imageFile!);
+      } else {
+        image = imageSource!;
+      }
       Item input = Item(
           id: widget.id ?? 0,
           name: controllerName.text,
@@ -112,15 +119,15 @@ class _ItemInputPageState extends State<ItemInputPage> {
                     GestureDetector(
                       onTap: () => showOptionToPick(),
                       child: SizedBox(
-                        width: double.infinity,
-                        height: 200,
+                        width: 75.w,
+                        height: 75.w,
                         child: imageFile != null && imageFile!.existsSync()
                             ? Image.file(
                                 imageFile!,
                                 fit: BoxFit.cover,
                               )
                             : Image.network(
-                                '${ApiClient().domainName}/$imageSource',
+                                '${ApiClient().domainName}$imageSource',
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) {
                                   return const Center(
@@ -174,13 +181,18 @@ class _ItemInputPageState extends State<ItemInputPage> {
                         labelText: 'Stock',
                       ),
                     ),
-                    const SizedBox(
-                      height: 48,
+                    SizedBox(
+                      height: 2.h,
                     ),
                     ElevatedButton(
                       onPressed: onSubmit,
                       child: const Text('Save'),
-                    )
+                    ),
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Cancel'))
                   ],
                 ),
               ),
@@ -213,8 +225,11 @@ class _ItemInputPageState extends State<ItemInputPage> {
 
   Future<void> pickImageFromGallery() async {
     final ImagePicker picker = ImagePicker();
-    final pickedImage =
-        await picker.pickImage(source: ImageSource.gallery, imageQuality: 10);
+    final pickedImage = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxHeight: 720,
+        maxWidth: 720,
+        imageQuality: 50);
     if (pickedImage == null) return;
     setState(() {
       imageFile = File(pickedImage.path);
@@ -224,8 +239,11 @@ class _ItemInputPageState extends State<ItemInputPage> {
 
   Future<void> pickImageFromCamera() async {
     final ImagePicker picker = ImagePicker();
-    final pickedImage =
-        await picker.pickImage(source: ImageSource.camera, imageQuality: 10);
+    final pickedImage = await picker.pickImage(
+        source: ImageSource.camera,
+        maxHeight: 720,
+        maxWidth: 720,
+        imageQuality: 50);
     if (pickedImage == null) return;
     setState(() {
       imageFile = File(pickedImage.path);
