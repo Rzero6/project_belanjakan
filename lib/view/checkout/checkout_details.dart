@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:project_belanjakan/model/address.dart';
 import 'package:project_belanjakan/model/coupon.dart';
+import 'package:project_belanjakan/services/api/api_client.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:project_belanjakan/model/cart.dart';
 import 'package:project_belanjakan/view/address/input_address.dart';
@@ -147,7 +148,8 @@ class CheckoutDetails extends StatelessWidget {
             return ListTile(
               leading: SizedBox(
                 width: 15.w,
-                child: Image.file(carts[cartIndex].item!.imageFile!,
+                child: Image.network(
+                    ApiClient().domainName + carts[cartIndex].item!.image,
                     fit: BoxFit.cover),
               ),
               title: Text(carts[cartIndex].item!.name),

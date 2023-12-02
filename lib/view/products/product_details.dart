@@ -3,6 +3,7 @@ import 'package:project_belanjakan/component/dialog.dart';
 import 'package:project_belanjakan/component/snackbar.dart';
 import 'package:project_belanjakan/model/cart.dart';
 import 'package:project_belanjakan/model/item.dart';
+import 'package:project_belanjakan/services/api/api_client.dart';
 import 'package:project_belanjakan/services/api/cart_client.dart';
 import 'package:project_belanjakan/services/api/item_client.dart';
 import 'package:project_belanjakan/view/payment/quick_pay.dart';
@@ -31,7 +32,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
       item = await ItemClient.findItem(widget.id);
-      await item.setImageFile();
       token = prefs.getString('token')!;
       setState(() {
         isLoading = false;
@@ -65,13 +65,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(
-                        width: double.infinity,
-                        height: 40.h,
-                        child: Image.file(
-                          item.imageFile!,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
+                          width: double.infinity,
+                          height: 40.h,
+                          child: Image.network(
+                            ApiClient().domainName + item.image,
+                            fit: BoxFit.cover,
+                          )),
                       Padding(
                         padding: EdgeInsets.symmetric(
                             vertical: 1.h, horizontal: 2.w),

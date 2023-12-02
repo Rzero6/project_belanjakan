@@ -5,6 +5,7 @@ import 'package:project_belanjakan/component/dialog.dart';
 import 'package:project_belanjakan/component/snackbar.dart';
 import 'package:project_belanjakan/model/address.dart';
 import 'package:project_belanjakan/model/cart.dart';
+import 'package:project_belanjakan/services/api/api_client.dart';
 import 'package:project_belanjakan/services/api/cart_client.dart';
 import 'package:project_belanjakan/view/address/get_current_location.dart';
 import 'package:project_belanjakan/view/checkout/checkout_details.dart';
@@ -137,8 +138,8 @@ class _ShoppingCartState extends ConsumerState<ShoppingCart> {
             SizedBox(
               width: 30.w,
               height: 15.h,
-              child: Image.file(
-                cart.item!.imageFile!,
+              child: Image.network(
+                ApiClient().domainName + cart.item!.image,
                 fit: BoxFit.cover,
               ),
             ),

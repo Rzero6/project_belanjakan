@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:project_belanjakan/services/api/api_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:project_belanjakan/component/snackbar.dart';
@@ -30,9 +31,6 @@ class _ItemsListViewState extends ConsumerState<ItemsListView> {
   final listItemProvider =
       FutureProvider.family<List<Item>, String>((ref, search) async {
     List<Item> items = await ItemClient.getItems(search);
-    for (Item item in items) {
-      await item.setImageFile();
-    }
     return items;
   });
 
@@ -68,14 +66,12 @@ class _ItemsListViewState extends ConsumerState<ItemsListView> {
       leading: SizedBox(
           width: 60,
           height: 60,
-          child: item.imageFile != null
-              ? Image.file(
-                  item.imageFile!,
-                  fit: BoxFit.cover,
-                )
-              : const Center(
-                  child: CircularProgressIndicator(),
-                )),
+          child: Image.network(
+            ApiClient().domainName + item.image,
+            errorBuilder: (context, error, stackTrace) {
+              return const Icon(Icons.shopping_bag);
+            },
+          )),
       title: Text(item.name),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

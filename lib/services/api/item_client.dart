@@ -65,7 +65,6 @@ class ItemClient {
       var response = await client.get(uri).timeout(const Duration(seconds: 30));
       if (response.statusCode != 200) throw Exception(response.reasonPhrase);
       Item item = Item.fromJson(json.decode(response.body)['data']);
-      await item.setImageFile();
       return item;
     } on TimeoutException catch (_) {
       return Future.error(timeout);
@@ -148,7 +147,6 @@ class ItemClient {
     }
   }
 
-
   static Future<Response> addItemTesting(Item item, String token) async {
     var client = http.Client();
     Uri uri = Uri.parse('http://127.0.0.1:8000/api/items');
@@ -192,7 +190,8 @@ class ItemClient {
     }
   }
 
-  static Future<Response> updateItemTesting(Item updatedItem, String token) async {
+  static Future<Response> updateItemTesting(
+      Item updatedItem, String token) async {
     var client = http.Client();
     Uri uri = Uri.parse('http://127.0.0.1:8000/api/items/${updatedItem.id}');
     try {

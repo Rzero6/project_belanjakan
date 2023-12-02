@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:project_belanjakan/services/api/api_client.dart';
 import 'package:project_belanjakan/services/api/item_client.dart';
 import 'package:project_belanjakan/view/products/product_details.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -18,9 +19,6 @@ class _ProductsViewState extends ConsumerState<ProductsView> {
   final listItemProvider =
       FutureProvider.family<List<Item>, String>((ref, search) async {
     List<Item> items = await ItemClient.getItems(search);
-    for (Item item in items) {
-      await item.setImageFile();
-    }
     return items;
   });
 
@@ -56,8 +54,8 @@ class _ProductsViewState extends ConsumerState<ProductsView> {
                   topRight: Radius.circular(10),
                   topLeft: Radius.circular(10),
                 ),
-                child: Image.file(
-                  item.imageFile!,
+                child: Image.network(
+                  '${ApiClient().domainName}${item.image}',
                   fit: BoxFit.cover,
                 ),
               ),

@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:project_belanjakan/component/snackbar.dart';
 import 'package:project_belanjakan/model/item.dart';
+import 'package:project_belanjakan/services/api/api_client.dart';
 import 'package:project_belanjakan/services/api/item_client.dart';
 import 'package:project_belanjakan/services/convert/string_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,6 +28,7 @@ class _ItemInputPageState extends State<ItemInputPage> {
   TextEditingController controllerStock = TextEditingController();
   TextEditingController controllerPrice = TextEditingController();
   File? imageFile;
+  String? imageSource;
   bool isLoading = false;
   CustomSnackBar customSnackBar = CustomSnackBar();
   late String token;
@@ -36,8 +38,8 @@ class _ItemInputPageState extends State<ItemInputPage> {
     });
     try {
       Item res = await ItemClient.findItem(widget.id);
-      imageFile = await ConvertImageString.strToImg(res.image);
       setState(() {
+        imageSource = res.image;
         controllerName.text = res.name;
         controllerDetail.text = res.detail;
         controllerPrice.text = res.price.toString();
@@ -117,9 +119,15 @@ class _ItemInputPageState extends State<ItemInputPage> {
                                 imageFile!,
                                 fit: BoxFit.cover,
                               )
-                            : const Center(
-                                child:
-                                    Text('Tolong Isi Gambarnya ! Pencet Akuu'),
+                            : Image.network(
+                                '${ApiClient().domainName}/$imageSource',
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Center(
+                                    child: Text(
+                                        'Tolong Isi Gambarnya ! Pencet Akuu'),
+                                  );
+                                },
                               ),
                       ),
                     ),
