@@ -110,6 +110,7 @@ class _ItemInputPageState extends State<ItemInputPage> {
                   padding: const EdgeInsets.all(16),
                   children: <Widget>[
                     GestureDetector(
+                      key: const Key('input-image-selector'),
                       onTap: () => showOptionToPick(),
                       child: SizedBox(
                         width: double.infinity,

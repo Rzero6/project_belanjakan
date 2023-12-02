@@ -12,7 +12,7 @@ void main() {
 
   setUpAll(() => HttpOverrides.global = null);
 
-  testWidgets('update success', (WidgetTester tester)  async {
+  testWidgets('update success', (WidgetTester tester) async {
     await tester.pumpWidget(
       ResponsiveSizer(
         builder: (context, orientation, deviceType) {
@@ -20,10 +20,10 @@ void main() {
               Device.orientation == Orientation.portrait ? 20.5.h : 12.5.h;
 
           return MaterialApp(
-            home: Container(
+            home: SizedBox(
               width: 100.w,
               height: containerHeight,
-              child: ProviderScope(child: ItemInputPage(id: 1)),
+              child: const ProviderScope(child: ItemInputPage(id: 1)),
             ),
           );
         },
@@ -31,12 +31,12 @@ void main() {
     );
 
     await tester.enterText(find.byKey(const Key('input-name')), 'Bola Basket');
-    await tester.enterText(find.byKey(const Key('input-detail')), 'Bola Basket yang Dipakai Pemain Profesional');
+    await tester.enterText(find.byKey(const Key('input-detail')),
+        'Bola Basket yang Dipakai Pemain Profesional');
     await tester.enterText(find.byKey(const Key('input-price')), '150000');
     await tester.enterText(find.byKey(const Key('input-stock')), '250');
     //await tester.tap(find.text('Save'));
 
     await tester.pump();
   });
-
 }
