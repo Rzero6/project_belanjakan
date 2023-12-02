@@ -117,6 +117,7 @@ class _ItemInputPageState extends State<ItemInputPage> {
                   padding: const EdgeInsets.all(16),
                   children: <Widget>[
                     GestureDetector(
+                      key: const Key('input-image-selector'),
                       onTap: () => showOptionToPick(),
                       child: SizedBox(
                         width: 75.w,
@@ -139,6 +140,7 @@ class _ItemInputPageState extends State<ItemInputPage> {
                       ),
                     ),
                     TextFormField(
+                      key: const Key("input-name"),
                       controller: controllerName,
                       validator: (value) =>
                           value == '' ? 'Must not be empty' : null,
@@ -151,6 +153,7 @@ class _ItemInputPageState extends State<ItemInputPage> {
                       height: 24,
                     ),
                     TextFormField(
+                      key: const Key("input-detail"),
                       controller: controllerDetail,
                       validator: (value) =>
                           value == '' ? 'Must not be empty' : null,
@@ -160,6 +163,7 @@ class _ItemInputPageState extends State<ItemInputPage> {
                       ),
                     ),
                     TextFormField(
+                      key: const Key("input-price"),
                       controller: controllerPrice,
                       validator: (value) =>
                           value == '' ? 'Must not be empty' : null,
@@ -171,6 +175,7 @@ class _ItemInputPageState extends State<ItemInputPage> {
                       ),
                     ),
                     TextFormField(
+                      key: const Key("input-stock"),
                       controller: controllerStock,
                       validator: (value) =>
                           value == '' ? 'Must not be empty' : null,

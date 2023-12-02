@@ -76,10 +76,10 @@ class _ProfileViewState extends State<ProfileView> {
                 tag: 'profilePic',
                 child: Ink.image(
                   image: Image.network(
-                    '${ApiClient().domainName}${userData!.profilePicture!}',
+                    '${ApiClient().domainName}${userData!.profilePicture}',
                     errorBuilder: (context, error, stackTrace) {
                       return Image.asset(
-                        'assets/images/profile_placeholder.jpg',
+                        '${ApiClient().domainName}/profile.png',
                         fit: BoxFit.cover,
                         width: 128,
                         height: 128,
