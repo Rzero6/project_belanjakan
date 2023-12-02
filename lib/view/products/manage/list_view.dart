@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project_belanjakan/services/api/api_client.dart';
@@ -99,6 +98,11 @@ class _ItemsListViewState extends ConsumerState<ItemsListView> {
     super.initState();
   }
 
+  onSearch(context, ref) async {
+    searchToken.search = searchController.text;
+    ref.refresh(listItemProvider(searchToken));
+  }
+
   @override
   Widget build(BuildContext context) {
     if (searchToken.token.isEmpty) {
@@ -119,16 +123,7 @@ class _ItemsListViewState extends ConsumerState<ItemsListView> {
           ),
           actions: [
             IconButton(
-                onPressed: () {
-                  setState(() {
-                    searchToken.search = searchController.text;
-                    print(searchToken.search);
-                    if (searchToken.search == '') {
-                      print(true);
-                    }
-                    ref.refresh(listItemProvider(searchToken));
-                  });
-                },
+                onPressed: () => onSearch(context, ref),
                 icon: const Icon(Icons.search))
           ]),
       floatingActionButton: FloatingActionButton(
