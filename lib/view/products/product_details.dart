@@ -11,11 +11,32 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Your App Title',
+      theme: ThemeData(
+        primarySwatch: Colors.blue, // Warna primer untuk Navigator
+      ),
+      home: ProductDetailScreen(id: 1, amount: 1),
+    );
+  }
+}
+
 class ProductDetailScreen extends StatefulWidget {
   final int id;
   final int amount;
-  const ProductDetailScreen(
-      {super.key, required this.id, required this.amount});
+
+  const ProductDetailScreen({
+    Key? key,
+    required this.id,
+    required this.amount,
+  }) : super(key: key);
 
   @override
   State<ProductDetailScreen> createState() => _ProductDetailScreenState();
@@ -51,80 +72,110 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final currencyFormat =
-        NumberFormat.currency(locale: 'id_ID', symbol: 'Rp. ');
+Widget build(BuildContext context) {
+  final currencyFormat = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp. ');
 
-    return Scaffold(
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                Expanded(
+  return Scaffold(
+    appBar: AppBar(
+      backgroundColor: Colors.transparent,
+      iconTheme: IconThemeData(color: Colors.blue),
+      leading: IconButton(
+        icon: Icon(Icons.arrow_back),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      title: Text(
+        item.name,
+        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
+      ),
+    ),
+    body: isLoading
+        ? const Center(child: CircularProgressIndicator())
+        : Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(
-                          width: double.infinity,
-                          height: 40.h,
-                          child: Image.network(
-                            ApiClient().domainName + item.image,
-                            fit: BoxFit.cover,
-                          )),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 1.h, horizontal: 2.w),
-                        child: Text(
-                          item.name,
-                          style: const TextStyle(
-                              fontSize: 26, fontWeight: FontWeight.bold),
+                      Center(
+                        child: Container(
+                          width: 35.h,
+                          height: 20.h,
+                          clipBehavior: Clip.antiAlias,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20.0),
+                            image: DecorationImage(
+                              image: NetworkImage(
+                                ApiClient().domainName + item.image,
+                              ),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
                         ),
                       ),
                       Padding(
                         padding: EdgeInsets.symmetric(
-                            vertical: 1.h, horizontal: 2.w),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          vertical: 4.h, horizontal: 15.w),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  item.name,
+                                  style: const TextStyle(
+                                    fontSize: 26,
+                                    fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  'tersisa ${NumberFormat.compact().format(item.stock)}',
+                                  style: const TextStyle(
+                                    fontSize: 18, color: Colors.black),
+                                ),
+                              ],
+                            ),
+                            // Added space between name and price
                             Text(
                               currencyFormat.format(item.price),
                               style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue),
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black),
                             ),
-                            Text(
-                                'tersisa ${NumberFormat.compact().format(item.stock)}')
                           ],
                         ),
                       ),
                       Padding(
-                        padding:
-                            EdgeInsets.only(top: 3.h, left: 2.w, right: 2.w),
+                        padding: EdgeInsets.only(
+                          top: 0.1.h, left: 15.w, right: 14.w),
                         child: const Text(
                           'Deskripsi',
                           style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
+                            fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                       ),
                       Padding(
                         padding: EdgeInsets.symmetric(
-                            horizontal: 3.w, vertical: 1.h),
+                          horizontal: 15.w, vertical: 1.h),
                         child: Text(
                           item.detail,
-                          style:
-                              const TextStyle(fontSize: 16, color: Colors.blue),
+                          style: const TextStyle(
+                            fontSize: 16, color: Colors.black),
                         ),
                       ),
                     ],
                   ),
                 ),
-                actionButton(),
-              ],
-            ),
-    );
-  }
+              ),
+              actionButton(),
+            ],
+          ),
+  );
+}
 
   void addToCart(context) async {
     try {
@@ -145,145 +196,57 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   Container actionButton() {
-    return Container(
-      color: Colors.white60,
-      height: 16.h,
-      padding: EdgeInsets.only(left: 5.w, right: 5.w),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Jumlah',
-                  style: TextStyle(fontSize: 18),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    IconButton(
-                        onPressed: () {
-                          if (amountController.text.isEmpty) {
-                            setState(() {
-                              amountController.text = 1.toString();
-                            });
-                          }
-                          if (int.parse(amountController.text) > 1) {
-                            setState(() {
-                              amountController.text =
-                                  (int.parse(amountController.text) - 1)
-                                      .toString();
-                            });
-                          }
-                        },
-                        icon: const Icon(Icons.remove)),
-                    SizedBox(
-                      width: 5.w,
-                      child: TextField(
-                        controller: amountController,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          hintText: '1',
-                          border: InputBorder.none,
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                        onPressed: () {
-                          if (amountController.text.isEmpty) {
-                            setState(() {
-                              amountController.text = 1.toString();
-                            });
-                          }
-                          if (int.parse(amountController.text) < item.stock) {
-                            setState(() {
-                              amountController.text =
-                                  (int.parse(amountController.text) + 1)
-                                      .toString();
-                            });
-                          }
-                        },
-                        icon: const Icon(Icons.add))
-                  ],
-                )
-              ],
+  return Container(
+    color: Colors.white60,
+    height: 16.h,
+    padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.h),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Spacer(),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Color(0xFF0077B6),
+            foregroundColor: Colors.white,
+            elevation: 0,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(30),
+                bottomLeft: Radius.circular(30),
+                topRight: Radius.circular(30),
+                bottomRight: Radius.circular(30),
+              ),
             ),
-            Row(
-              children: [
-                const Icon(
-                  Icons.favorite_border,
-                  color: Color(0xFF5e5e5e),
+          ),
+          onPressed: () {
+            addToCart(context);
+          },
+          child: Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(vertical: 2.h),
+            child: Center(
+              child: Text(
+                "Add to Cart".toUpperCase(),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.white,
                 ),
-                const Spacer(),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue.shade100,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          bottomLeft: Radius.circular(10)),
-                    ),
-                  ),
-                  onPressed: () {
-                    addToCart(context);
-                  },
-                  child: Container(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 1.w, vertical: 2.h),
-                    child: Text("Add to cart".toUpperCase(),
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.blue.shade600)),
-                  ),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    elevation: 0,
-                    shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(10),
-                            bottomRight: Radius.circular(10)),
-                        side: BorderSide(color: Colors.blue)),
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                  ),
-                  onPressed: () {},
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => QuickPayView(
-                                id: widget.id,
-                                quantity: int.parse(amountController.text)),
-                          ));
-                    },
-                    child: Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 1.w, vertical: 2.h),
-                      child: Text(
-                        "Buy now".toUpperCase(),
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          color: Color(0xFFFFFFFF),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
-          ],
+          ),
         ),
-      ),
-    );
-  }
+        SizedBox(height: 10.0), // Tambahkan SizedBox di sini
+        Text(
+          "Something do you like",
+          style: TextStyle(
+            fontSize: 25,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+      ],
+    ),
+  );
+}
 }
