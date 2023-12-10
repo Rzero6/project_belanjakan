@@ -179,7 +179,6 @@ class ItemClient {
       var response = await client.get(uri).timeout(const Duration(seconds: 30));
       if (response.statusCode != 200) throw Exception(response.reasonPhrase);
       Item item = Item.fromJson(json.decode(response.body)['data']);
-      await item.setImageFile();
       return item;
     } on TimeoutException catch (_) {
       return Future.error(timeout);

@@ -17,14 +17,11 @@ class CouponsPage extends ConsumerStatefulWidget {
 class _CouponsPageState extends ConsumerState<CouponsPage> {
   CustomSnackBar customSnackBar = CustomSnackBar();
   late String token;
+  bool isLoading = true;
+  bool isAllowedToStroke = true;
   final listCouponProvider =
       FutureProvider.family<List<Coupon>, String>((ref, token) async {
     return await CouponClient.getCoupons(token);
-  });
-  final tokenProvider = FutureProvider<String>((ref) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = prefs.getString('token')!;
-    return token;
   });
 
   void showDialogUdahNgocok() {
@@ -46,9 +43,38 @@ class _CouponsPageState extends ConsumerState<CouponsPage> {
         });
   }
 
+  loadToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    token = prefs.getString('token')!;
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  deleteExpiredCoupons(List<Coupon> coupons) async {
+    DateTime now = DateTime.now();
+    if (coupons.isEmpty) return;
+    for (Coupon coupon in coupons) {
+      DateTime expirationDate = DateTime.parse(coupon.expiresAt);
+      if (expirationDate.isBefore(now)) {
+        await CouponClient.deleteCoupon(coupon.id!, token);
+      }
+    }
+  }
+
+  checkAllowedToStroke(List<Coupon> coupons) async {
+    for (Coupon coupon in coupons) {
+      if (coupon.code.startsWith("SNW")) {
+        isAllowedToStroke = false;
+        return;
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    loadToken();
   }
 
   onRefresh(context, ref) async {
@@ -57,43 +83,42 @@ class _CouponsPageState extends ConsumerState<CouponsPage> {
 
   @override
   Widget build(BuildContext context) {
-    var tokenListener = ref.watch(tokenProvider);
+    if (isLoading) {
+      return const Scaffold(
+          body: Center(
+        child: CircularProgressIndicator(),
+      ));
+    }
+    var couponListener = ref.watch(listCouponProvider(token));
     return Scaffold(
       floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => const ShakeNWin()))
-                .then((value) => ref.refresh(listCouponProvider(token)));
+            isAllowedToStroke
+                ? Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => const ShakeNWin()))
+                    .then((value) => ref.refresh(listCouponProvider(token)))
+                : showDialogUdahNgocok();
           },
           child: const Icon(Icons.phonelink_ring_rounded)),
-      appBar: AppBar(
-          elevation: 0.0, centerTitle: true, title: const Text('Coupons')),
-      body: tokenListener.when(
-        data: (token) {
-          var couponListener = ref.watch(listCouponProvider(token));
-          return couponListener.when(
-            data: (coupons) => RefreshIndicator(
-              onRefresh: () => onRefresh(context, ref),
-              child: ListView.builder(
-                itemCount: coupons.length,
-                itemBuilder: (context, index) {
-                  return couponInCard(coupons[index], context, ref);
-                },
-              ),
-            ),
-            error: (err, s) => Center(
-              child: Text(err.toString()),
-            ),
-            loading: () => const Center(
-              child: CircularProgressIndicator(),
+      body: couponListener.when(
+        data: (coupons) {
+          deleteExpiredCoupons(coupons);
+          checkAllowedToStroke(coupons);
+          return RefreshIndicator(
+            onRefresh: () => onRefresh(context, ref),
+            child: ListView.builder(
+              itemCount: coupons.length,
+              itemBuilder: (context, index) {
+                return couponInCard(coupons[index], context, ref);
+              },
             ),
           );
         },
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
-        ),
         error: (err, s) => Center(
           child: Text(err.toString()),
+        ),
+        loading: () => const Center(
+          child: CircularProgressIndicator(),
         ),
       ),
     );

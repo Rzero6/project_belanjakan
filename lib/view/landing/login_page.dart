@@ -9,6 +9,7 @@ import 'package:project_belanjakan/view/main/main_menu.dart';
 import 'package:project_belanjakan/view/landing/register_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 
 class Loginview extends StatefulWidget {
   const Loginview({super.key});
@@ -80,6 +81,9 @@ class _LoginviewState extends State<Loginview> {
                                 ),
                               ]),
                         ),
+                        SizedBox(
+                          height: 2.h,
+                        ),
                         TextFormField(
                           key: const Key("input-email"),
                           controller: emailController,
@@ -95,6 +99,9 @@ class _LoginviewState extends State<Loginview> {
                               : EmailValidator.validate(value!)
                                   ? null
                                   : 'Email salah',
+                        ),
+                        SizedBox(
+                          height: 2.h,
                         ),
                         TextFormField(
                           key: const Key("input-password"),

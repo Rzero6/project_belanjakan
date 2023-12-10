@@ -14,7 +14,8 @@ void main() {
         detail: 'Orang paling anjeng',
         image: 'image test',
         price: 100,
-        stock: 1);
+        stock: 1,
+        idCategory: 1);
     Response result = await ItemClient.addItemTesting(item, token!);
     expect(result.statusCode, equals(200));
   });
@@ -34,7 +35,8 @@ void main() {
         detail: 'Updateed',
         image: 'image test',
         price: 1000,
-        stock: 10);
+        stock: 10,
+        idCategory: 1);
     Response result = await ItemClient.updateItem(item, token!);
     expect(result.statusCode, equals(200));
   });
