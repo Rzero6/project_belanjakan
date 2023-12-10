@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:project_belanjakan/view/offers/coupons/coupons_page.dart';
 import 'package:project_belanjakan/view/products/product_grid_show.dart';
 import 'package:project_belanjakan/view/main/shoppingCart_page.dart';
-import 'package:project_belanjakan/view/offers/daily_offers.dart';
 import 'package:project_belanjakan/view/profile/profile_page.dart';
 
 class MainMenuView extends StatefulWidget {
@@ -25,7 +25,7 @@ class _MainMenuViewState extends State<MainMenuView> {
   Widget build(BuildContext context) {
     final List<Widget> pages = [
       const ProductsView(),
-      const DailyOffers(),
+      const CouponsPage(),
       const ShoppingCart(),
       const ProfileView(),
     ];
