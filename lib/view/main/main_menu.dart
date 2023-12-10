@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:project_belanjakan/view/main/home_view.dart';
 import 'package:project_belanjakan/view/products/product_grid_show.dart';
 import 'package:project_belanjakan/view/main/shoppingCart_page.dart';
 import 'package:project_belanjakan/view/offers/daily_offers.dart';
@@ -24,7 +25,7 @@ class _MainMenuViewState extends State<MainMenuView> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> pages = [
-      const ProductsView(),
+      const HomeView(),
       const DailyOffers(),
       const ShoppingCart(),
       const ProfileView(),
