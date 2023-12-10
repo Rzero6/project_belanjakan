@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project_belanjakan/services/notifications/services.dart';
-import 'package:project_belanjakan/view/landing/splash_screen.dart';
+//import 'package:project_belanjakan/view/landing/splash_screen.dart';
+import 'package:project_belanjakan/view/address/address_page.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -39,7 +40,7 @@ class MainApp extends StatelessWidget {
             );
       return MaterialApp(
         navigatorKey: navigatorKey,
-        home: const SplashScreen(),
+        home: const AddressesView(),
       );
     });
   }
