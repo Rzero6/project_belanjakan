@@ -29,19 +29,20 @@ class _HomeViewState extends ConsumerState<HomeView> {
   int _currentIndex = 0;
   final listItemProvider =
       FutureProvider.family<List<Item>, String>((ref, search) async {
-    List<Item> items = await ItemClient.getItems(search);
+    List<Item> items = await ItemClient.getItems(search, 0);
     return items;
   });
-  final listCatProvider =
-      FutureProvider.family<List<Category>, String>((ref, nothing) async {
+  final listCatProvider = FutureProvider<List<Category>>((ref) async {
     List<Category> items = await CategoryClient.getCategories();
-    List<Category> limitedCategories = items.take(5).toList();
-    return limitedCategories;
+    if (items.length > 5) {
+      return items.take(5).toList();
+    }
+    return items;
   });
   @override
   Widget build(BuildContext context) {
     var itemListener = ref.watch(listItemProvider(searchController.text));
-    var catListener = ref.watch(listCatProvider('nothing'));
+    var catListener = ref.watch(listCatProvider);
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -398,6 +399,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                       height: 2.h,
                       child: Text(
                         item.name,
+                        overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,

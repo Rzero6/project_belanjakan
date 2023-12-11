@@ -100,6 +100,15 @@ class _ShoppingCartState extends ConsumerState<ShoppingCart> {
                             padding: EdgeInsets.symmetric(
                                 vertical: 1.h, horizontal: 1.h),
                             child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF0077B6),
+                                  foregroundColor: Colors.white,
+                                  elevation: 0,
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(30)),
+                                  ),
+                                ),
                                 onPressed: () => onCheckout(carts, context),
                                 child: const Text('Check out')),
                           ),
@@ -141,9 +150,14 @@ class _ShoppingCartState extends ConsumerState<ShoppingCart> {
             SizedBox(
               width: 30.w,
               height: 15.h,
-              child: Image.network(
-                ApiClient().domainName + cart.item!.image,
-                fit: BoxFit.cover,
+              child: ClipRRect(
+                borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(8.0),
+                    topLeft: Radius.circular(8)),
+                child: Image.network(
+                  ApiClient().domainName + cart.item!.image,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
             Padding(
@@ -152,12 +166,30 @@ class _ShoppingCartState extends ConsumerState<ShoppingCart> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(cart.item!.name),
+                  SizedBox(
+                    width: 47.w,
+                    child: Text(
+                      cart.item!.name,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 2.h,
+                  ),
                   Text(NumberFormat.currency(locale: 'id_ID', symbol: 'Rp. ')
                       .format(cart.item!.price)),
                   Text(
                       'Tersisa ${NumberFormat.compact().format(cart.item!.stock)}'),
-                  Text('Jumlah: ${cart.amount}'),
+                  SizedBox(
+                    height: 1.h,
+                  ),
+                  Text(
+                    'Jumlah: ${cart.amount}',
+                    style: const TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
                 ],
               ),
             ),

@@ -9,14 +9,14 @@ class ItemClient {
   static final ApiClient apiClient = ApiClient();
   static const String timeout = 'Take too long, check your connection';
 
-  static Future<List<Item>> getItems(String searchTerm) async {
+  static Future<List<Item>> getItems(String searchTerm, int idCategory) async {
     var client = http.Client();
     Uri uri;
     try {
       if (searchTerm.isEmpty) {
         uri = Uri.parse('${apiClient.baseUrl}/items');
       } else {
-        uri = Uri.parse('${apiClient.baseUrl}/items/search/q=$searchTerm');
+        uri = Uri.parse('${apiClient.baseUrl}/items/search/$idCategory/q=$searchTerm');
       }
       var response = await client.get(uri).timeout(const Duration(seconds: 30));
       if (response.statusCode != 200) {
