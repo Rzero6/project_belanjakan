@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:project_belanjakan/model/address.dart';
 import 'package:project_belanjakan/model/coupon.dart';
 import 'package:project_belanjakan/services/api/api_client.dart';
+import 'package:project_belanjakan/view/checkout/coupon_selection.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:project_belanjakan/model/cart.dart';
 import 'package:project_belanjakan/view/address/input_address.dart';
@@ -20,9 +21,15 @@ class CheckoutDetails extends StatefulWidget {
   _CheckoutDetailsState createState() => _CheckoutDetailsState();
 }
 
-class _CheckoutDetailsState extends State<CheckoutDetails> {
-  OverlayEntry? overlayEntry;
+int idCoupon = 0;
 
+void gotoSelectionCoupon(context) {
+  Navigator.push(context,
+          MaterialPageRoute(builder: (_) => const CouponsSelectionPage()))
+      .then((value) => value = idCoupon);
+}
+
+class _CheckoutDetailsState extends State<CheckoutDetails> {
   @override
   Widget build(BuildContext context) {
     Address deliveryAddress = widget.currentAddress;
@@ -31,8 +38,7 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
         idUser: 1,
         discount: 20,
         code: "TESTCODE",
-        expiresAt: "expiresAt"
-    );
+        expiresAt: "expiresAt");
     double ongkir = 16000;
 
     return Scaffold(
@@ -46,12 +52,7 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
             const Divider(
               height: 0,
             ),
-            ElevatedButton(
-              onPressed: () {
-                _showOrderDetails(ongkir, coupon, widget.listCart);
-              },
-              child: const Text('Show Order Details'),
-            ),
+            itemDetailsPrice(widget.listCart, ongkir, coupon, context)
           ],
         ),
       ),
@@ -105,89 +106,85 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
     );
   }
 
-  Widget _buildOrderDetails(double ongkir, Coupon coupon, List<Cart> carts) {
-    final currencyFormat = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp. ');
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              IconButton(
-                icon: Icon(Icons.close),
-                onPressed: () {
-                  _removeOverlay();
-                },
+  Widget itemDetailsPrice(
+      List<Cart> carts, double ongkir, Coupon coupon, context) {
+    final currencyFormat =
+        NumberFormat.currency(locale: 'id_ID', symbol: 'Rp. ');
+    return Expanded(
+      child: ListView.builder(
+          itemCount: (carts.length + 3) * 2,
+          itemBuilder: (context, index) {
+            if (index.isOdd) {
+              return const Divider(
+                height: 0,
+              );
+            }
+            if (index == (carts.length) * 2) {
+              return ListTile(
+                title: const Text('Pengiriman'),
+                subtitle: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('J&T'),
+                    Text(currencyFormat.format(ongkir))
+                  ],
+                ),
+                trailing: const Icon(Icons.arrow_forward_ios_rounded),
+              );
+            }
+            if (index == (carts.length + 1) * 2) {
+              return ListTile(
+                onTap: () => gotoSelectionCoupon(context),
+                title: const Text('Diskon'),
+                subtitle: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(idCoupon == 0
+                        ? 'Tekan untuk pilih kupon'
+                        : '${coupon.name} ${coupon.discount}%'),
+                    Text(idCoupon == 0
+                        ? '0%'
+                        : '- ${currencyFormat.format(calculateDiskon(coupon.discount.toDouble(), calculateAllItem(carts)))}')
+                  ],
+                ),
+                trailing: const Icon(Icons.arrow_forward_ios_rounded),
+              );
+            }
+            if (index == (carts.length + 2) * 2) {
+              return ListTile(
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Total Harga'),
+                    Text(currencyFormat.format(calculateAll(ongkir,
+                        coupon.discount.toDouble(), calculateAllItem(carts))))
+                  ],
+                ),
+              );
+            }
+
+            final cartIndex = index ~/ 2;
+            return ListTile(
+              leading: SizedBox(
+                width: 15.w,
+                child: Image.network(
+                    ApiClient().domainName + carts[cartIndex].item!.image,
+                    fit: BoxFit.cover),
               ),
-            ],
-          ),
-          ListTile(
-            title: const Text('Pengiriman'),
-            subtitle: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('J&T'),
-                Text(currencyFormat.format(ongkir))
-              ],
-            ),
-          ),
-          ListTile(
-            title: const Text('Diskon'),
-            subtitle: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('${coupon.name} ${coupon.discount}%'),
-                Text(
-                  '- ${currencyFormat.format(calculateDiskon(coupon.discount.toDouble(), calculateAllItem(carts)))}',
-                )
-              ],
-            ),
-          ),
-          ListTile(
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('${coupon.name} ${coupon.discount}%'),
-                Text(currencyFormat.format(calculateAll(ongkir, coupon.discount.toDouble(), calculateAllItem(carts))))
-              ],
-            ),
-          ),
-        ],
-      ),
+              title: Text(carts[cartIndex].item!.name),
+              subtitle: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(currencyFormat.format(carts[cartIndex].item!.price)),
+                  Text('x${carts[cartIndex].amount}'),
+                  Text(currencyFormat.format(calculatePricePerItem(
+                      carts[cartIndex].amount.toDouble(),
+                      carts[cartIndex].item!.price.toDouble())))
+                ],
+              ),
+            );
+          }),
     );
-  }
-
-  void _showOrderDetails(double ongkir, Coupon coupon, List<Cart> carts) {
-    overlayEntry = OverlayEntry(
-      builder: (context) => Positioned(
-        bottom: 0,
-        left: 0,
-        right: 0,
-        child: Material(
-          color: Colors.transparent,
-          child: WillPopScope(
-            onWillPop: () async {
-              _removeOverlay();
-              return true;
-            },
-            child: Container(
-              child: _buildOrderDetails(ongkir, coupon, carts),
-            ),
-          ),
-        ),
-      ),
-    );
-
-    Overlay.of(context)?.insert(overlayEntry!);
-  }
-
-  void _removeOverlay() {
-    overlayEntry?.remove();
   }
 
   double calculatePricePerItem(double amount, double price) {

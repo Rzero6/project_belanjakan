@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:project_belanjakan/view/main/home_view.dart';
 import 'package:project_belanjakan/view/offers/coupons/coupons_page.dart';
-import 'package:project_belanjakan/view/offers/daily_offers.dart';
-import 'package:project_belanjakan/view/products/product_grid_show.dart';
 import 'package:project_belanjakan/view/main/shoppingCart_page.dart';
 import 'package:project_belanjakan/view/profile/profile_page.dart';
 
