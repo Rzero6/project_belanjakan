@@ -27,8 +27,6 @@ class _MainMenuViewState extends State<MainMenuView> {
   Widget build(BuildContext context) {
     final List<Widget> pages = [
       const HomeView(),
-      const DailyOffers(),
-      const ProductsView(),
       const CouponsPage(),
       const ShoppingCart(),
       const ProfileView(),

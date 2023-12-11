@@ -1,15 +1,16 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:project_belanjakan/model/category.dart';
 import 'package:project_belanjakan/model/item.dart';
 import 'package:project_belanjakan/services/api/api_client.dart';
+import 'package:project_belanjakan/services/api/category_client.dart';
 import 'package:project_belanjakan/services/api/item_client.dart';
 import 'package:project_belanjakan/view/products/product_details.dart';
-import 'package:project_belanjakan/view/products/product_grid_show.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class HomeView extends ConsumerStatefulWidget {
@@ -28,9 +29,16 @@ class _HomeViewState extends ConsumerState<HomeView> {
     List<Item> items = await ItemClient.getItems(search);
     return items;
   });
+  final listCatProvider =
+      FutureProvider.family<List<Category>, String>((ref, nothing) async {
+    List<Category> items = await CategoryClient.getCategories();
+    List<Category> limitedCategories = items.take(5).toList();
+    return limitedCategories;
+  });
   @override
   Widget build(BuildContext context) {
-    var listener = ref.watch(listItemProvider(searchController.text));
+    var itemListener = ref.watch(listItemProvider(searchController.text));
+    var catListener = ref.read(listCatProvider('nothing'));
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -47,7 +55,65 @@ class _HomeViewState extends ConsumerState<HomeView> {
               height: 1.h,
             ),
             catHeader(),
-            catList(),
+            SizedBox(
+                height: 45.w,
+                child: catListener.when(
+                    data: (category) => ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: category.length,
+                          itemBuilder: (context, index) => Container(
+                            margin: EdgeInsets.only(right: 3.w, left: 2.w),
+                            width: 45.w,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10.0),
+                              image: DecorationImage(
+                                image: CachedNetworkImageProvider(
+                                  '${ApiClient().domainName}${category[index].image}',
+                                  scale: 0.1,
+                                ),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            child: Align(
+                              alignment: Alignment.bottomLeft,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  category[index].name,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 30.0,
+                                    fontWeight: FontWeight.bold,
+                                    shadows: [
+                                      Shadow(
+                                        color: Colors.black,
+                                        offset: Offset(-1, -1),
+                                      ),
+                                      Shadow(
+                                        color: Colors.black,
+                                        offset: Offset(1, -1),
+                                      ),
+                                      Shadow(
+                                        color: Colors.black,
+                                        offset: Offset(1, 1),
+                                      ),
+                                      Shadow(
+                                        color: Colors.black,
+                                        offset: Offset(-1, 1),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    error: (err, s) => Center(
+                          child: Text(err.toString()),
+                        ),
+                    loading: () => const Center(
+                          child: CircularProgressIndicator(),
+                        ))),
             SizedBox(
               height: 1.h,
             ),
@@ -69,7 +135,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
               ]),
             ),
             SizedBox(
-              child: listener.when(
+              height: 300.0,
+              child: itemListener.when(
                 data: (items) => GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
@@ -90,15 +157,14 @@ class _HomeViewState extends ConsumerState<HomeView> {
                 ),
               ),
             ),
+            const SizedBox(
+              height: 20.0,
+            )
           ],
         ),
       ),
     );
   }
-
-  // onRefresh(context, ref) async {
-  //   ref.refresh(listItemProvider(searchController.text));
-  // }
 
   Card searchBox() {
     return Card(
