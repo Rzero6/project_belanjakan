@@ -131,7 +131,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               image: imageFile != null
                                   ? Image.file(imageFile!).image
                                   : Image.network(
-                                      '${ApiClient().domainName}${userData!.profilePicture!}',
+                                      '${ApiClient().domainName}${userData!.profilePicture}',
                                       errorBuilder:
                                           (context, error, stackTrace) {
                                         return Image.asset(
