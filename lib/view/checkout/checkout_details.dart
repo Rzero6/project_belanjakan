@@ -120,7 +120,8 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
         discount: coupon.discount,
         paymentMethod: metodePembayaran,
         deliveryCost: 16000,
-        createdAt: '');
+        createdAt: '',
+        status: 'Ordered');
 
     DetailTransaction moreTrans;
     if (metodePembayaran == 'Visa') {
@@ -365,17 +366,19 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
         discount: discount,
         paymentMethod: paymentMethod,
         deliveryCost: deliveryCost,
-        createdAt: '');
+        createdAt: '',
+        status: 'Ordered');
 
     try {
       int id = await TransactionClient.addTransaction(transaction);
       for (Cart cart in listItems) {
         DetailTransaction detailTransaction = DetailTransaction(
-            id: 0,
-            idTransaction: id,
-            name: cart.item!.name,
-            price: cart.item!.price,
-            amount: cart.amount);
+          id: 0,
+          idTransaction: id,
+          name: cart.item!.name,
+          price: cart.item!.price,
+          amount: cart.amount,
+        );
         await TransactionClient.addDetailsTransaction(detailTransaction);
       }
     } catch (e) {

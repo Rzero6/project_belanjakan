@@ -34,11 +34,9 @@ class _CategoryViewState extends ConsumerState<CategoryView> {
         SizedBox(
           height: 2.w,
         ),
-        SizedBox(
-            height: 45.w,
+        Expanded(
             child: catListener.when(
                 data: (category) => ListView.builder(
-                      scrollDirection: Axis.horizontal,
                       itemCount: category.length,
                       itemBuilder: (context, index) => GestureDetector(
                         onTap: () {
@@ -49,47 +47,53 @@ class _CategoryViewState extends ConsumerState<CategoryView> {
                             ),
                           );
                         },
-                        child: Container(
-                          margin: EdgeInsets.only(right: 3.w, left: 2.w),
-                          width: 45.w,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10.0),
-                            image: DecorationImage(
-                              image: CachedNetworkImageProvider(
-                                '${ApiClient().domainName}${category[index].image}',
-                                scale: 0.1,
+                        child: Padding(
+                          padding: EdgeInsets.only(bottom: 2.h),
+                          child: SizedBox(
+                            height: 45.w,
+                            child: Container(
+                              margin: EdgeInsets.only(right: 3.w, left: 2.w),
+                              width: 45.w,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10.0),
+                                image: DecorationImage(
+                                  image: CachedNetworkImageProvider(
+                                    '${ApiClient().domainName}${category[index].image}',
+                                    scale: 0.1,
+                                  ),
+                                  fit: BoxFit.cover,
+                                ),
                               ),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          child: Align(
-                            alignment: Alignment.bottomLeft,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                category[index].name,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 30.0,
-                                  fontWeight: FontWeight.bold,
-                                  shadows: [
-                                    Shadow(
-                                      color: Colors.black,
-                                      offset: Offset(-1, -1),
+                              child: Align(
+                                alignment: Alignment.bottomLeft,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    category[index].name,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 30.0,
+                                      fontWeight: FontWeight.bold,
+                                      shadows: [
+                                        Shadow(
+                                          color: Colors.black,
+                                          offset: Offset(-1, -1),
+                                        ),
+                                        Shadow(
+                                          color: Colors.black,
+                                          offset: Offset(1, -1),
+                                        ),
+                                        Shadow(
+                                          color: Colors.black,
+                                          offset: Offset(1, 1),
+                                        ),
+                                        Shadow(
+                                          color: Colors.black,
+                                          offset: Offset(-1, 1),
+                                        ),
+                                      ],
                                     ),
-                                    Shadow(
-                                      color: Colors.black,
-                                      offset: Offset(1, -1),
-                                    ),
-                                    Shadow(
-                                      color: Colors.black,
-                                      offset: Offset(1, 1),
-                                    ),
-                                    Shadow(
-                                      color: Colors.black,
-                                      offset: Offset(-1, 1),
-                                    ),
-                                  ],
+                                  ),
                                 ),
                               ),
                             ),

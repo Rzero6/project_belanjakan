@@ -251,14 +251,14 @@ class _HomeViewState extends ConsumerState<HomeView> {
                   width: 100.w,
                   margin: const EdgeInsets.symmetric(horizontal: 10.0),
                   decoration: BoxDecoration(
-                    color: Colors.amber,
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'Image $i',
-                      style: const TextStyle(fontSize: 16.0),
+                    image: DecorationImage(
+                      image: CachedNetworkImageProvider(
+                        '${ApiClient().domainName}/images/offers/Sale$i.jpg',
+                        scale: 0.1,
+                      ),
+                      fit: BoxFit.cover,
                     ),
+                    borderRadius: BorderRadius.circular(8.0),
                   ),
                 );
               },
@@ -318,35 +318,6 @@ class _HomeViewState extends ConsumerState<HomeView> {
           ],
         ),
       ]),
-    );
-  }
-
-  SizedBox catList() {
-    return SizedBox(
-      height: 45.w,
-      child: ListView(
-        // This next line does the trick.
-        scrollDirection: Axis.horizontal,
-        children: <Widget>[
-          ...[1, 2, 3, 4, 5]
-              .map(
-                (i) => Container(
-                  margin: EdgeInsets.only(right: 3.w, left: 2.w),
-                  width: 45.w,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0),
-                      color: Colors.black87),
-                  child: Center(
-                    child: Text(
-                      "Cat $i",
-                      style: const TextStyle(color: Colors.white70),
-                    ),
-                  ),
-                ),
-              )
-              .toList(),
-        ],
-      ),
     );
   }
 

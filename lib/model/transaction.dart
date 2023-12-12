@@ -8,6 +8,7 @@ class Transaction {
   String paymentMethod;
   int deliveryCost;
   String createdAt;
+  String status;
   List<DetailTransaction>? listDetails;
   Transaction({
     required this.id,
@@ -18,6 +19,7 @@ class Transaction {
     required this.deliveryCost,
     required this.createdAt,
     this.listDetails,
+    required this.status,
   });
 
   factory Transaction.fromRawJson(String str) =>
@@ -31,6 +33,7 @@ class Transaction {
       paymentMethod: json['payment_method'],
       deliveryCost: json['delivery_cost'],
       createdAt: json['created_at'],
+      status: json['status'],
     );
   }
   String toRawJson() => json.encode(toJson());
@@ -42,6 +45,7 @@ class Transaction {
         "payment_method": paymentMethod,
         "delivery_cost": deliveryCost,
         "created_at": createdAt,
+        "status": status,
       };
 }
 

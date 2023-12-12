@@ -7,6 +7,7 @@ import 'package:project_belanjakan/services/notifications/services.dart';
 import 'package:project_belanjakan/view/landing/login_page.dart';
 import 'package:project_belanjakan/view/products/manage/list_view.dart';
 import 'package:project_belanjakan/view/profile/edit_profile_page.dart';
+import 'package:project_belanjakan/view/profile/my_product.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:project_belanjakan/services/api/user_client.dart';
@@ -161,9 +162,11 @@ class _ProfileViewState extends State<ProfileView> {
             width: double.infinity,
             child: Column(
               children: [
-                const ListTile(
-                  leading: Icon(Icons.assignment),
-                  title: Text('Pesanan Saya'),
+                ListTile(
+                  leading: const Icon(Icons.assignment),
+                  title: const Text('Pesanan Saya'),
+                  onTap: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const MyProduct())),
                 ),
                 const Divider(
                   height: 0,
