@@ -221,8 +221,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 return Text('Error: ${snapshot.error}');
               } else {
                 return ListTile(
-                  leading: Image.network(
-                      ApiClient().domainName + snapshot.data!.profilePicture!),
+                  leading: snapshot.data!.profilePicture != null
+                      ? Image.network(
+                          '${ApiClient().domainName}${snapshot.data!.profilePicture!}')
+                      : Image.network(
+                          '${ApiClient().domainName}/images/profile.jpg',
+                        ),
                   title: Text(snapshot.data!.name),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
