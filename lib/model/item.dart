@@ -8,7 +8,7 @@ class Item {
   String image;
   int price;
   int stock;
-
+  double? rating;
   Item({
     required this.id,
     required this.idCategory,
@@ -17,6 +17,7 @@ class Item {
     required this.image,
     required this.price,
     required this.stock,
+    this.rating,
   });
   factory Item.fromRawJson(String str) => Item.fromJson(json.decode(str));
   factory Item.fromJson(Map<String, dynamic> json) {

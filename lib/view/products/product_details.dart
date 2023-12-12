@@ -3,10 +3,12 @@ import 'package:project_belanjakan/component/dialog.dart';
 import 'package:project_belanjakan/component/snackbar.dart';
 import 'package:project_belanjakan/model/cart.dart';
 import 'package:project_belanjakan/model/item.dart';
+import 'package:project_belanjakan/model/review.dart';
 import 'package:project_belanjakan/services/api/api_client.dart';
 import 'package:project_belanjakan/services/api/cart_client.dart';
 import 'package:project_belanjakan/services/api/item_client.dart';
 import 'package:intl/intl.dart';
+import 'package:project_belanjakan/services/api/review_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
@@ -26,19 +28,20 @@ class ProductDetailScreen extends StatefulWidget {
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   late Item item;
+  late Reviews reviews;
   bool isLoading = true;
   final TextEditingController amountController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   late String token;
-  CustomSnackBar customSnackBar = CustomSnackBar();
 
   void loadData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
       item = await ItemClient.findItem(widget.id);
+      reviews = await ReviewClient.getReviewsPerItem(item.id);
       token = prefs.getString('token')!;
     } catch (err) {
-      customSnackBar.showSnackBar(context, err.toString(), Colors.red);
+      CustomSnackBar.showSnackBar(context, err.toString(), Colors.red);
       Navigator.pop(context);
     }
     setState(() {
@@ -76,7 +79,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               title: Text(
                 item.name,
                 style: const TextStyle(
-                  overflow: TextOverflow.ellipsis,
+                    overflow: TextOverflow.ellipsis,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF0077B6)),
@@ -139,7 +142,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                         ),
                                         Column(
                                           children: [
-                                            makeStarRating(5),
+                                            makeStarRating(reviews.rating),
                                             Text(
                                               'tersisa ${NumberFormat.compact().format(item.stock)}',
                                               style: const TextStyle(
@@ -205,11 +208,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               : int.parse(amountController.text));
       await CartClient.addOrUpdateCart(cart, token);
       Navigator.pop(context);
-      customSnackBar.showSnackBar(context, 'Added to Cart', Colors.green);
+      CustomSnackBar.showSnackBar(context, 'Added to Cart', Colors.green);
       Navigator.pop(context);
     } catch (e) {
       Navigator.pop(context);
-      customSnackBar.showSnackBar(context, e.toString(), Colors.red);
+      CustomSnackBar.showSnackBar(context, e.toString(), Colors.red);
     }
   }
 

@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:project_belanjakan/component/snackbar.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:project_belanjakan/model/coupon.dart';
 import 'package:project_belanjakan/services/api/coupon_client.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
 
 class CouponsSelectionPage extends ConsumerStatefulWidget {
-  const CouponsSelectionPage({super.key});
+  final int couponId;
+  const CouponsSelectionPage({
+    super.key,
+    required this.couponId,
+  });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -16,7 +20,6 @@ class CouponsSelectionPage extends ConsumerStatefulWidget {
 }
 
 class _CouponsSelectionPageState extends ConsumerState<CouponsSelectionPage> {
-  CustomSnackBar customSnackBar = CustomSnackBar();
   late String token;
   bool isLoading = true;
   int selectedCouponId = 0;
@@ -48,10 +51,15 @@ class _CouponsSelectionPageState extends ConsumerState<CouponsSelectionPage> {
   void initState() {
     super.initState();
     loadToken();
+    selectedCouponId = widget.couponId;
   }
 
   onRefresh(context, ref) async {
     ref.refresh(listCouponProvider(token));
+  }
+
+  onSelect() {
+    Navigator.pop(context, selectedCouponId);
   }
 
   @override
@@ -63,39 +71,70 @@ class _CouponsSelectionPageState extends ConsumerState<CouponsSelectionPage> {
       ));
     }
     var couponListener = ref.watch(listCouponProvider(token));
-    return Scaffold(
-      body: couponListener.when(
-        data: (coupons) {
-          deleteExpiredCoupons(coupons);
-          return RefreshIndicator(
-            onRefresh: () => onRefresh(context, ref),
-            child: ListView.builder(
-              itemCount: coupons.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 3.w),
-                  child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          if (selectedCouponId == coupons[index].id!) {
-                            selectedCouponId = 0;
-                          } else {
-                            selectedCouponId = coupons[index].id!;
-                          }
-                        });
+    return WillPopScope(
+      onWillPop: () async {
+        onSelect();
+        return false;
+      },
+      child: Scaffold(
+        body: couponListener.when(
+          data: (coupons) {
+            deleteExpiredCoupons(coupons);
+            return Column(
+              children: [
+                Expanded(
+                  child: RefreshIndicator(
+                    onRefresh: () => onRefresh(context, ref),
+                    child: ListView.builder(
+                      itemCount: coupons.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 3.w),
+                          child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  if (selectedCouponId == coupons[index].id!) {
+                                    selectedCouponId = 0;
+                                  } else {
+                                    selectedCouponId = coupons[index].id!;
+                                  }
+                                });
+                              },
+                              child: couponInCard(coupons[index], context, ref,
+                                  selectedCouponId)),
+                        );
                       },
-                      child: couponInCard(
-                          coupons[index], context, ref, selectedCouponId)),
-                );
-              },
-            ),
-          );
-        },
-        error: (err, s) => Center(
-          child: Text(err.toString()),
-        ),
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  height: 8.h,
+                  child: Padding(
+                    padding:
+                        EdgeInsets.symmetric(vertical: 1.h, horizontal: 1.h),
+                    child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF0077B6),
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(30)),
+                          ),
+                        ),
+                        onPressed: () => onSelect(),
+                        child: const Text('Select')),
+                  ),
+                )
+              ],
+            );
+          },
+          error: (err, s) => Center(
+            child: Text(err.toString()),
+          ),
+          loading: () => const Center(
+            child: CircularProgressIndicator(),
+          ),
         ),
       ),
     );
