@@ -18,7 +18,7 @@ class _ProductsViewState extends ConsumerState<ProductsView> {
   final TextEditingController searchController = TextEditingController();
   final listItemProvider =
       FutureProvider.family<List<Item>, String>((ref, search) async {
-    List<Item> items = await ItemClient.getItems(search);
+    List<Item> items = await ItemClient.getItems(search, 0);
     return items;
   });
 

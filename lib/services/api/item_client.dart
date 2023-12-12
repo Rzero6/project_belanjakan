@@ -16,7 +16,8 @@ class ItemClient {
       if (searchTerm.isEmpty) {
         uri = Uri.parse('${apiClient.baseUrl}/items');
       } else {
-        uri = Uri.parse('${apiClient.baseUrl}/items/search/$idCategory/q=$searchTerm');
+        uri = Uri.parse(
+            '${apiClient.baseUrl}/items/search/$idCategory/q=$searchTerm');
       }
       var response = await client.get(uri).timeout(const Duration(seconds: 30));
       if (response.statusCode != 200) {
