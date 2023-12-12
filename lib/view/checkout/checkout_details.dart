@@ -14,6 +14,7 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:project_belanjakan/model/cart.dart';
 import 'package:project_belanjakan/view/address/input_address.dart';
 import 'package:project_belanjakan/model/transaction.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CheckoutDetails extends StatefulWidget {
   final List<Cart> listCart;
@@ -31,6 +32,7 @@ class CheckoutDetails extends StatefulWidget {
 }
 
 class _CheckoutDetailsState extends State<CheckoutDetails> {
+  int? idBuyer;
   int idCoupon = 0;
   bool isLoading = false;
   Coupon coupon = Coupon(
@@ -40,6 +42,12 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
       code: '',
       expiresAt: '-');
   String metodePembayaran = 'Visa';
+
+  @override
+  void initState() {
+    loadData();
+    super.initState();
+  }
 
   Future<void> gotoSelectionCoupon(context) async {
     idCoupon = await Navigator.push(
@@ -105,6 +113,16 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
   }
 
   void onOrder() {
+    Transaction trans = Transaction(
+        id: 0,
+        idBuyer: idBuyer!,
+        address: widget.currentAddress.toString(),
+        discount: coupon.discount,
+        paymentMethod: metodePembayaran,
+        deliveryCost: 16000,
+        createdAt: '');
+
+    DetailTransaction moreTrans;
     if (metodePembayaran == 'Visa') {
       Navigator.pushReplacement(
           context,
@@ -166,6 +184,14 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
               ]),
       ),
     );
+  }
+
+  Future<void> loadData() async {
+    SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
+    idBuyer = sharedPrefs.getInt('userID');
+    setState(() {
+      isLoading = false;
+    });
   }
 
   Widget addressPicker(context, deliveryAddress) {
