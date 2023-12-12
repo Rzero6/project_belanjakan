@@ -8,6 +8,9 @@ import 'package:project_belanjakan/model/item.dart';
 import 'package:project_belanjakan/services/api/api_client.dart';
 import 'package:project_belanjakan/services/api/category_client.dart';
 import 'package:project_belanjakan/services/api/item_client.dart';
+import 'package:project_belanjakan/view/main/cat_view.dart';
+import 'package:project_belanjakan/view/products/product_details.dart';
+import 'package:project_belanjakan/view/products/product_grid_by_cat.dart';
 import 'package:project_belanjakan/view/products/product_details.dart';
 import 'package:project_belanjakan/view/products/product_grid_show.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -23,6 +26,7 @@ class HomeView extends ConsumerStatefulWidget {
 class _HomeViewState extends ConsumerState<HomeView> {
   final TextEditingController searchController = TextEditingController();
   final CarouselController _controller = CarouselController();
+  final ScrollController _scrollController = ScrollController();
   int _currentIndex = 0;
   final listItemProvider =
       FutureProvider.family<List<Item>, String>((ref, search) async {
@@ -62,47 +66,58 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     data: (category) => ListView.builder(
                           scrollDirection: Axis.horizontal,
                           itemCount: category.length,
-                          itemBuilder: (context, index) => Container(
-                            margin: EdgeInsets.only(right: 3.w, left: 2.w),
-                            width: 45.w,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10.0),
-                              image: DecorationImage(
-                                image: CachedNetworkImageProvider(
-                                  '${ApiClient().domainName}${category[index].image}',
-                                  scale: 0.1,
+                          itemBuilder: (context, index) => GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      ProductsByCat(category[index].id),
                                 ),
-                                fit: BoxFit.cover,
+                              );
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(right: 3.w, left: 2.w),
+                              width: 45.w,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10.0),
+                                image: DecorationImage(
+                                  image: CachedNetworkImageProvider(
+                                    '${ApiClient().domainName}${category[index].image}',
+                                    scale: 0.1,
+                                  ),
+                                  fit: BoxFit.cover,
+                                ),
                               ),
-                            ),
-                            child: Align(
-                              alignment: Alignment.bottomLeft,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  category[index].name,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 30.0,
-                                    fontWeight: FontWeight.bold,
-                                    shadows: [
-                                      Shadow(
-                                        color: Colors.black,
-                                        offset: Offset(-1, -1),
-                                      ),
-                                      Shadow(
-                                        color: Colors.black,
-                                        offset: Offset(1, -1),
-                                      ),
-                                      Shadow(
-                                        color: Colors.black,
-                                        offset: Offset(1, 1),
-                                      ),
-                                      Shadow(
-                                        color: Colors.black,
-                                        offset: Offset(-1, 1),
-                                      ),
-                                    ],
+                              child: Align(
+                                alignment: Alignment.bottomLeft,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    category[index].name,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 30.0,
+                                      fontWeight: FontWeight.bold,
+                                      shadows: [
+                                        Shadow(
+                                          color: Colors.black,
+                                          offset: Offset(-1, -1),
+                                        ),
+                                        Shadow(
+                                          color: Colors.black,
+                                          offset: Offset(1, -1),
+                                        ),
+                                        Shadow(
+                                          color: Colors.black,
+                                          offset: Offset(1, 1),
+                                        ),
+                                        Shadow(
+                                          color: Colors.black,
+                                          offset: Offset(-1, 1),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -135,27 +150,31 @@ class _HomeViewState extends ConsumerState<HomeView> {
                 ),
               ]),
             ),
-            SizedBox(
-              height: 100.h,
-              child: itemListener.when(
-                data: (items) => GridView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.85,
-                    mainAxisSpacing: 5,
-                    crossAxisSpacing: 5,
+            Scrollbar(
+              thumbVisibility: true,
+              controller: _scrollController,
+              child: SizedBox(
+                height: 300.0,
+                child: itemListener.when(
+                  data: (items) => GridView.builder(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 0.85,
+                      mainAxisSpacing: 5,
+                      crossAxisSpacing: 5,
+                    ),
+                    itemCount: items.length,
+                    itemBuilder: (context, index) {
+                      return itemInCard(items[index], context, ref);
+                    },
                   ),
-                  itemCount: items.length,
-                  itemBuilder: (context, index) {
-                    return itemInCard(items[index], context, ref);
-                  },
-                ),
-                error: (err, s) => Center(
-                  child: Text(err.toString()),
-                ),
-                loading: () => const Center(
-                  child: CircularProgressIndicator(),
+                  error: (err, s) => Center(
+                    child: Text(err.toString()),
+                  ),
+                  loading: () => const Center(
+                    child: CircularProgressIndicator(),
+                  ),
                 ),
               ),
             ),
@@ -283,7 +302,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => const HomeView(),
+                    builder: (_) => const CategoryView(),
                   ),
                 );
               },

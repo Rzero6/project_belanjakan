@@ -40,6 +40,28 @@ class ItemClient {
     }
   }
 
+  static Future<List<Item>> getItemsByCat(int searchTerm) async {
+    var client = http.Client();
+    Uri uri;
+    try {
+      uri = Uri.parse('${apiClient.baseUrl}/items/cat/$searchTerm');
+
+      var response = await client.get(uri).timeout(const Duration(seconds: 30));
+      if (response.statusCode != 200) {
+        throw json.decode(response.body)['message'].toString();
+      }
+
+      Iterable list = json.decode(response.body)['data'];
+      return list.map((e) => Item.fromJson(e)).toList();
+    } on TimeoutException catch (_) {
+      return Future.error(timeout);
+    } catch (e) {
+      return Future.error(e.toString());
+    } finally {
+      client.close();
+    }
+  }
+
   static Future<List<Item>> getItemsOnlyOwner(
       String searchTerm, String token) async {
     var client = http.Client();
