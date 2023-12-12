@@ -1,136 +1,110 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
-void main() => runApp(MyApp());
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Payment Method UI',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: PaymentScreen(),
-    );
-  }
-}
-
 class PaymentScreen extends StatefulWidget {
+  String selectedPaymentMethod;
+  PaymentScreen({super.key, required this.selectedPaymentMethod});
   @override
   _PaymentScreenState createState() => _PaymentScreenState();
 }
 
 class _PaymentScreenState extends State<PaymentScreen> {
-  String selectedPaymentMethod = '';
-  double totalAmount = 7590000;
+  @override
+  void initState() {
+    super.initState();
+    selectPaymentMethod(widget.selectedPaymentMethod);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Payment Method'),
+        title: const Text('Payment Method'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          }
-        ),
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context);
+            }),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Select Payment Method',
               style: TextStyle(
                 fontSize: 16.0,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 20.0),
-            PaymentMethodTile(
-              imagePath: 'assets/images/QRIS.png',
-              totalAmount: totalAmount,
-              onTap: () async {
-                selectPaymentMethod('Qris');
-              },
-              isSelected: selectedPaymentMethod == 'Qris',
-            ),
+            const SizedBox(height: 20.0),
             PaymentMethodTile(
               imagePath: 'assets/images/visa.png',
-              totalAmount: totalAmount,
+              name: 'VISA',
               onTap: () async {
                 selectPaymentMethod('Visa');
               },
-              isSelected: selectedPaymentMethod == 'Visa',
+              isSelected: widget.selectedPaymentMethod == 'Visa',
             ),
             PaymentMethodTile(
               imagePath: 'assets/images/dana.png',
-              totalAmount: totalAmount,
+              name: 'DANA',
               onTap: () async {
                 selectPaymentMethod('Dana');
               },
-              isSelected: selectedPaymentMethod == 'Dana',
+              isSelected: widget.selectedPaymentMethod == 'Dana',
             ),
             PaymentMethodTile(
               imagePath: 'assets/images/gopay.png',
-              totalAmount: totalAmount,
+              name: 'GoPay',
               onTap: () async {
                 selectPaymentMethod('Gopay');
               },
-              isSelected: selectedPaymentMethod == 'Gopay',
+              isSelected: widget.selectedPaymentMethod == 'Gopay',
             ),
             PaymentMethodTile(
               imagePath: 'assets/images/shopeepay.png',
-              totalAmount: totalAmount,
+              name: 'Shopee Pay',
               onTap: () async {
                 selectPaymentMethod('ShopeePay');
               },
-              isSelected: selectedPaymentMethod == 'ShopeePay',
+              isSelected: widget.selectedPaymentMethod == 'ShopeePay',
             ),
             PaymentMethodTile(
               imagePath: 'assets/images/ovo.png',
-              totalAmount: totalAmount,
+              name: 'OVO',
               onTap: () async {
                 selectPaymentMethod('Ovo');
               },
-              isSelected: selectedPaymentMethod == 'Ovo',
+              isSelected: widget.selectedPaymentMethod == 'Ovo',
             ),
-            Expanded(
+            const Expanded(
               child: SizedBox.expand(),
             ),
-            SizedBox(
-              height: 20.0
-            ),
+            const SizedBox(height: 20.0),
             Align(
               alignment: Alignment.bottomCenter,
               child: SizedBox(
                 width: MediaQuery.of(context).size.width,
                 child: ElevatedButton(
                   onPressed: () {
-                    if (selectedPaymentMethod.isNotEmpty) {
-                      Navigator.push(
-                        context, 
-                        MaterialPageRoute(
-                          builder: (context) => NextPage(
-                            selectedPaymentMethod: selectedPaymentMethod,
-                            totalAmount: totalAmount,
-                          ),
-                        ),
-                      );
+                    if (widget.selectedPaymentMethod.isNotEmpty) {
+                      Navigator.pop(context, widget.selectedPaymentMethod);
                     } else {
-                      print('Please select a payment method');
+                      Fluttertoast.showToast(
+                        msg: 'Please select a payment method',
+                      );
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.blue,
-                    onPrimary: Colors.white,
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.blue,
                   ),
-                  child: Text('Select Payment Method'),
+                  child: const Text('Select Payment Method'),
                 ),
               ),
             ),
@@ -142,7 +116,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   void selectPaymentMethod(String paymentMethod) {
     setState(() {
-        selectedPaymentMethod = paymentMethod;
+      widget.selectedPaymentMethod = paymentMethod;
     });
   }
 
@@ -158,13 +132,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
 class PaymentMethodTile extends StatelessWidget {
   final String imagePath;
-  final double totalAmount;
+  final String name;
   final Function onTap;
   final bool isSelected;
 
-  const PaymentMethodTile({               
-    required this.imagePath,                                                
-    required this.totalAmount,
+  const PaymentMethodTile({
+    super.key,
+    required this.imagePath,
+    required this.name,
     required this.onTap,
     this.isSelected = false,
   });
@@ -181,8 +156,8 @@ class PaymentMethodTile extends StatelessWidget {
             width: 2.0,
           ),
         ),
-        child : Padding(
-          padding: EdgeInsets.all(16.0),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -191,27 +166,26 @@ class PaymentMethodTile extends StatelessWidget {
                 width: 50.0,
                 height: 50.0,
               ),
-              Text(
-                formatCurrency(totalAmount),
-                style: TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                )
-              ),
+              Text(name,
+                  style: const TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  )),
             ],
           ),
         ),
       ),
     );
   }
-} 
+}
 
 class NextPage extends StatelessWidget {
   final String selectedPaymentMethod;
   final double totalAmount;
 
-  NextPage({
+  const NextPage({
+    super.key,
     required this.selectedPaymentMethod,
     required this.totalAmount,
   });
@@ -220,7 +194,7 @@ class NextPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Payment Method'),
+        title: const Text('Payment Method'),
       ),
       body: Center(
         child: Column(
@@ -236,7 +210,7 @@ class NextPage extends StatelessWidget {
 }
 
 String formatCurrency(double amount) {
-  final currencyFormatter = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp');
+  final currencyFormatter =
+      NumberFormat.currency(locale: 'id_ID', symbol: 'Rp');
   return currencyFormatter.format(amount);
 }
-

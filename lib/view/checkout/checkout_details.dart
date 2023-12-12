@@ -6,6 +6,9 @@ import 'package:project_belanjakan/model/coupon.dart';
 import 'package:project_belanjakan/services/api/api_client.dart';
 import 'package:project_belanjakan/services/api/coupon_client.dart';
 import 'package:project_belanjakan/view/checkout/coupon_selection.dart';
+import 'package:project_belanjakan/view/payment/card_method.dart';
+import 'package:project_belanjakan/view/payment/payment_method.dart';
+import 'package:project_belanjakan/view/payment/pin_verify.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:project_belanjakan/model/cart.dart';
 import 'package:project_belanjakan/view/address/input_address.dart';
@@ -34,6 +37,7 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
       discount: 0,
       code: '',
       expiresAt: '-');
+  String metodePembayaran = 'Visa';
 
   Future<void> gotoSelectionCoupon(context) async {
     idCoupon = await Navigator.push(
@@ -41,6 +45,27 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
         MaterialPageRoute(
             builder: (_) => CouponsSelectionPage(
                   couponId: idCoupon,
+                )));
+    if (idCoupon != 0) {
+      getCoupon(context);
+    } else {
+      setState(() {
+        coupon = Coupon(
+            name: 'Tekan untuk pilih kupon',
+            idUser: 0,
+            discount: 0,
+            code: '',
+            expiresAt: '-');
+      });
+    }
+  }
+
+  Future<void> gotoSelectionPayments(context) async {
+    metodePembayaran = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (_) => PaymentScreen(
+                  selectedPaymentMethod: metodePembayaran,
                 )));
     if (idCoupon != 0) {
       getCoupon(context);
@@ -77,7 +102,21 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
     }
   }
 
-  onOrder() {}
+  void onOrder() {
+    if (metodePembayaran == 'Visa') {
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const CardMethodView(),
+          ));
+    } else {
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => PinVerificationScreen(),
+          ));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -231,9 +270,9 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
             }
             if (index == (carts.length + 3) * 2) {
               return ListTile(
-                onTap: () {},
+                onTap: () => gotoSelectionPayments(context),
                 title: const Text('Metode Pembayaran'),
-                subtitle: const Text('Visa'),
+                subtitle: Text(metodePembayaran),
                 trailing: const Icon(Icons.arrow_forward_ios_rounded),
               );
             }
