@@ -57,7 +57,7 @@ class _CouponsPageState extends ConsumerState<CouponsPage> {
     for (Coupon coupon in coupons) {
       DateTime expirationDate = DateTime.parse(coupon.expiresAt);
       if (expirationDate.isBefore(now)) {
-        await CouponClient.deleteCoupon(coupon.id!, token);
+        await CouponClient.deleteCoupon(coupon.id!);
       }
     }
   }

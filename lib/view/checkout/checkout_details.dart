@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:project_belanjakan/component/dialog.dart';
 import 'package:project_belanjakan/component/snackbar.dart';
 import 'package:project_belanjakan/model/address.dart';
 import 'package:project_belanjakan/model/coupon.dart';
+import 'package:project_belanjakan/model/delivery_method.dart';
 import 'package:project_belanjakan/services/api/api_client.dart';
+import 'package:project_belanjakan/services/api/cart_client.dart';
 import 'package:project_belanjakan/services/api/coupon_client.dart';
+import 'package:project_belanjakan/services/api/item_client.dart';
 import 'package:project_belanjakan/services/api/transaction_client.dart';
 import 'package:project_belanjakan/view/checkout/coupon_selection.dart';
-import 'package:project_belanjakan/view/payment/card_method.dart';
+import 'package:project_belanjakan/view/checkout/delivery_selection.dart';
 import 'package:project_belanjakan/view/payment/payment_method.dart';
-import 'package:project_belanjakan/view/payment/pin_verify.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:project_belanjakan/model/cart.dart';
 import 'package:project_belanjakan/view/address/input_address.dart';
@@ -42,7 +45,7 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
       code: '',
       expiresAt: '-');
   String metodePembayaran = 'Visa';
-
+  DeliveryMethod deliveryMethod = DeliveryMethod(name: 'Normal', cost: 15000);
   @override
   void initState() {
     loadData();
@@ -68,6 +71,18 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
             expiresAt: '-');
       });
     }
+  }
+
+  Future<void> gotoSelectionDelivery(context) async {
+    deliveryMethod = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => DeliverySelection(
+          deliveryMethod: deliveryMethod,
+        ),
+      ),
+    );
+    setState(() {});
   }
 
   Future<void> gotoSelectionPayments(context) async {
@@ -112,32 +127,6 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
     }
   }
 
-  void onOrder() {
-    Transaction trans = Transaction(
-        id: 0,
-        idBuyer: idBuyer!,
-        address: widget.currentAddress.toString(),
-        discount: coupon.discount,
-        paymentMethod: metodePembayaran,
-        deliveryCost: 16000,
-        createdAt: '');
-
-    DetailTransaction moreTrans;
-    if (metodePembayaran == 'Visa') {
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const CardMethodView(),
-          ));
-    } else {
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => PinVerificationScreen(),
-          ));
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     Address deliveryAddress = widget.currentAddress;
@@ -177,7 +166,13 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
                             borderRadius: BorderRadius.all(Radius.circular(30)),
                           ),
                         ),
-                        onPressed: () => onOrder(),
+                        onPressed: () => onOrder(
+                            deliveryAddress.toString(),
+                            coupon.discount,
+                            metodePembayaran,
+                            deliveryMethod.cost,
+                            widget.listCart,
+                            context),
                         child: const Text('Pesan')),
                   ),
                 ),
@@ -260,11 +255,12 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
                 subtitle: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('J&T'),
-                    Text(currencyFormat.format(ongkir))
+                    Text(deliveryMethod.name),
+                    Text(currencyFormat.format(deliveryMethod.cost))
                   ],
                 ),
                 trailing: const Icon(Icons.arrow_forward_ios_rounded),
+                onTap: () => gotoSelectionDelivery(context),
               );
             }
             if (index == (carts.length + 1) * 2) {
@@ -353,11 +349,9 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
     return allItem * diskon / 100;
   }
 
-  handleOrder(String address, int discount, String paymentMethod,
-      int deliveryCost, List<Cart> listItems, context) async {
-    setState(() {
-      isLoading = true;
-    });
+  onOrder(String address, int discount, String paymentMethod, int deliveryCost,
+      List<Cart> listItems, context) async {
+    CustomDialog.showLoadingDialog(context);
     Transaction transaction = Transaction(
         id: 0,
         idBuyer: 0,
@@ -369,6 +363,9 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
 
     try {
       int id = await TransactionClient.addTransaction(transaction);
+      if (idCoupon != 0) {
+        await CouponClient.deleteCoupon(idCoupon);
+      }
       for (Cart cart in listItems) {
         DetailTransaction detailTransaction = DetailTransaction(
             id: 0,
@@ -376,10 +373,17 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
             name: cart.item!.name,
             price: cart.item!.price,
             amount: cart.amount);
+        await ItemClient.updateStock(cart.idItem, cart.amount);
         await TransactionClient.addDetailsTransaction(detailTransaction);
+        await CartClient.deleteCart(cart.id);
       }
+      CustomSnackBar.showSnackBar(
+          context, "Berhasil memesan produk", Colors.blue);
+      Navigator.pop(context);
     } catch (e) {
       CustomSnackBar.showSnackBar(context, e.toString(), Colors.red);
+    } finally {
+      Navigator.pop(context);
     }
   }
 }

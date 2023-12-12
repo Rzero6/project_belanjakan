@@ -36,7 +36,7 @@ class _ShoppingCartState extends ConsumerState<ShoppingCart> {
   onDelete(id, context, ref, token) async {
     CustomDialog.showLoadingDialog(context);
     try {
-      await CartClient.deleteCart(id, token);
+      await CartClient.deleteCart(id);
       ref.refresh(listCartProvider(token));
       CustomSnackBar.showSnackBar(context, "Delete Success", Colors.green);
     } catch (e) {
@@ -51,7 +51,7 @@ class _ShoppingCartState extends ConsumerState<ShoppingCart> {
       isLoading = true;
     });
     Address currentAddress = await GetCurrentLocation().getAddressLocation();
-    Navigator.push(
+    await Navigator.push(
         context,
         MaterialPageRoute(
             builder: (_) => CheckoutDetails(
@@ -63,6 +63,7 @@ class _ShoppingCartState extends ConsumerState<ShoppingCart> {
         isLoading = false;
       });
     });
+    onRefresh(context, ref, token);
   }
 
   onRefresh(context, ref, token) async {

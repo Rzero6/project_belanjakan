@@ -5,6 +5,7 @@ import 'package:project_belanjakan/services/api/api_client.dart';
 import 'package:http/http.dart' as http;
 import 'package:project_belanjakan/model/item.dart';
 import 'package:project_belanjakan/services/api/review_client.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ItemClient {
   static final ApiClient apiClient = ApiClient();
@@ -140,6 +141,35 @@ class ItemClient {
               'Content-Type': 'application/json',
             },
             body: updatedItem.toRawJson(),
+          )
+          .timeout(const Duration(seconds: 30));
+      if (response.statusCode != 200) throw Exception(response.reasonPhrase);
+      return response;
+    } on TimeoutException catch (_) {
+      return Future.error(timeout);
+    } catch (e) {
+      return Future.error(e.toString());
+    } finally {
+      client.close();
+    }
+  }
+
+  static Future<Response> updateStock(int id, int amount) async {
+    var client = http.Client();
+    Uri uri = Uri.parse('${apiClient.baseUrl}/items/$id');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token')!;
+    try {
+      var response = await client
+          .patch(
+            uri,
+            headers: {
+              'Authorization': 'Bearer $token',
+              'Content-Type': 'application/json',
+            },
+            body: jsonEncode(
+              {'amount': amount},
+            ),
           )
           .timeout(const Duration(seconds: 30));
       if (response.statusCode != 200) throw Exception(response.reasonPhrase);

@@ -5,6 +5,7 @@ import 'package:project_belanjakan/model/cart.dart';
 import 'package:project_belanjakan/services/api/api_client.dart';
 import 'package:http/http.dart' as http;
 import 'package:project_belanjakan/services/api/item_client.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CartClient {
   static final ApiClient apiClient = ApiClient();
@@ -64,10 +65,11 @@ class CartClient {
     }
   }
 
-  static Future<Response> deleteCart(int cartId, String token) async {
+  static Future<Response> deleteCart(int cartId) async {
     var client = http.Client();
     Uri uri = Uri.parse('${apiClient.baseUrl}/carts/$cartId');
-
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token')!;
     try {
       var response = await client.delete(
         uri,
