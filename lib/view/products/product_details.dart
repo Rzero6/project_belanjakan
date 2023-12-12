@@ -245,7 +245,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   void addToCart(context) async {
     try {
-      CustomDialog().showLoadingDialog(context);
+      CustomDialog.showLoadingDialog(context);
       Cart cart = Cart(
           id: 0,
           idUser: 0,

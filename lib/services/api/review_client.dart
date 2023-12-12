@@ -4,6 +4,7 @@ import 'package:http/http.dart';
 import 'package:project_belanjakan/services/api/api_client.dart';
 import 'package:http/http.dart' as http;
 import 'package:project_belanjakan/model/review.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ReviewClient {
   static final ApiClient apiClient = ApiClient();
@@ -20,9 +21,7 @@ class ReviewClient {
       }
       Iterable list = json.decode(response.body)['data'];
       double rating = json.decode(response.body)['rating'].toDouble();
-      print('tesssssssssssssssst');
       List<Review> listReviews = list.map((e) => Review.fromJson(e)).toList();
-      print(listReviews.length);
       return Reviews(rating: rating, listReviews: listReviews);
     } on TimeoutException catch (_) {
       return Future.error(timeout);
@@ -73,9 +72,11 @@ class ReviewClient {
     }
   }
 
-  static Future<Response> addReview(Review review, String token) async {
+  static Future<Response> addReview(Review review) async {
     var client = http.Client();
     Uri uri = Uri.parse('${apiClient.baseUrl}/reviews');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token')!;
     try {
       var response = await client
           .post(

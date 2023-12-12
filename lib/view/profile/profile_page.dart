@@ -4,6 +4,7 @@ import 'package:photo_view/photo_view.dart';
 import 'package:project_belanjakan/model/user.dart';
 import 'package:project_belanjakan/services/api/api_client.dart';
 import 'package:project_belanjakan/services/notifications/services.dart';
+import 'package:project_belanjakan/view/input_review.dart';
 import 'package:project_belanjakan/view/landing/login_page.dart';
 import 'package:project_belanjakan/view/products/manage/list_view.dart';
 import 'package:project_belanjakan/view/profile/edit_profile_page.dart';
@@ -174,6 +175,15 @@ class _ProfileViewState extends State<ProfileView> {
                   onTap: () => Navigator.push(context,
                       MaterialPageRoute(builder: (_) => const ItemsListView())),
                 ),
+                ListTile(
+                  title: const Text('Review'),
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const InputReview(
+                                idItem: 4,
+                              ))),
+                )
               ],
             ),
           ),

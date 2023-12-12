@@ -34,7 +34,7 @@ class _ShoppingCartState extends ConsumerState<ShoppingCart> {
   bool isLoading = false;
 
   onDelete(id, context, ref, token) async {
-    CustomDialog().showLoadingDialog(context);
+    CustomDialog.showLoadingDialog(context);
     try {
       await CartClient.deleteCart(id, token);
       ref.refresh(listCartProvider(token));
