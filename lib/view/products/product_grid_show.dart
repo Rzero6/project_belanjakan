@@ -1,26 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
+
+import 'package:project_belanjakan/model/item.dart';
 import 'package:project_belanjakan/services/api/api_client.dart';
 import 'package:project_belanjakan/services/api/item_client.dart';
 import 'package:project_belanjakan/view/products/product_details.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
-import 'package:project_belanjakan/model/item.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ProductsView extends ConsumerStatefulWidget {
-  const ProductsView({super.key});
+  final String search;
+  final int categoryId;
+  const ProductsView(this.search, this.categoryId, {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _ProductsViewState();
 }
 
+class SearchCategory {
+  String searchTerm;
+  int categoryId;
+  SearchCategory({
+    required this.searchTerm,
+    required this.categoryId,
+  });
+}
+
 class _ProductsViewState extends ConsumerState<ProductsView> {
   final TextEditingController searchController = TextEditingController();
-  final listItemProvider =
-      FutureProvider.family<List<Item>, String>((ref, search) async {
-    List<Item> items = await ItemClient.getItems(search, 0);
+  final listItemProvider = FutureProvider.family<List<Item>, SearchCategory>(
+      (ref, searchCategory) async {
+    List<Item> items = await ItemClient.getItems(
+        searchCategory.searchTerm, searchCategory.categoryId);
     return items;
   });
+  late SearchCategory searchCategory;
+  @override
+  void initState() {
+    searchCategory = SearchCategory(
+        searchTerm: widget.search, categoryId: widget.categoryId);
+    searchController.text = widget.search;
+    super.initState();
+  }
 
   Card itemInCard(Item item, context, ref) {
     return Card(
@@ -106,12 +127,12 @@ class _ProductsViewState extends ConsumerState<ProductsView> {
   }
 
   onRefresh(context, ref) async {
-    ref.refresh(listItemProvider(searchController.text));
+    ref.refresh(listItemProvider(searchCategory));
   }
 
   @override
   Widget build(BuildContext context) {
-    var listener = ref.watch(listItemProvider(searchController.text));
+    var listener = ref.watch(listItemProvider(searchCategory));
 
     return Scaffold(
       body: Column(
@@ -179,6 +200,10 @@ class _ProductsViewState extends ConsumerState<ProductsView> {
     );
   }
 
+  onSearch() {
+    searchCategory.searchTerm = searchController.text;
+  }
+
   Card searchBox(ref) {
     return Card(
       elevation: 4,
@@ -189,6 +214,8 @@ class _ProductsViewState extends ConsumerState<ProductsView> {
             Expanded(
               child: TextField(
                 controller: searchController,
+                textInputAction: TextInputAction.search,
+                onSubmitted: (value) => onSearch(),
                 decoration: const InputDecoration(
                   hintText: 'Search...',
                   border: InputBorder.none,
@@ -199,19 +226,14 @@ class _ProductsViewState extends ConsumerState<ProductsView> {
             if (searchController.text.isNotEmpty)
               IconButton(
                 onPressed: () {
-                  setState(() {
-                    searchController.clear();
-                  });
+                  searchController.clear();
+                  onSearch();
                 },
                 icon: const Icon(Icons.highlight_remove),
               ),
             IconButton(
               icon: const Icon(Icons.search),
-              onPressed: () async {
-                setState(
-                  () {},
-                );
-              },
+              onPressed: () => onSearch,
             ),
           ],
         ),

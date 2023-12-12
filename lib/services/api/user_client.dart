@@ -4,6 +4,8 @@ import 'package:project_belanjakan/services/api/api_client.dart';
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class UserClient {
   ApiClient apiClient = ApiClient();
 
@@ -44,6 +46,35 @@ class UserClient {
   Future<User> getUser(String token) async {
     var client = http.Client();
     Uri uri = Uri.parse('${apiClient.baseUrl}/user');
+    try {
+      var response = await client.get(
+        uri,
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      ).timeout(const Duration(seconds: 15));
+      if (response.statusCode == 200) {
+        var json = response.body;
+        var jsonData = jsonDecode(json);
+        var userJson = jsonData['data'];
+        return User.fromJson(userJson);
+      } else {
+        var json = response.body;
+        var jsonData = jsonDecode(json);
+        throw Exception(jsonData['message'] ?? 'Getting Info Failed');
+      }
+    } on TimeoutException catch (_) {
+      throw Exception('Take too long, please check your connection');
+    } finally {
+      client.close();
+    }
+  }
+
+  static Future<User> getUserById(int id) async {
+    var client = http.Client();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token')!;
+    Uri uri = Uri.parse('${ApiClient().baseUrl}/user/$id');
     try {
       var response = await client.get(
         uri,

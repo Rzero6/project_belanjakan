@@ -4,11 +4,13 @@ import 'package:project_belanjakan/component/snackbar.dart';
 import 'package:project_belanjakan/model/cart.dart';
 import 'package:project_belanjakan/model/item.dart';
 import 'package:project_belanjakan/model/review.dart';
+import 'package:project_belanjakan/model/user.dart';
 import 'package:project_belanjakan/services/api/api_client.dart';
 import 'package:project_belanjakan/services/api/cart_client.dart';
 import 'package:project_belanjakan/services/api/item_client.dart';
 import 'package:intl/intl.dart';
 import 'package:project_belanjakan/services/api/review_client.dart';
+import 'package:project_belanjakan/services/api/user_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
@@ -34,7 +36,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   final _formKey = GlobalKey<FormState>();
   late String token;
 
-  void loadData() async {
+  void loadData(context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
       item = await ItemClient.findItem(widget.id);
@@ -52,7 +54,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   void initState() {
     super.initState();
-    loadData();
+    loadData(context);
     amountController.text = widget.amount.toString();
   }
 
@@ -85,115 +87,160 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     color: Color(0xFF0077B6)),
               ),
             ),
-            body: isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : Column(
-                    children: [
-                      Expanded(
-                        child: SingleChildScrollView(
+            body: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: 2.h,
+                        ),
+                        Center(
+                          child: Container(
+                            width: 35.h,
+                            height: 20.h,
+                            clipBehavior: Clip.antiAlias,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20.0),
+                              image: DecorationImage(
+                                image: NetworkImage(
+                                  ApiClient().domainName + item.image,
+                                ),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 1.h, horizontal: 10.w),
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              Text(
+                                item.name,
+                                style: const TextStyle(
+                                    fontSize: 35, fontWeight: FontWeight.bold),
+                              ),
                               SizedBox(
-                                height: 4.h,
+                                height: 1.h,
                               ),
-                              Center(
-                                child: Container(
-                                  width: 35.h,
-                                  height: 20.h,
-                                  clipBehavior: Clip.antiAlias,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20.0),
-                                    image: DecorationImage(
-                                      image: NetworkImage(
-                                        ApiClient().domainName + item.image,
-                                      ),
-                                      fit: BoxFit.cover,
-                                    ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    currencyFormat.format(item.price),
+                                    style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black),
                                   ),
-                                ),
+                                  Column(
+                                    children: [
+                                      makeStarRating(reviews.rating),
+                                      Text(
+                                        'tersisa ${NumberFormat.compact().format(item.stock)}',
+                                        style: const TextStyle(
+                                            fontSize: 14, color: Colors.black),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
-                              Padding(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 4.h, horizontal: 10.w),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      item.name,
-                                      style: const TextStyle(
-                                          fontSize: 35,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    SizedBox(
-                                      height: 1.h,
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          currencyFormat.format(item.price),
-                                          style: const TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.black),
-                                        ),
-                                        Column(
-                                          children: [
-                                            makeStarRating(reviews.rating),
-                                            Text(
-                                              'tersisa ${NumberFormat.compact().format(item.stock)}',
-                                              style: const TextStyle(
-                                                  fontSize: 14,
-                                                  color: Colors.black),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(
-                                    top: 0.1.h, left: 10.w, right: 14.w),
-                                child: const Text(
-                                  'Deskripsi',
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 10.w, vertical: 1.h),
-                                child: Text(
-                                  item.detail,
-                                  style: const TextStyle(
-                                      fontSize: 16, color: Colors.black),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 10.w, vertical: 4.h),
-                                child: const Text(
-                                  'Reviews',
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              )
                             ],
                           ),
                         ),
-                      ),
-                      actionButton(),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: 1.h, left: 10.w, right: 14.w),
+                          child: const Text(
+                            'Deskripsi',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 10.w, vertical: 1.h),
+                          child: Text(
+                            item.detail,
+                            style: const TextStyle(
+                                fontSize: 16, color: Colors.black),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 10.w, vertical: 1.h),
+                          child: const Text(
+                            'Reviews',
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        reviewInListTile(),
+                      ],
+                    ),
+                  ),
+                ),
+                actionButton(),
+              ],
+            ),
+          );
+  }
+
+  Future<User> findUser(id) async {
+    try {
+      return await UserClient.getUserById(id);
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Widget reviewInListTile() {
+    return SizedBox(
+      height: 50.h,
+      child: ListView.separated(
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: reviews.listReviews.length,
+        separatorBuilder: (context, index) {
+          return const Divider();
+        },
+        itemBuilder: (context, index) {
+          return FutureBuilder<User>(
+            future: findUser(reviews.listReviews[index].idUser),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                return ListTile(
+                  leading: Image.network(
+                      ApiClient().domainName + snapshot.data!.profilePicture!),
+                  title: Text(snapshot.data!.name),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(reviews.listReviews[index].detail),
+                      makeStarRating(
+                          reviews.listReviews[index].rating.toDouble()),
                     ],
                   ),
+                  trailing:
+                      Text(formatDate(reviews.listReviews[index].createdAt)),
+                );
+              }
+            },
           );
+        },
+      ),
+    );
   }
 
   void addToCart(context) async {
@@ -356,5 +403,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         )
       ],
     );
+  }
+
+  String formatDate(String dateTime) {
+    return DateFormat('dd/MM/yyyy').format(DateTime.parse(dateTime));
   }
 }

@@ -1,17 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:project_belanjakan/model/category.dart';
 import 'package:project_belanjakan/model/item.dart';
-import 'package:project_belanjakan/model/review.dart';
 import 'package:project_belanjakan/services/api/api_client.dart';
 import 'package:project_belanjakan/services/api/category_client.dart';
 import 'package:project_belanjakan/services/api/item_client.dart';
-import 'package:project_belanjakan/services/api/review_client.dart';
 import 'package:project_belanjakan/view/products/product_details.dart';
+import 'package:project_belanjakan/view/products/product_grid_show.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -40,7 +38,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
   });
   @override
   Widget build(BuildContext context) {
-    var itemListener = ref.watch(listItemProvider(searchController.text));
+    var itemListener = ref.watch(listItemProvider(''));
     var catListener = ref.watch(listCatProvider);
     return Scaffold(
       body: SingleChildScrollView(
@@ -118,7 +116,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                           child: CircularProgressIndicator(),
                         ))),
             SizedBox(
-              height: 1.h,
+              height: 2.h,
             ),
             Padding(
               padding: EdgeInsets.only(left: 2.w, right: 2.w),
@@ -138,9 +136,10 @@ class _HomeViewState extends ConsumerState<HomeView> {
               ]),
             ),
             SizedBox(
-              height: 300.0,
+              height: 100.h,
               child: itemListener.when(
                 data: (items) => GridView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     childAspectRatio: 0.85,
@@ -160,13 +159,18 @@ class _HomeViewState extends ConsumerState<HomeView> {
                 ),
               ),
             ),
-            const SizedBox(
-              height: 20.0,
-            )
           ],
         ),
       ),
     );
+  }
+
+  onSearch() {
+    Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => ProductsView(searchController.text, 0)))
+        .then((value) => searchController.clear());
   }
 
   Card searchBox() {
@@ -178,6 +182,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
           children: [
             Expanded(
               child: TextField(
+                textInputAction: TextInputAction.search,
+                onSubmitted: (value) => onSearch(),
                 controller: searchController,
                 decoration: const InputDecoration(
                   hintText: 'Search...',
@@ -197,11 +203,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
               ),
             IconButton(
               icon: const Icon(Icons.search),
-              onPressed: () async {
-                setState(
-                  () {},
-                );
-              },
+              onPressed: () => onSearch(),
             ),
           ],
         ),

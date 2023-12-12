@@ -12,6 +12,21 @@ class Address {
   final double? latitude;
   final double? longitude;
 
-  Address({ this.id, this.userId,this.nomor,this.jalan,this.kecamatan,this.kelurahan,this.provinsi,this.kabupaten,this.kodePos,this.blok, this.latitude, this.longitude});
-
+  Address(
+      {this.id,
+      this.userId,
+      this.nomor,
+      this.jalan,
+      this.kecamatan,
+      this.kelurahan,
+      this.provinsi,
+      this.kabupaten,
+      this.kodePos,
+      this.blok,
+      this.latitude,
+      this.longitude});
+  @override
+  String toString() {
+    return '$nomor $jalan, $kelurahan, $kecamatan, $kabupaten $kodePos, $provinsi';
+  }
 }
