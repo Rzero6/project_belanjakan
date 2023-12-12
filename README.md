@@ -19,4 +19,4 @@ UGD 6 Unit Testing
 - Tito : Login + tanggal Register + Read + Update + Delete
 - Angel : Create item (tapi masih suspend)
 - Daniel : Login API
-- Hans: -
+- Hans: memperindah design UI
