@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class CustomSnackBar {
-  void showSnackBar(BuildContext context, String msg, Color bg) {
+  static void showSnackBar(BuildContext context, String msg, Color bg) {
     final scaffold = ScaffoldMessenger.of(context);
     scaffold.showSnackBar(
       SnackBar(

@@ -20,9 +20,29 @@ class ReviewClient {
       }
 
       Iterable list = json.decode(response.body)['data'];
-      double rating = json.decode(response.body)['rating'];
+      double rating = json.decode(response.body)['rating'].toDouble();
       List<Review> listReviews = list.map((e) => Review.fromJson(e)).toList();
       return Reviews(rating: rating, listReviews: listReviews);
+    } on TimeoutException catch (_) {
+      return Future.error(timeout);
+    } catch (e) {
+      return Future.error(e.toString());
+    } finally {
+      client.close();
+    }
+  }
+
+  static Future<double> getRatingPerItem(idItem) async {
+    var client = http.Client();
+    Uri uri;
+    try {
+      uri = Uri.parse('${apiClient.baseUrl}/item/$idItem/reviews');
+      var response = await client.get(uri).timeout(const Duration(seconds: 30));
+      if (response.statusCode != 200) {
+        throw json.decode(response.body)['message'].toString();
+      }
+
+      return json.decode(response.body)['rating'].toDouble();
     } on TimeoutException catch (_) {
       return Future.error(timeout);
     } catch (e) {

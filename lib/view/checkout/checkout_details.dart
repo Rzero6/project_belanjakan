@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:project_belanjakan/component/snackbar.dart';
 import 'package:project_belanjakan/model/address.dart';
 import 'package:project_belanjakan/model/coupon.dart';
 import 'package:project_belanjakan/services/api/api_client.dart';
+import 'package:project_belanjakan/services/api/coupon_client.dart';
 import 'package:project_belanjakan/view/checkout/coupon_selection.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:project_belanjakan/model/cart.dart';
@@ -11,34 +13,75 @@ import 'package:project_belanjakan/view/address/input_address.dart';
 class CheckoutDetails extends StatefulWidget {
   final List<Cart> listCart;
   final Address currentAddress;
+  final String token;
   const CheckoutDetails({
     Key? key,
     required this.listCart,
     required this.currentAddress,
+    required this.token,
   }) : super(key: key);
 
   @override
   _CheckoutDetailsState createState() => _CheckoutDetailsState();
 }
 
-int idCoupon = 0;
-
-void gotoSelectionCoupon(context) {
-  Navigator.push(context,
-          MaterialPageRoute(builder: (_) => const CouponsSelectionPage()))
-      .then((value) => value = idCoupon);
-}
-
 class _CheckoutDetailsState extends State<CheckoutDetails> {
+  int idCoupon = 0;
+  bool isLoading = false;
+  Coupon coupon = Coupon(
+      name: 'Tekan untuk pilih kupon',
+      idUser: 0,
+      discount: 0,
+      code: '',
+      expiresAt: '-');
+
+  Future<void> gotoSelectionCoupon(context) async {
+    idCoupon = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (_) => CouponsSelectionPage(
+                  couponId: idCoupon,
+                )));
+    if (idCoupon != 0) {
+      getCoupon(context);
+    } else {
+      setState(() {
+        coupon = Coupon(
+            name: 'Tekan untuk pilih kupon',
+            idUser: 0,
+            discount: 0,
+            code: '',
+            expiresAt: '-');
+      });
+    }
+  }
+
+  void getCoupon(context) async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      coupon = await CouponClient.findCoupon(idCoupon, widget.token);
+    } catch (e) {
+      coupon = Coupon(
+          name: 'Tekan untuk pilih kupon',
+          idUser: 0,
+          discount: 0,
+          code: '',
+          expiresAt: '-');
+      CustomSnackBar.showSnackBar(context, e.toString(), Colors.red);
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  onOrder() {}
+
   @override
   Widget build(BuildContext context) {
     Address deliveryAddress = widget.currentAddress;
-    Coupon coupon = Coupon(
-        name: "Test",
-        idUser: 1,
-        discount: 20,
-        code: "TESTCODE",
-        expiresAt: "expiresAt");
     double ongkir = 16000;
 
     return Scaffold(
@@ -46,15 +89,40 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
         title: const Text('Checkout'),
       ),
       body: Center(
-        child: Column(
-          children: [
-            addressPicker(context, deliveryAddress),
-            const Divider(
-              height: 0,
-            ),
-            itemDetailsPrice(widget.listCart, ongkir, coupon, context)
-          ],
-        ),
+        child: isLoading
+            ? const CircularProgressIndicator()
+            : Column(children: [
+                Expanded(
+                  child: Column(
+                    children: [
+                      addressPicker(context, deliveryAddress),
+                      const Divider(
+                        height: 0,
+                      ),
+                      itemDetailsPrice(widget.listCart, ongkir, coupon, context)
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  height: 8.h,
+                  child: Padding(
+                    padding:
+                        EdgeInsets.symmetric(vertical: 1.h, horizontal: 1.h),
+                    child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF0077B6),
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(30)),
+                          ),
+                        ),
+                        onPressed: () => onOrder(),
+                        child: const Text('Pesan')),
+                  ),
+                ),
+              ]),
       ),
     );
   }
@@ -112,7 +180,7 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
         NumberFormat.currency(locale: 'id_ID', symbol: 'Rp. ');
     return Expanded(
       child: ListView.builder(
-          itemCount: (carts.length + 3) * 2,
+          itemCount: (carts.length + 4) * 2,
           itemBuilder: (context, index) {
             if (index.isOdd) {
               return const Divider(
@@ -140,11 +208,10 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(idCoupon == 0
-                        ? 'Tekan untuk pilih kupon'
+                        ? coupon.name
                         : '${coupon.name} ${coupon.discount}%'),
-                    Text(idCoupon == 0
-                        ? '0%'
-                        : '- ${currencyFormat.format(calculateDiskon(coupon.discount.toDouble(), calculateAllItem(carts)))}')
+                    Text(
+                        '- ${currencyFormat.format(calculateDiskon(coupon.discount.toDouble(), calculateAllItem(carts)))}')
                   ],
                 ),
                 trailing: const Icon(Icons.arrow_forward_ios_rounded),
@@ -162,6 +229,14 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
                 ),
               );
             }
+            if (index == (carts.length + 3) * 2) {
+              return ListTile(
+                onTap: () {},
+                title: const Text('Metode Pembayaran'),
+                subtitle: const Text('Visa'),
+                trailing: const Icon(Icons.arrow_forward_ios_rounded),
+              );
+            }
 
             final cartIndex = index ~/ 2;
             return ListTile(
@@ -171,7 +246,10 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
                     ApiClient().domainName + carts[cartIndex].item!.image,
                     fit: BoxFit.cover),
               ),
-              title: Text(carts[cartIndex].item!.name),
+              title: Text(
+                carts[cartIndex].item!.name,
+                overflow: TextOverflow.ellipsis,
+              ),
               subtitle: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

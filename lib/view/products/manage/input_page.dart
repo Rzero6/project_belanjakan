@@ -37,7 +37,6 @@ class _ItemInputPageState extends State<ItemInputPage> {
   File? imageFile;
   String? imageSource;
   bool isLoading = false;
-  CustomSnackBar customSnackBar = CustomSnackBar();
   late String token;
   void loadDataItem() async {
     setState(() {
@@ -57,7 +56,7 @@ class _ItemInputPageState extends State<ItemInputPage> {
         isLoading = false;
       });
     } catch (e) {
-      customSnackBar.showSnackBar(context, e.toString(), Colors.red);
+      CustomSnackBar.showSnackBar(context, e.toString(), Colors.red);
       Navigator.pop(context);
     }
   }
@@ -87,12 +86,15 @@ class _ItemInputPageState extends State<ItemInputPage> {
   @override
   Widget build(BuildContext context) {
     void onSubmit() async {
+      if (!formKey.currentState!.validate()) return;
+      if (imageFile == null && imageSource == null) {
+        CustomSnackBar.showSnackBar(context, 'Harus isi gambar!', Colors.red);
+        return;
+      }
+      if (selectedCategory == null) return;
       setState(() {
         isLoading = true;
       });
-      if (!formKey.currentState!.validate()) return;
-      if (imageFile == null && imageSource == null) return;
-      if (selectedCategory == null) return;
       String image = '';
       if (imageFile != null) {
         image = await ConvertImageString.imgToStr(imageFile!);
@@ -113,10 +115,10 @@ class _ItemInputPageState extends State<ItemInputPage> {
         } else {
           await ItemClient.updateItem(input, token);
         }
-        customSnackBar.showSnackBar(context, 'Success', Colors.green);
+        CustomSnackBar.showSnackBar(context, 'Success', Colors.green);
         Navigator.pop(context);
       } catch (e) {
-        customSnackBar.showSnackBar(context, e.toString(), Colors.red);
+        CustomSnackBar.showSnackBar(context, e.toString(), Colors.red);
         Navigator.pop(context);
       }
     }

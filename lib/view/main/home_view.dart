@@ -6,9 +6,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:project_belanjakan/model/category.dart';
 import 'package:project_belanjakan/model/item.dart';
+import 'package:project_belanjakan/model/review.dart';
 import 'package:project_belanjakan/services/api/api_client.dart';
 import 'package:project_belanjakan/services/api/category_client.dart';
 import 'package:project_belanjakan/services/api/item_client.dart';
+import 'package:project_belanjakan/services/api/review_client.dart';
 import 'package:project_belanjakan/view/products/product_details.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -26,7 +28,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
   int _currentIndex = 0;
   final listItemProvider =
       FutureProvider.family<List<Item>, String>((ref, search) async {
-    List<Item> items = await ItemClient.getItems(search);
+    List<Item> items = await ItemClient.getItems(search, 0);
     return items;
   });
   final listCatProvider = FutureProvider<List<Category>>((ref) async {
@@ -400,7 +402,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
                       ),
                     ),
                     SizedBox(
-                        height: 2.h, child: makeStarRating(4.5, item.stock))
+                        height: 2.h,
+                        child: makeStarRating(item.rating!, item.stock))
                   ],
                 ),
               ),

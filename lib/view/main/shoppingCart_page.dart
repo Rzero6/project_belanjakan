@@ -35,19 +35,18 @@ class _ShoppingCartState extends ConsumerState<ShoppingCart> {
 
   onDelete(id, context, ref, token) async {
     CustomDialog().showLoadingDialog(context);
-    CustomSnackBar customSnackBar = CustomSnackBar();
     try {
       await CartClient.deleteCart(id, token);
       ref.refresh(listCartProvider(token));
-      customSnackBar.showSnackBar(context, "Delete Success", Colors.green);
+      CustomSnackBar.showSnackBar(context, "Delete Success", Colors.green);
     } catch (e) {
-      customSnackBar.showSnackBar(context, e.toString(), Colors.red);
+      CustomSnackBar.showSnackBar(context, e.toString(), Colors.red);
     } finally {
       Navigator.pop(context);
     }
   }
 
-  onCheckout(List<Cart> carts, context) async {
+  onCheckout(List<Cart> carts, context, token) async {
     setState(() {
       isLoading = true;
     });
@@ -56,8 +55,10 @@ class _ShoppingCartState extends ConsumerState<ShoppingCart> {
         context,
         MaterialPageRoute(
             builder: (_) => CheckoutDetails(
-                listCart: carts,
-                currentAddress: currentAddress))).then((value) {
+                  listCart: carts,
+                  currentAddress: currentAddress,
+                  token: token,
+                ))).then((value) {
       setState(() {
         isLoading = false;
       });
@@ -109,7 +110,8 @@ class _ShoppingCartState extends ConsumerState<ShoppingCart> {
                                         BorderRadius.all(Radius.circular(30)),
                                   ),
                                 ),
-                                onPressed: () => onCheckout(carts, context),
+                                onPressed: () =>
+                                    onCheckout(carts, context, token),
                                 child: const Text('Check out')),
                           ),
                         )

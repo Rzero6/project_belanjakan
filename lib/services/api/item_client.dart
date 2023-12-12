@@ -4,6 +4,7 @@ import 'package:http/http.dart';
 import 'package:project_belanjakan/services/api/api_client.dart';
 import 'package:http/http.dart' as http;
 import 'package:project_belanjakan/model/item.dart';
+import 'package:project_belanjakan/services/api/review_client.dart';
 
 class ItemClient {
   static final ApiClient apiClient = ApiClient();
@@ -16,7 +17,8 @@ class ItemClient {
       if (searchTerm.isEmpty) {
         uri = Uri.parse('${apiClient.baseUrl}/items');
       } else {
-        uri = Uri.parse('${apiClient.baseUrl}/items/search/$idCategory/q=$searchTerm');
+        uri = Uri.parse(
+            '${apiClient.baseUrl}/items/search/$idCategory/q=$searchTerm');
       }
       var response = await client.get(uri).timeout(const Duration(seconds: 30));
       if (response.statusCode != 200) {
@@ -24,7 +26,11 @@ class ItemClient {
       }
 
       Iterable list = json.decode(response.body)['data'];
-      return list.map((e) => Item.fromJson(e)).toList();
+      List<Item> listItems = list.map((e) => Item.fromJson(e)).toList();
+      for (Item item in listItems) {
+        item.rating = await ReviewClient.getRatingPerItem(item.id);
+      }
+      return listItems;
     } on TimeoutException catch (_) {
       return Future.error(timeout);
     } catch (e) {
