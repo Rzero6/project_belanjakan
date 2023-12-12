@@ -5,6 +5,7 @@ import 'package:project_belanjakan/model/address.dart';
 import 'package:project_belanjakan/model/coupon.dart';
 import 'package:project_belanjakan/services/api/api_client.dart';
 import 'package:project_belanjakan/services/api/coupon_client.dart';
+import 'package:project_belanjakan/services/api/transaction_client.dart';
 import 'package:project_belanjakan/view/checkout/coupon_selection.dart';
 import 'package:project_belanjakan/view/payment/card_method.dart';
 import 'package:project_belanjakan/view/payment/payment_method.dart';
@@ -12,6 +13,7 @@ import 'package:project_belanjakan/view/payment/pin_verify.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:project_belanjakan/model/cart.dart';
 import 'package:project_belanjakan/view/address/input_address.dart';
+import 'package:project_belanjakan/model/transaction.dart';
 
 class CheckoutDetails extends StatefulWidget {
   final List<Cart> listCart;
@@ -323,5 +325,35 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
 
   double calculateDiskon(double diskon, double allItem) {
     return allItem * diskon / 100;
+  }
+
+  handleOrder(String address, int discount, String paymentMethod,
+      int deliveryCost, List<Cart> listItems, context) async {
+    setState(() {
+      isLoading = true;
+    });
+    Transaction transaction = Transaction(
+        id: 0,
+        idBuyer: 0,
+        address: address,
+        discount: discount,
+        paymentMethod: paymentMethod,
+        deliveryCost: deliveryCost,
+        createdAt: '');
+
+    try {
+      int id = await TransactionClient.addTransaction(transaction);
+      for (Cart cart in listItems) {
+        DetailTransaction detailTransaction = DetailTransaction(
+            id: 0,
+            idTransaction: id,
+            name: cart.item!.name,
+            price: cart.item!.price,
+            amount: cart.amount);
+        await TransactionClient.addDetailsTransaction(detailTransaction);
+      }
+    } catch (e) {
+      CustomSnackBar.showSnackBar(context, e.toString(), Colors.red);
+    }
   }
 }
