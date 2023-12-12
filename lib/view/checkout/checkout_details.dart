@@ -5,14 +5,17 @@ import 'package:project_belanjakan/component/snackbar.dart';
 import 'package:project_belanjakan/model/address.dart';
 import 'package:project_belanjakan/model/coupon.dart';
 import 'package:project_belanjakan/model/delivery_method.dart';
+import 'package:project_belanjakan/model/user.dart';
 import 'package:project_belanjakan/services/api/api_client.dart';
 import 'package:project_belanjakan/services/api/cart_client.dart';
 import 'package:project_belanjakan/services/api/coupon_client.dart';
 import 'package:project_belanjakan/services/api/item_client.dart';
 import 'package:project_belanjakan/services/api/transaction_client.dart';
+import 'package:project_belanjakan/services/api/user_client.dart';
 import 'package:project_belanjakan/view/checkout/coupon_selection.dart';
 import 'package:project_belanjakan/view/checkout/delivery_selection.dart';
 import 'package:project_belanjakan/view/payment/payment_method.dart';
+import 'package:project_belanjakan/view/receipt/pdf_view.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:project_belanjakan/model/cart.dart';
 import 'package:project_belanjakan/view/address/input_address.dart';
@@ -127,56 +130,65 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
     }
   }
 
+  onPopping(int id) {
+    Navigator.pop(context, id);
+  }
+
   @override
   Widget build(BuildContext context) {
     Address deliveryAddress = widget.currentAddress;
     double ongkir = 16000;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Checkout'),
-      ),
-      body: Center(
-        child: isLoading
-            ? const CircularProgressIndicator()
-            : Column(children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      addressPicker(context, deliveryAddress),
-                      const Divider(
-                        height: 0,
-                      ),
-                      itemDetailsPrice(widget.listCart, ongkir, coupon, context)
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  width: double.infinity,
-                  height: 8.h,
-                  child: Padding(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 1.h, horizontal: 1.h),
-                    child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF0077B6),
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(30)),
-                          ),
+    return WillPopScope(
+      onWillPop: () => onPopping(0),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Checkout'),
+        ),
+        body: Center(
+          child: isLoading
+              ? const CircularProgressIndicator()
+              : Column(children: [
+                  Expanded(
+                    child: Column(
+                      children: [
+                        addressPicker(context, deliveryAddress),
+                        const Divider(
+                          height: 0,
                         ),
-                        onPressed: () => onOrder(
-                            deliveryAddress.toString(),
-                            coupon.discount,
-                            metodePembayaran,
-                            deliveryMethod.cost,
-                            widget.listCart,
-                            context),
-                        child: const Text('Pesan')),
+                        itemDetailsPrice(
+                            widget.listCart, ongkir, coupon, context)
+                      ],
+                    ),
                   ),
-                ),
-              ]),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 8.h,
+                    child: Padding(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 1.h, horizontal: 1.h),
+                      child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF0077B6),
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            shape: const RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(30)),
+                            ),
+                          ),
+                          onPressed: () => onOrder(
+                              deliveryAddress.toString(),
+                              coupon.discount,
+                              metodePembayaran,
+                              deliveryMethod.cost,
+                              widget.listCart,
+                              context),
+                          child: const Text('Pesan')),
+                    ),
+                  ),
+                ]),
+        ),
       ),
     );
   }
@@ -380,9 +392,9 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
       CustomSnackBar.showSnackBar(
           context, "Berhasil memesan produk", Colors.blue);
       Navigator.pop(context);
+      onPopping(id);
     } catch (e) {
       CustomSnackBar.showSnackBar(context, e.toString(), Colors.red);
-    } finally {
       Navigator.pop(context);
     }
   }

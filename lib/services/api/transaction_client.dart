@@ -63,7 +63,7 @@ class TransactionClient {
     }
   }
 
-  static Future<Transaction> findTransaction(id, token) async {
+  static Future<Transaction> findTransaction(id) async {
     var client = http.Client();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token')!;
