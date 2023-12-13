@@ -3,7 +3,7 @@
 ## KELOMPOK 2 KELAS D
 
 current progress:
-UGD 6 Unit Testing
+UAS Deployed
 
 ## Anggota Kelompok
 
@@ -13,10 +13,3 @@ UGD 6 Unit Testing
 - 210711280 - Angel
 - 210711346 - Daniel Natalius Christopper
 
-## Tugas
-
-- Reynold : benerin back-end + front-end sebelum di testing
-- Tito : Login + tanggal Register + Read + Update + Delete
-- Angel : Create item (tapi masih suspend)
-- Daniel : Login API
-- Hans: -
