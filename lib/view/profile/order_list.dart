@@ -46,7 +46,7 @@ class _OrderListViewState extends ConsumerState<OrderListView> {
                     itemBuilder: (context, index) => GestureDetector(
                       onTap: () async {
                         if (!widget.canReview) return;
-                        if (data[index].rated == true) return;
+                        if (data[index].rated == 1) return;
                         setState(() {
                           isLoading = true;
                         });

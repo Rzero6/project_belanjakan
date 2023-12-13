@@ -55,7 +55,7 @@ class DetailTransaction {
   String name;
   int price;
   int amount;
-  bool rated;
+  int rated;
   DetailTransaction(
       {required this.id,
       required this.idTransaction,

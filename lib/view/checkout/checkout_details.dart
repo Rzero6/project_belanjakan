@@ -386,7 +386,7 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
             name: cart.item!.name,
             price: cart.item!.price,
             amount: cart.amount,
-            rated: false);
+            rated: 0);
         await ItemClient.updateStock(cart.idItem, cart.amount);
         await TransactionClient.addDetailsTransaction(detailTransaction);
         await CartClient.deleteCart(cart.id);
