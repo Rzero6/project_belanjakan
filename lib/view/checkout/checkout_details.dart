@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:project_belanjakan/component/dialog.dart';
 import 'package:project_belanjakan/component/snackbar.dart';
 import 'package:project_belanjakan/model/address.dart';
 import 'package:project_belanjakan/model/coupon.dart';
+import 'package:project_belanjakan/model/delivery_method.dart';
+import 'package:project_belanjakan/model/user.dart';
 import 'package:project_belanjakan/services/api/api_client.dart';
+import 'package:project_belanjakan/services/api/cart_client.dart';
 import 'package:project_belanjakan/services/api/coupon_client.dart';
+import 'package:project_belanjakan/services/api/item_client.dart';
 import 'package:project_belanjakan/services/api/transaction_client.dart';
+import 'package:project_belanjakan/services/api/user_client.dart';
 import 'package:project_belanjakan/view/checkout/coupon_selection.dart';
-import 'package:project_belanjakan/view/payment/card_method.dart';
+import 'package:project_belanjakan/view/checkout/delivery_selection.dart';
 import 'package:project_belanjakan/view/payment/payment_method.dart';
-import 'package:project_belanjakan/view/payment/pin_verify.dart';
+import 'package:project_belanjakan/view/receipt/pdf_view.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:project_belanjakan/model/cart.dart';
 import 'package:project_belanjakan/view/address/input_address.dart';
@@ -42,7 +48,7 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
       code: '',
       expiresAt: '-');
   String metodePembayaran = 'Visa';
-
+  DeliveryMethod deliveryMethod = DeliveryMethod(name: 'Normal', cost: 15000);
   @override
   void initState() {
     loadData();
@@ -68,6 +74,18 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
             expiresAt: '-');
       });
     }
+  }
+
+  Future<void> gotoSelectionDelivery(context) async {
+    deliveryMethod = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => DeliverySelection(
+          deliveryMethod: deliveryMethod,
+        ),
+      ),
+    );
+    setState(() {});
   }
 
   Future<void> gotoSelectionPayments(context) async {
@@ -112,31 +130,8 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
     }
   }
 
-  void onOrder() {
-    Transaction trans = Transaction(
-        id: 0,
-        idBuyer: idBuyer!,
-        address: widget.currentAddress.toString(),
-        discount: coupon.discount,
-        paymentMethod: metodePembayaran,
-        deliveryCost: 16000,
-        createdAt: '',
-        status: 'Ordered');
-
-    DetailTransaction moreTrans;
-    if (metodePembayaran == 'Visa') {
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const CardMethodView(),
-          ));
-    } else {
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => PinVerificationScreen(),
-          ));
-    }
+  onPopping(int id) {
+    Navigator.pop(context, id);
   }
 
   @override
@@ -144,45 +139,56 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
     Address deliveryAddress = widget.currentAddress;
     double ongkir = 16000;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Checkout'),
-      ),
-      body: Center(
-        child: isLoading
-            ? const CircularProgressIndicator()
-            : Column(children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      addressPicker(context, deliveryAddress),
-                      const Divider(
-                        height: 0,
-                      ),
-                      itemDetailsPrice(widget.listCart, ongkir, coupon, context)
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  width: double.infinity,
-                  height: 8.h,
-                  child: Padding(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 1.h, horizontal: 1.h),
-                    child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF0077B6),
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(30)),
-                          ),
+    return WillPopScope(
+      onWillPop: () => onPopping(0),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Checkout'),
+        ),
+        body: Center(
+          child: isLoading
+              ? const CircularProgressIndicator()
+              : Column(children: [
+                  Expanded(
+                    child: Column(
+                      children: [
+                        addressPicker(context, deliveryAddress),
+                        const Divider(
+                          height: 0,
                         ),
-                        onPressed: () => onOrder(),
-                        child: const Text('Pesan')),
+                        itemDetailsPrice(
+                            widget.listCart, ongkir, coupon, context)
+                      ],
+                    ),
                   ),
-                ),
-              ]),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 8.h,
+                    child: Padding(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 1.h, horizontal: 1.h),
+                      child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF0077B6),
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            shape: const RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(30)),
+                            ),
+                          ),
+                          onPressed: () => onOrder(
+                              deliveryAddress.toString(),
+                              coupon.discount,
+                              metodePembayaran,
+                              deliveryMethod.cost,
+                              widget.listCart,
+                              context),
+                          child: const Text('Pesan')),
+                    ),
+                  ),
+                ]),
+        ),
       ),
     );
   }
@@ -261,11 +267,12 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
                 subtitle: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('J&T'),
-                    Text(currencyFormat.format(ongkir))
+                    Text(deliveryMethod.name),
+                    Text(currencyFormat.format(deliveryMethod.cost))
                   ],
                 ),
                 trailing: const Icon(Icons.arrow_forward_ios_rounded),
+                onTap: () => gotoSelectionDelivery(context),
               );
             }
             if (index == (carts.length + 1) * 2) {
@@ -354,11 +361,9 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
     return allItem * diskon / 100;
   }
 
-  handleOrder(String address, int discount, String paymentMethod,
-      int deliveryCost, List<Cart> listItems, context) async {
-    setState(() {
-      isLoading = true;
-    });
+  onOrder(String address, int discount, String paymentMethod, int deliveryCost,
+      List<Cart> listItems, context) async {
+    CustomDialog.showLoadingDialog(context);
     Transaction transaction = Transaction(
         id: 0,
         idBuyer: 0,
@@ -371,18 +376,28 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
 
     try {
       int id = await TransactionClient.addTransaction(transaction);
+      if (idCoupon != 0) {
+        await CouponClient.deleteCoupon(idCoupon);
+      }
       for (Cart cart in listItems) {
         DetailTransaction detailTransaction = DetailTransaction(
-          id: 0,
-          idTransaction: id,
-          name: cart.item!.name,
-          price: cart.item!.price,
-          amount: cart.amount,
-        );
+            id: 0,
+            idTransaction: id,
+            name: cart.item!.name,
+            price: cart.item!.price,
+            amount: cart.amount,
+            rated: false);
+        await ItemClient.updateStock(cart.idItem, cart.amount);
         await TransactionClient.addDetailsTransaction(detailTransaction);
+        await CartClient.deleteCart(cart.id);
       }
+      CustomSnackBar.showSnackBar(
+          context, "Berhasil memesan produk", Colors.blue);
+      Navigator.pop(context);
+      onPopping(id);
     } catch (e) {
       CustomSnackBar.showSnackBar(context, e.toString(), Colors.red);
+      Navigator.pop(context);
     }
   }
 }

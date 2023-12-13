@@ -4,6 +4,7 @@ import 'package:http/http.dart';
 import 'package:project_belanjakan/model/coupon.dart';
 import 'package:project_belanjakan/services/api/api_client.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CouponClient {
   static final ApiClient apiClient = ApiClient();
@@ -106,10 +107,11 @@ class CouponClient {
     }
   }
 
-  static Future<Response> deleteCoupon(int couponId, String token) async {
+  static Future<Response> deleteCoupon(int couponId) async {
     var client = http.Client();
     Uri uri = Uri.parse('${apiClient.baseUrl}/coupons/$couponId');
-
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token')!;
     try {
       var response = await client.delete(
         uri,

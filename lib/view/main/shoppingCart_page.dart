@@ -5,11 +5,16 @@ import 'package:project_belanjakan/component/dialog.dart';
 import 'package:project_belanjakan/component/snackbar.dart';
 import 'package:project_belanjakan/model/address.dart';
 import 'package:project_belanjakan/model/cart.dart';
+import 'package:project_belanjakan/model/transaction.dart';
+import 'package:project_belanjakan/model/user.dart';
 import 'package:project_belanjakan/services/api/api_client.dart';
 import 'package:project_belanjakan/services/api/cart_client.dart';
+import 'package:project_belanjakan/services/api/transaction_client.dart';
+import 'package:project_belanjakan/services/api/user_client.dart';
 import 'package:project_belanjakan/view/address/get_current_location.dart';
 import 'package:project_belanjakan/view/checkout/checkout_details.dart';
 import 'package:project_belanjakan/view/products/product_details.dart';
+import 'package:project_belanjakan/view/receipt/pdf_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
@@ -34,9 +39,9 @@ class _ShoppingCartState extends ConsumerState<ShoppingCart> {
   bool isLoading = false;
 
   onDelete(id, context, ref, token) async {
-    CustomDialog().showLoadingDialog(context);
+    CustomDialog.showLoadingDialog(context);
     try {
-      await CartClient.deleteCart(id, token);
+      await CartClient.deleteCart(id);
       ref.refresh(listCartProvider(token));
       CustomSnackBar.showSnackBar(context, "Delete Success", Colors.green);
     } catch (e) {
@@ -51,18 +56,23 @@ class _ShoppingCartState extends ConsumerState<ShoppingCart> {
       isLoading = true;
     });
     Address currentAddress = await GetCurrentLocation().getAddressLocation();
-    Navigator.push(
+    int idTransaksi = await Navigator.push(
         context,
         MaterialPageRoute(
             builder: (_) => CheckoutDetails(
                   listCart: carts,
                   currentAddress: currentAddress,
                   token: token,
-                ))).then((value) {
-      setState(() {
-        isLoading = false;
-      });
+                )));
+
+    Transaction transaction =
+        await TransactionClient.findTransaction(idTransaksi);
+    User user = await UserClient.getUserById(transaction.idBuyer);
+    setState(() {
+      isLoading = false;
     });
+    createPdf(user, transaction, context);
+    onRefresh(context, ref, token);
   }
 
   onRefresh(context, ref, token) async {

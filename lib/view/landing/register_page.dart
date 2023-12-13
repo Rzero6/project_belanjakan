@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -42,7 +44,6 @@ class RegisterviewState extends State<Registerview> {
       Colors.green,
       Colors.red,
       Colors.yellow,
-
     ];
     const colorizeTextStyle = TextStyle(
       fontSize: 50.0,
@@ -249,16 +250,20 @@ class RegisterviewState extends State<Registerview> {
                             width: double.infinity,
                             child: ElevatedButton(
                               key: const Key("register-submit"),
-                              onPressed: () {
+                              onPressed: () async {
                                 if (formKey.currentState!.validate()) {
-                                  context.read<RegisterBloc>().add(
-                                        FormSubmitted(
-                                            username: usernameController.text,
-                                            password: passwordController.text,
-                                            noTlp: numberController.text,
-                                            tanggalLahir: dateController.text,
-                                            email: emailController.text),
-                                      );
+                                  bool result =
+                                      await showConfirmDialog(context);
+                                  if (result) {
+                                    context.read<RegisterBloc>().add(
+                                          FormSubmitted(
+                                              username: usernameController.text,
+                                              password: passwordController.text,
+                                              noTlp: numberController.text,
+                                              tanggalLahir: dateController.text,
+                                              email: emailController.text),
+                                        );
+                                  }
                                 }
                               },
                               child: Padding(
@@ -313,5 +318,82 @@ class RegisterviewState extends State<Registerview> {
       return true;
     }
     return false;
+  }
+
+  Future<bool> showConfirmDialog(BuildContext context) async {
+    Completer<bool> completer = Completer<bool>();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Align(
+            alignment: Alignment.center,
+            child: Text('Konfirmasi Registrasi'),
+          ),
+          content: SizedBox(
+            width: double.infinity,
+            height: 10.h,
+            child: RichText(
+              textAlign: TextAlign.center,
+              text: const TextSpan(
+                style: TextStyle(fontSize: 14, color: Colors.black),
+                children: <TextSpan>[
+                  TextSpan(
+                    text: 'Apakah anda menyetujui ',
+                  ),
+                  TextSpan(
+                    text: '\nketentuan dan persetujuan\n',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  TextSpan(text: ' untuk mendaftarkan data anda di '),
+                  TextSpan(
+                    text: 'belanjakan ?',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.blue,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                SizedBox(
+                  width: 30.w,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      completer.complete(true);
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Iya'),
+                  ),
+                ),
+                SizedBox(
+                  width: 30.w,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      completer.complete(false);
+                      Navigator.of(context).pop();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.grey),
+                    ),
+                    child: const Text('Tidak'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+
+    return completer.future;
   }
 }

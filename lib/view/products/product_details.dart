@@ -206,7 +206,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     return SizedBox(
       height: 50.h,
       child: ListView.separated(
-        physics: const NeverScrollableScrollPhysics(),
         itemCount: reviews.listReviews.length,
         separatorBuilder: (context, index) {
           return const Divider();
@@ -221,12 +220,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 return Text('Error: ${snapshot.error}');
               } else {
                 return ListTile(
-                  leading: snapshot.data!.profilePicture != null
-                      ? Image.network(
-                          '${ApiClient().domainName}${snapshot.data!.profilePicture!}')
-                      : Image.network(
-                          '${ApiClient().domainName}/images/profile.jpg',
-                        ),
+                  leading: ClipRRect(
+                    borderRadius: BorderRadius.circular(50),
+                    child: snapshot.data!.profilePicture != null
+                        ? Image.network(
+                            '${ApiClient().domainName}${snapshot.data!.profilePicture!}')
+                        : Image.network(
+                            '${ApiClient().domainName}/images/profile.jpg',
+                          ),
+                  ),
                   title: Text(snapshot.data!.name),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -249,7 +251,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   void addToCart(context) async {
     try {
-      CustomDialog().showLoadingDialog(context);
+      CustomDialog.showLoadingDialog(context);
       Cart cart = Cart(
           id: 0,
           idUser: 0,

@@ -29,9 +29,9 @@ class _CouponsPageState extends ConsumerState<CouponsPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Tunggu Dulu...'),
-            content: const Text(
-                'Kau tuh dah ngocok, tunggu dulu lah. Ngocok lagi besok yaa.'),
+            title: const Text('Maaf yaa...'),
+            content:
+                const Text('Shake and Win hanya bisa dilakukan sehari sekali.'),
             actions: <Widget>[
               ElevatedButton(
                   onPressed: () {
@@ -57,7 +57,7 @@ class _CouponsPageState extends ConsumerState<CouponsPage> {
     for (Coupon coupon in coupons) {
       DateTime expirationDate = DateTime.parse(coupon.expiresAt);
       if (expirationDate.isBefore(now)) {
-        await CouponClient.deleteCoupon(coupon.id!, token);
+        await CouponClient.deleteCoupon(coupon.id!);
       }
     }
   }

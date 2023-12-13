@@ -11,7 +11,6 @@ import 'package:project_belanjakan/services/api/item_client.dart';
 import 'package:project_belanjakan/view/main/cat_view.dart';
 import 'package:project_belanjakan/view/products/product_details.dart';
 import 'package:project_belanjakan/view/products/product_grid_by_cat.dart';
-import 'package:project_belanjakan/view/products/product_details.dart';
 import 'package:project_belanjakan/view/products/product_grid_show.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -35,8 +34,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
   });
   final listCatProvider = FutureProvider<List<Category>>((ref) async {
     List<Category> items = await CategoryClient.getCategories();
-    if (items.length > 5) {
-      return items.take(5).toList();
+    if (items.length > 4) {
+      return items.take(4).toList();
     }
     return items;
   });
@@ -150,31 +149,27 @@ class _HomeViewState extends ConsumerState<HomeView> {
                 ),
               ]),
             ),
-            Scrollbar(
-              thumbVisibility: true,
-              controller: _scrollController,
-              child: SizedBox(
-                height: 300.0,
-                child: itemListener.when(
-                  data: (items) => GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.85,
-                      mainAxisSpacing: 5,
-                      crossAxisSpacing: 5,
-                    ),
-                    itemCount: items.length,
-                    itemBuilder: (context, index) {
-                      return itemInCard(items[index], context, ref);
-                    },
+            SizedBox(
+              height: 65.h,
+              child: itemListener.when(
+                data: (items) => GridView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.85,
+                    mainAxisSpacing: 5,
+                    crossAxisSpacing: 5,
                   ),
-                  error: (err, s) => Center(
-                    child: Text(err.toString()),
-                  ),
-                  loading: () => const Center(
-                    child: CircularProgressIndicator(),
-                  ),
+                  itemCount: items.length,
+                  itemBuilder: (context, index) {
+                    return itemInCard(items[index], context, ref);
+                  },
+                ),
+                error: (err, s) => Center(
+                  child: Text(err.toString()),
+                ),
+                loading: () => const Center(
+                  child: CircularProgressIndicator(),
                 ),
               ),
             ),
