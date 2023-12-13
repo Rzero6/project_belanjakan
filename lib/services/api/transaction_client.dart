@@ -145,4 +145,30 @@ class TransactionClient {
       client.close();
     }
   }
+
+  static Future<Response> updateRatedDetailsTransaction(
+      int idDetailTransaksi) async {
+    var client = http.Client();
+    Uri uri = Uri.parse(
+        '${apiClient.baseUrl}/transactions/details/$idDetailTransaksi');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token')!;
+    try {
+      var response = await client.patch(
+        uri,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      ).timeout(const Duration(seconds: 30));
+      if (response.statusCode != 200) throw Exception(response.reasonPhrase);
+      return response;
+    } on TimeoutException catch (_) {
+      return Future.error(timeout);
+    } catch (e) {
+      return Future.error(e.toString());
+    } finally {
+      client.close();
+    }
+  }
 }
