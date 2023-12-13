@@ -1,21 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:project_belanjakan/component/dialog.dart';
 import 'package:project_belanjakan/component/snackbar.dart';
 import 'package:project_belanjakan/model/cart.dart';
 import 'package:project_belanjakan/model/item.dart';
+import 'package:project_belanjakan/model/review.dart';
+import 'package:project_belanjakan/model/user.dart';
 import 'package:project_belanjakan/services/api/api_client.dart';
 import 'package:project_belanjakan/services/api/cart_client.dart';
 import 'package:project_belanjakan/services/api/item_client.dart';
-import 'package:project_belanjakan/view/payment/quick_pay.dart';
 import 'package:intl/intl.dart';
+import 'package:project_belanjakan/services/api/review_client.dart';
+import 'package:project_belanjakan/services/api/user_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final int id;
   final int amount;
-  const ProductDetailScreen(
-      {super.key, required this.id, required this.amount});
+
+  const ProductDetailScreen({
+    Key? key,
+    required this.id,
+    required this.amount,
+  }) : super(key: key);
 
   @override
   State<ProductDetailScreen> createState() => _ProductDetailScreenState();
@@ -23,30 +31,36 @@ class ProductDetailScreen extends StatefulWidget {
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   late Item item;
+  late Reviews reviews;
   bool isLoading = true;
   final TextEditingController amountController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   late String token;
-  CustomSnackBar customSnackBar = CustomSnackBar();
 
-  void loadData() async {
+  void loadData(context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
       item = await ItemClient.findItem(widget.id);
+      reviews = await ReviewClient.getReviewsPerItem(item.id);
       token = prefs.getString('token')!;
-      setState(() {
-        isLoading = false;
-      });
     } catch (err) {
-      customSnackBar.showSnackBar(context, err.toString(), Colors.red);
+      CustomSnackBar.showSnackBar(context, err.toString(), Colors.red);
       Navigator.pop(context);
     }
+    setState(() {
+      if (item.stock == 0) {
+        CustomSnackBar.showSnackBar(context,
+            'Stok Habis, Tunggu Seller Restock atau pesan lainnya', Colors.red);
+        Navigator.pop(context);
+      }
+      isLoading = false;
+    });
   }
 
   @override
   void initState() {
     super.initState();
-    loadData();
+    loadData(context);
     amountController.text = widget.amount.toString();
   }
 
@@ -54,93 +68,210 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   Widget build(BuildContext context) {
     final currencyFormat =
         NumberFormat.currency(locale: 'id_ID', symbol: 'Rp. ');
-
-    return Scaffold(
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
+    return isLoading
+        ? const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          )
+        : Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              iconTheme: const IconThemeData(color: Color(0xFF0077B6)),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              title: Text(
+                item.name,
+                style: const TextStyle(
+                    overflow: TextOverflow.ellipsis,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF0077B6)),
+              ),
+            ),
+            body: Column(
               children: [
                 Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                          width: double.infinity,
-                          height: 40.h,
-                          child: Image.network(
-                            ApiClient().domainName + item.image,
-                            fit: BoxFit.cover,
-                          )),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 1.h, horizontal: 2.w),
-                        child: Text(
-                          item.name,
-                          style: const TextStyle(
-                              fontSize: 26, fontWeight: FontWeight.bold),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: 2.h,
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 1.h, horizontal: 2.w),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              currencyFormat.format(item.price),
-                              style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue),
+                        Center(
+                          child: Container(
+                            width: 35.h,
+                            height: 20.h,
+                            clipBehavior: Clip.antiAlias,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20.0),
+                              image: DecorationImage(
+                                image: NetworkImage(
+                                  ApiClient().domainName + item.image,
+                                ),
+                                fit: BoxFit.cover,
+                              ),
                             ),
-                            Text(
-                                'tersisa ${NumberFormat.compact().format(item.stock)}')
-                          ],
+                          ),
                         ),
-                      ),
-                      Padding(
-                        padding:
-                            EdgeInsets.only(top: 3.h, left: 2.w, right: 2.w),
-                        child: const Text(
-                          'Deskripsi',
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 1.h, horizontal: 10.w),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                item.name,
+                                style: const TextStyle(
+                                    fontSize: 35, fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(
+                                height: 1.h,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    currencyFormat.format(item.price),
+                                    style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black),
+                                  ),
+                                  Column(
+                                    children: [
+                                      makeStarRating(reviews.rating),
+                                      Text(
+                                        'tersisa ${NumberFormat.compact().format(item.stock)}',
+                                        style: const TextStyle(
+                                            fontSize: 14, color: Colors.black),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 3.w, vertical: 1.h),
-                        child: Text(
-                          item.detail,
-                          style:
-                              const TextStyle(fontSize: 16, color: Colors.blue),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: 1.h, left: 10.w, right: 14.w),
+                          child: const Text(
+                            'Deskripsi',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
                         ),
-                      ),
-                    ],
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 10.w, vertical: 1.h),
+                          child: Text(
+                            item.detail,
+                            style: const TextStyle(
+                                fontSize: 16, color: Colors.black),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 10.w, vertical: 1.h),
+                          child: const Text(
+                            'Reviews',
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        reviewInListTile(),
+                      ],
+                    ),
                   ),
                 ),
                 actionButton(),
               ],
             ),
+          );
+  }
+
+  Future<User> findUser(id) async {
+    try {
+      return await UserClient.getUserById(id);
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Widget reviewInListTile() {
+    return SizedBox(
+      height: 50.h,
+      child: ListView.separated(
+        itemCount: reviews.listReviews.length,
+        separatorBuilder: (context, index) {
+          return const Divider();
+        },
+        itemBuilder: (context, index) {
+          return FutureBuilder<User>(
+            future: findUser(reviews.listReviews[index].idUser),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                return ListTile(
+                  leading: ClipRRect(
+                    borderRadius: BorderRadius.circular(50),
+                    child: snapshot.data!.profilePicture != null
+                        ? Image.network(
+                            '${ApiClient().domainName}${snapshot.data!.profilePicture!}')
+                        : Image.network(
+                            '${ApiClient().domainName}/images/profile.jpg',
+                          ),
+                  ),
+                  title: Text(snapshot.data!.name),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(reviews.listReviews[index].detail),
+                      makeStarRating(
+                          reviews.listReviews[index].rating.toDouble()),
+                    ],
+                  ),
+                  trailing:
+                      Text(formatDate(reviews.listReviews[index].createdAt)),
+                );
+              }
+            },
+          );
+        },
+      ),
     );
   }
 
   void addToCart(context) async {
     try {
-      CustomDialog().showLoadingDialog(context);
+      CustomDialog.showLoadingDialog(context);
       Cart cart = Cart(
           id: 0,
           idUser: 0,
           idItem: item.id,
-          amount: int.parse(amountController.text));
+          amount: amountController.text.isEmpty
+              ? 1
+              : int.parse(amountController.text));
       await CartClient.addOrUpdateCart(cart, token);
       Navigator.pop(context);
-      customSnackBar.showSnackBar(context, 'Added to Cart', Colors.green);
+      CustomSnackBar.showSnackBar(context, 'Added to Cart', Colors.green);
       Navigator.pop(context);
     } catch (e) {
       Navigator.pop(context);
-      customSnackBar.showSnackBar(context, e.toString(), Colors.red);
+      CustomSnackBar.showSnackBar(context, e.toString(), Colors.red);
     }
   }
 
@@ -148,10 +279,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     return Container(
       color: Colors.white60,
       height: 16.h,
-      padding: EdgeInsets.only(left: 5.w, right: 5.w),
+      padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.h),
       child: Form(
         key: _formKey,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -183,7 +315,19 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         icon: const Icon(Icons.remove)),
                     SizedBox(
                       width: 5.w,
-                      child: TextField(
+                      child: TextFormField(
+                        onChanged: (value) {
+                          if (int.parse(value) > item.stock) {
+                            setState(() {
+                              amountController.text = item.stock.toString();
+                            });
+                          }
+                          if (int.parse(value) < 1) {
+                            setState(() {
+                              amountController.text = 1.toString();
+                            });
+                          }
+                        },
                         controller: amountController,
                         keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
@@ -212,78 +356,68 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 )
               ],
             ),
-            Row(
-              children: [
-                const Icon(
-                  Icons.favorite_border,
-                  color: Color(0xFF5e5e5e),
-                ),
-                const Spacer(),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue.shade100,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          bottomLeft: Radius.circular(10)),
-                    ),
-                  ),
-                  onPressed: () {
-                    addToCart(context);
-                  },
-                  child: Container(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 1.w, vertical: 2.h),
-                    child: Text("Add to cart".toUpperCase(),
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.blue.shade600)),
+            const Spacer(),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF0077B6),
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    bottomLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
+                    bottomRight: Radius.circular(30),
                   ),
                 ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    elevation: 0,
-                    shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(10),
-                            bottomRight: Radius.circular(10)),
-                        side: BorderSide(color: Colors.blue)),
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                  ),
-                  onPressed: () {},
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => QuickPayView(
-                                id: widget.id,
-                                quantity: int.parse(amountController.text)),
-                          ));
-                    },
-                    child: Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 1.w, vertical: 2.h),
-                      child: Text(
-                        "Buy now".toUpperCase(),
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          color: Color(0xFFFFFFFF),
-                        ),
-                      ),
+              ),
+              onPressed: () {
+                addToCart(context);
+              },
+              child: Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(vertical: 2.h),
+                child: Center(
+                  child: Text(
+                    "Add to Cart".toUpperCase(),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.white,
                     ),
                   ),
                 ),
-              ],
+              ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  Row makeStarRating(double rating) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            for (int i = 0; i < 5; i++)
+              Icon(
+                rating >= i + 1
+                    ? Icons.star_rate_rounded
+                    : rating >= i + 0.5
+                        ? Icons.star_half_rounded
+                        : Icons.star_border_rounded,
+                color: Colors.orangeAccent,
+                size: 15,
+              ),
+          ],
+        )
+      ],
+    );
+  }
+
+  String formatDate(String dateTime) {
+    return DateFormat('dd/MM/yyyy').format(DateTime.parse(dateTime));
   }
 }

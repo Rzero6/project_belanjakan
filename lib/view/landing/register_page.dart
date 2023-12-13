@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:project_belanjakan/bloc/form_submission_state.dart';
@@ -5,6 +8,7 @@ import 'package:project_belanjakan/bloc/register_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:project_belanjakan/bloc/register_event.dart';
 import 'package:project_belanjakan/bloc/register_state.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 
 class Registerview extends StatefulWidget {
   const Registerview({super.key});
@@ -23,7 +27,28 @@ class RegisterviewState extends State<Registerview> {
   bool isPasswordVisibleChanged = true;
 
   @override
+  void dispose() {
+    usernameController.dispose();
+    passwordController.dispose();
+    emailController.dispose();
+    numberController.dispose();
+    dateController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    const colorizeColors = [
+      Colors.blue,
+      Colors.purple,
+      Colors.green,
+      Colors.red,
+      Colors.yellow,
+    ];
+    const colorizeTextStyle = TextStyle(
+      fontSize: 50.0,
+      fontWeight: FontWeight.bold,
+    );
     return BlocProvider(
       create: (context) => RegisterBloc(),
       child: BlocListener<RegisterBloc, RegisterState>(
@@ -56,14 +81,37 @@ class RegisterviewState extends State<Registerview> {
               body: Form(
                 key: formKey,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20.0, vertical: 10.0),
+                  padding: EdgeInsets.symmetric(horizontal: 5.w),
                   child: Container(
-                    alignment: Alignment.center,
+                    alignment: Alignment.topCenter,
                     child: SingleChildScrollView(
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 10.h, horizontal: 1.w),
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: AnimatedTextKit(
+                                animatedTexts: [
+                                  ColorizeAnimatedText('Come Join Us',
+                                      textStyle: colorizeTextStyle,
+                                      colors: colorizeColors,
+                                      textAlign: TextAlign.center),
+                                  ColorizeAnimatedText('@belanjakan',
+                                      textStyle: colorizeTextStyle,
+                                      colors: colorizeColors,
+                                      textAlign: TextAlign.center),
+                                  ColorizeAnimatedText('Register',
+                                      textStyle: colorizeTextStyle,
+                                      colors: colorizeColors,
+                                      textAlign: TextAlign.center),
+                                ],
+                                isRepeatingAnimation: true,
+                              ),
+                            ),
+                          ),
                           TextFormField(
                             controller: usernameController,
                             key: const Key("register-input-username"),
@@ -83,9 +131,10 @@ class RegisterviewState extends State<Registerview> {
                               return null;
                             },
                           ),
+                          SizedBox(height: 2.h),
                           TextFormField(
                               controller: emailController,
-                              key: Key('register-input-email'),
+                              key: const Key('register-input-email'),
                               keyboardType: TextInputType.emailAddress,
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(
@@ -102,6 +151,7 @@ class RegisterviewState extends State<Registerview> {
                                 }
                                 return null;
                               }),
+                          SizedBox(height: 2.h),
                           TextFormField(
                             controller: passwordController,
                             key: const Key('register-input-password'),
@@ -143,9 +193,10 @@ class RegisterviewState extends State<Registerview> {
                               return null;
                             },
                           ),
+                          SizedBox(height: 2.h),
                           TextFormField(
                               controller: numberController,
-                              key: Key('register-input-number'),
+                              key: const Key('register-input-number'),
                               keyboardType: TextInputType.phone,
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(
@@ -164,8 +215,9 @@ class RegisterviewState extends State<Registerview> {
                                   return 'Phone Number must start with + or 0';
                                 }
                               }),
+                          SizedBox(height: 2.h),
                           TextFormField(
-                              key: Key("register-input-date"),
+                              key: const Key("register-input-date"),
                               controller: dateController,
                               keyboardType: TextInputType.datetime,
                               onTap: _selectDate,
@@ -193,21 +245,25 @@ class RegisterviewState extends State<Registerview> {
                                 }
                                 return null;
                               }),
-                          const SizedBox(height: 30),
+                          SizedBox(height: 2.h),
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
                               key: const Key("register-submit"),
-                              onPressed: () {
+                              onPressed: () async {
                                 if (formKey.currentState!.validate()) {
-                                  context.read<RegisterBloc>().add(
-                                        FormSubmitted(
-                                            username: usernameController.text,
-                                            password: passwordController.text,
-                                            noTlp: numberController.text,
-                                            tanggalLahir: dateController.text,
-                                            email: emailController.text),
-                                      );
+                                  bool result =
+                                      await showConfirmDialog(context);
+                                  if (result) {
+                                    context.read<RegisterBloc>().add(
+                                          FormSubmitted(
+                                              username: usernameController.text,
+                                              password: passwordController.text,
+                                              noTlp: numberController.text,
+                                              tanggalLahir: dateController.text,
+                                              email: emailController.text),
+                                        );
+                                  }
                                 }
                               },
                               child: Padding(
@@ -262,5 +318,82 @@ class RegisterviewState extends State<Registerview> {
       return true;
     }
     return false;
+  }
+
+  Future<bool> showConfirmDialog(BuildContext context) async {
+    Completer<bool> completer = Completer<bool>();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Align(
+            alignment: Alignment.center,
+            child: Text('Konfirmasi Registrasi'),
+          ),
+          content: SizedBox(
+            width: double.infinity,
+            height: 10.h,
+            child: RichText(
+              textAlign: TextAlign.center,
+              text: const TextSpan(
+                style: TextStyle(fontSize: 14, color: Colors.black),
+                children: <TextSpan>[
+                  TextSpan(
+                    text: 'Apakah anda menyetujui ',
+                  ),
+                  TextSpan(
+                    text: '\nketentuan dan persetujuan\n',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  TextSpan(text: ' untuk mendaftarkan data anda di '),
+                  TextSpan(
+                    text: 'belanjakan ?',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.blue,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                SizedBox(
+                  width: 30.w,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      completer.complete(true);
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Iya'),
+                  ),
+                ),
+                SizedBox(
+                  width: 30.w,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      completer.complete(false);
+                      Navigator.of(context).pop();
+                    },
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.grey),
+                    ),
+                    child: const Text('Tidak'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+
+    return completer.future;
   }
 }

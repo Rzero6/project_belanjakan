@@ -24,7 +24,6 @@ class SearchToken {
 
 class _ItemsListViewState extends ConsumerState<ItemsListView> {
   final TextEditingController searchController = TextEditingController();
-  CustomSnackBar customSnackBar = CustomSnackBar();
   File? cachedImage;
   late SearchToken searchToken;
   final listItemProvider =
@@ -52,9 +51,9 @@ class _ItemsListViewState extends ConsumerState<ItemsListView> {
     try {
       await ItemClient.deleteItem(id, searchToken.token);
       ref.refresh(listItemProvider(searchToken));
-      customSnackBar.showSnackBar(context, "Delete Success", Colors.green);
+      CustomSnackBar.showSnackBar(context, "Delete Success", Colors.green);
     } catch (e) {
-      customSnackBar.showSnackBar(context, e.toString(), Colors.red);
+      CustomSnackBar.showSnackBar(context, e.toString(), Colors.red);
     }
   }
 
@@ -135,7 +134,10 @@ class _ItemsListViewState extends ConsumerState<ItemsListView> {
         data: (items) => SingleChildScrollView(
           child: Column(
             children: items
-                .map((item) => itemInListTile(item, context, ref, searchToken))
+                .map((item) => Column(children: [
+                      itemInListTile(item, context, ref, searchToken),
+                      const Divider(),
+                    ]))
                 .toList(),
           ),
         ),

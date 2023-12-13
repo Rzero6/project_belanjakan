@@ -17,7 +17,7 @@ class PreviewScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         centerTitle: true,
-        title: const Text('Preview'),
+        title: const Text('Detail Transaksi'),
       ),
       body: PdfPreview(
         build: (format) => doc.save(),

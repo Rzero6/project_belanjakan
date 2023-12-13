@@ -21,7 +21,6 @@ class _QuickPayViewState extends State<QuickPayView> {
   late Item item;
   bool isLoading = false;
   late Address currentAddress;
-  CustomSnackBar customSnackbar = CustomSnackBar();
 
   void loadData() async {
     try {
@@ -32,7 +31,7 @@ class _QuickPayViewState extends State<QuickPayView> {
         isLoading = false;
       });
     } catch (err) {
-      customSnackbar.showSnackBar(context, err.toString(), Colors.red);
+      CustomSnackBar.showSnackBar(context, err.toString(), Colors.red);
       Navigator.pop(context);
     }
   }
