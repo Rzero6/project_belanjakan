@@ -2,56 +2,90 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project_belanjakan/component/dialog.dart';
+import 'package:project_belanjakan/model/item.dart';
 import 'package:project_belanjakan/model/transaction.dart';
 import 'package:project_belanjakan/services/api/item_client.dart';
 import 'package:project_belanjakan/services/api/transaction_client.dart';
+import 'package:project_belanjakan/view/input_review.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:riverpod/riverpod.dart';
 
 class OrderListView extends ConsumerStatefulWidget {
-  final String status;
-  const OrderListView(this.status, {super.key});
+  final bool canReview;
+  final int id;
+  const OrderListView(this.canReview, this.id, {super.key});
 
   @override
   ConsumerState<OrderListView> createState() => _OrderListViewState();
 }
 
 class _OrderListViewState extends ConsumerState<OrderListView> {
-  final listTransactionProvider =
-      FutureProvider.family<List<Transaction>?, String>((ref, search) async {
-    List<Transaction>? items = await TransactionClient.getTransactionsPerUser();
-    if (items.isEmpty) {
-      List<Transaction> filteredItems =
-          items.where((element) => element.status == search).toList();
-      return filteredItems;
-    } else {
-      return null;
-    }
+  final listDetailTransactionProvider =
+      FutureProvider.family<List<DetailTransaction>?, int>((ref, search) async {
+    Transaction? items = await TransactionClient.findTransaction(search);
+    List<DetailTransaction>? detailItems = items.listDetails;
+    return detailItems;
   });
 
   @override
   Widget build(BuildContext context) {
-    var itemListener = ref.watch(listTransactionProvider(widget.status));
+    bool isLoading = false;
+    var itemListener = ref.watch(listDetailTransactionProvider(widget.id));
     return Scaffold(
-      body: SizedBox(
-        child: itemListener.when(
-          data: (data) => ListView.builder(
-            itemBuilder: (context, index) => SizedBox(
-              height: 8.h,
-              child: Row(children: [
-                Text(data![index].id.toString()),
-                Text(data[index].paymentMethod)
-              ]),
+      body: isLoading == true
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : Container(
+              padding: EdgeInsets.only(top: 2.h, bottom: 2.h),
+              child: SizedBox(
+                child: itemListener.when(
+                  data: (data) => ListView.builder(
+                    itemCount: data!.length,
+                    itemBuilder: (context, index) => GestureDetector(
+                      onTap: () async {
+                        if (!widget.canReview) return;
+                        if (data[index].rated == true) return;
+                        setState(() {
+                          isLoading = true;
+                        });
+                        List<Item> litem =
+                            await ItemClient.getItems(data[index].name, 0);
+
+                        setState(() {
+                          isLoading = false;
+                        });
+
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  InputReview(idItem: litem.first.id),
+                            ));
+                      },
+                      child: SizedBox(
+                        height: 8.h,
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 4.w),
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(data[index].name),
+                                Text('Jumlah : ${data[index].amount}')
+                              ]),
+                        ),
+                      ),
+                    ),
+                  ),
+                  error: (err, s) => Center(
+                    child: Text(err.toString()),
+                  ),
+                  loading: () => const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+              ),
             ),
-          ),
-          error: (err, s) => Center(
-            child: Text(err.toString()),
-          ),
-          loading: () => const Center(
-            child: CircularProgressIndicator(),
-          ),
-        ),
-      ),
     );
   }
 }

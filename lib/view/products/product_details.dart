@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:project_belanjakan/component/dialog.dart';
 import 'package:project_belanjakan/component/snackbar.dart';
 import 'package:project_belanjakan/model/cart.dart';
@@ -47,6 +48,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       Navigator.pop(context);
     }
     setState(() {
+      if (item.stock == 0) {
+        CustomSnackBar.showSnackBar(context,
+            'Stok Habis, Tunggu Seller Restock atau pesan lainnya', Colors.red);
+        Navigator.pop(context);
+      }
       isLoading = false;
     });
   }

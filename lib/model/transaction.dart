@@ -55,23 +55,24 @@ class DetailTransaction {
   String name;
   int price;
   int amount;
-  DetailTransaction({
-    required this.id,
-    required this.idTransaction,
-    required this.name,
-    required this.price,
-    required this.amount,
-  });
+  bool rated;
+  DetailTransaction(
+      {required this.id,
+      required this.idTransaction,
+      required this.name,
+      required this.price,
+      required this.amount,
+      required this.rated});
   factory DetailTransaction.fromRawJson(String str) =>
       DetailTransaction.fromJson(json.decode(str));
   factory DetailTransaction.fromJson(Map<String, dynamic> json) {
     return DetailTransaction(
-      id: json['id'],
-      idTransaction: json['id_transaction'],
-      name: json['name'],
-      price: json['price'],
-      amount: json['amount'],
-    );
+        id: json['id'],
+        idTransaction: json['id_transaction'],
+        name: json['name'],
+        price: json['price'],
+        amount: json['amount'],
+        rated: json['rated']);
   }
   String toRawJson() => json.encode(toJson());
   Map<String, dynamic> toJson() => {
@@ -80,5 +81,6 @@ class DetailTransaction {
         "name": name,
         "price": price,
         "amount": amount,
+        "rated": rated
       };
 }
