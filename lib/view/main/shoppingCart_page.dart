@@ -64,14 +64,19 @@ class _ShoppingCartState extends ConsumerState<ShoppingCart> {
                   currentAddress: currentAddress,
                   token: token,
                 )));
-
-    Transaction transaction =
-        await TransactionClient.findTransaction(idTransaksi);
-    User user = await UserClient.getUserById(transaction.idBuyer);
-    setState(() {
-      isLoading = false;
-    });
-    createPdf(user, transaction, context);
+    if (idTransaksi != 0) {
+      Transaction transaction =
+          await TransactionClient.findTransaction(idTransaksi);
+      User user = await UserClient.getUserById(transaction.idBuyer);
+      setState(() {
+        isLoading = false;
+      });
+      createPdf(user, transaction, context);
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+    }
     onRefresh(context, ref, token);
   }
 
