@@ -178,15 +178,6 @@ class _ProfileViewState extends State<ProfileView> {
                   onTap: () => Navigator.push(context,
                       MaterialPageRoute(builder: (_) => const ItemsListView())),
                 ),
-                ListTile(
-                  title: const Text('Review'),
-                  onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => const InputReview(
-                                idItem: 4,
-                              ))),
-                )
               ],
             ),
           ),

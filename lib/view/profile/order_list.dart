@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project_belanjakan/component/dialog.dart';
+import 'package:project_belanjakan/component/snackbar.dart';
 import 'package:project_belanjakan/model/item.dart';
 import 'package:project_belanjakan/model/transaction.dart';
 import 'package:project_belanjakan/services/api/item_client.dart';
@@ -52,6 +53,16 @@ class _OrderListViewState extends ConsumerState<OrderListView> {
                         List<Item> litem =
                             await ItemClient.getItems(data[index].name, 0);
 
+                        if (litem.isEmpty) {
+                          CustomSnackBar.showSnackBar(
+                              context,
+                              'Data tidak ditemukan, mungkin telah dihapus seller / admin',
+                              Colors.red);
+                          await TransactionClient.updateRatedDetailsTransaction(
+                              data[index].id);
+                          Navigator.pop(context);
+                        }
+
                         setState(() {
                           isLoading = false;
                         });
@@ -59,8 +70,10 @@ class _OrderListViewState extends ConsumerState<OrderListView> {
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (_) =>
-                                  InputReview(idItem: litem.first.id),
+                              builder: (_) => InputReview(
+                                idItem: litem.first.id,
+                                idDetail: data[index].id,
+                              ),
                             ));
                       },
                       child: SizedBox(

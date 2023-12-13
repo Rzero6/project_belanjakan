@@ -8,11 +8,13 @@ import 'package:project_belanjakan/model/review.dart';
 import 'package:project_belanjakan/services/api/api_client.dart';
 import 'package:project_belanjakan/services/api/item_client.dart';
 import 'package:project_belanjakan/services/api/review_client.dart';
+import 'package:project_belanjakan/services/api/transaction_client.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class InputReview extends StatefulWidget {
   final int idItem;
-  const InputReview({super.key, required this.idItem});
+  final int idDetail;
+  const InputReview({super.key, required this.idItem, required this.idDetail});
   @override
   State<InputReview> createState() => _InputReviewState();
 }
@@ -80,7 +82,8 @@ class _InputReviewState extends State<InputReview> {
                             borderRadius: BorderRadius.all(Radius.circular(30)),
                           ),
                         ),
-                        onPressed: () => onSubmit(item.id, context),
+                        onPressed: () =>
+                            onSubmit(item.id, widget.idDetail, context),
                         child: const Text(
                           'Kirim',
                           style: TextStyle(fontSize: 18),
@@ -94,7 +97,7 @@ class _InputReviewState extends State<InputReview> {
     );
   }
 
-  onSubmit(idItem, context) async {
+  onSubmit(idItem, idDetail, context) async {
     CustomDialog.showLoadingDialog(context);
     try {
       Review review = Review(
@@ -105,9 +108,9 @@ class _InputReviewState extends State<InputReview> {
           detail: descriptionController.text,
           createdAt: '');
       await ReviewClient.addReview(review);
+      await TransactionClient.updateRatedDetailsTransaction(idDetail);
       CustomSnackBar.showSnackBar(
           context, 'Berhasil memberikan review', Colors.blue);
-      Navigator.pop(context);
       Navigator.pop(context);
     } catch (e) {
       CustomSnackBar.showSnackBar(
