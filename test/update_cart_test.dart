@@ -14,8 +14,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   setUpAll(() => HttpOverrides.global = null);
+  final TestWidgetsFlutterBinding binding =
+      TestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('Update cart success success', (WidgetTester tester) async {
+    binding.window.devicePixelRatioTestValue = 10.0;
     final userData =
         await AuthClient.loginTesting('akatsukikh99@gmail.com', '12345678!');
     expect(userData.token, isNotNull);
