@@ -65,6 +65,8 @@ void main() {
 
     await tester.tap(find.byKey(const Key('register-submit')));
     await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Iya'));
+    await tester.pumpAndSettle();
     expect(find.byKey(const Key('register-message-failed')), findsOneWidget);
   });
 
@@ -117,7 +119,10 @@ void main() {
     await tester.pump();
 
     expect(find.byType(Registerview), findsWidgets);
+
     await tester.tap(find.byKey(const Key('register-submit')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Iya'));
     await tester.pumpAndSettle();
     expect(find.byType(Registerview), findsNothing);
   });

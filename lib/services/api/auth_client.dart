@@ -83,7 +83,7 @@ class AuthClient {
 
   static Future<User> loginTesting(String email, String password) async {
     var client = http.Client();
-    Uri uri = Uri.parse('http://172.16.65.98:8000/api/login');
+    Uri uri = Uri.parse('${ApiClient().baseUrl}/login');
 
     try {
       var response = await client.post(

@@ -19,7 +19,7 @@ void main() {
 
   setUpAll(() => HttpOverrides.global = null);
 
-  testWidgets('Read cart success success', (WidgetTester tester) async {
+  testWidgets('Read cart success', (WidgetTester tester) async {
     binding.window.devicePixelRatioTestValue = 10.0;
     final userData =
         await AuthClient.loginTesting('akatsukikh99@gmail.com', '12345678!');
@@ -37,7 +37,7 @@ void main() {
         Cart(id: 0, idUser: 0, idItem: 1, amount: 3),
         userData.token!); // klo di device lain pastikan pas
     await CartClient.addOrUpdateCart(
-        Cart(id: 0, idUser: 0, idItem: 2, amount: 3), userData.token!);
+        Cart(id: 0, idUser: 0, idItem: 3, amount: 3), userData.token!);
 
     await tester.pumpWidget(
       ProviderScope(
@@ -57,7 +57,7 @@ void main() {
         ),
       ),
     );
-    // await tester.pump();
+    await tester.pump();
     await tester.pumpAndSettle();
     expect(find.byType(SliverList), findsWidgets);
   });
