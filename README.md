@@ -1,15 +1,45 @@
-# project_belanjakan
+# 📱 Belanjakan Mobile App
 
-## KELOMPOK 2 KELAS D
+Belanjakan is a mobile e-commerce application that enables users to browse products, manage carts, make purchases, and track transactions — all from their phone.
 
-current progress:
-UAS Deployed
+---
 
-## Anggota Kelompok
+## 🚀 Tech Stack
+- Flutter
+- Laravel Backend API (REST API Integration)
+- MySQL Database
 
-- 210711015 - Reynold Kunarto
-- 210711282 - Yohanes Krisostomus Brahmantya
-- 200710903 - Hans Timotius Junior Sitepu
-- 210711280 - Angel
-- 210711346 - Daniel Natalius Christopper
+---
 
+## ✨ Key Features
+- 🔐 Login & Registration
+- 🛍 Browse Products by Category
+- 🛒 Add / Update / Remove Cart Items
+- 💳 Checkout & Transaction History
+- ⭐ Product Reviews & Ratings
+- 🎉 Shake & Win — Random Coupon Generator Feature
+- 👤 Profile Information Update
+  
+---
+
+## ▶️ How to Run (Flutter)
+- flutter pub get
+- flutter run
+
+---
+
+## 🔗 Backend API
+This project is connected to the Laravel backend: [View Repository](https://github.com/Rzero6/project_belanjakan_api)
+
+---
+## 📸 Screenshots
+
+![App Screenshot](https://res.cloudinary.com/dqrhcgkup/image/upload/belanjakan_login_rylxht.png)
+![App Screenshot](https://res.cloudinary.com/dqrhcgkup/image/upload/belanjakan_home_pf1kar.png)
+![App Screenshot](https://res.cloudinary.com/dqrhcgkup/image/upload/belanjakan_profile_iephwg.png)
+
+---
+
+## 📄 License
+
+This project is for educational purposes.
